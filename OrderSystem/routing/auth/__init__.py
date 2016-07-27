@@ -2,8 +2,8 @@ from flask import redirect, url_for, request, render_template, Blueprint, flash
 from flask_login import login_user, logout_user
 from sqlalchemy import or_
 
+from OrderSystem import forms, db, app
 from OrderSystem.sql.ORM import User, Subteam
-from OrderSystem import forms, db, app, slack
 from OrderSystem.utilities.Helpers import verify_password, flash_errors, hash_password
 from OrderSystem.utilities.ServerLogger import log_event
 
@@ -87,15 +87,6 @@ def register():
                           "New account registered as \"{0}\" using registration code: {1}".format(username, app.config[
                               "REGISTRATION_CODE"]))
                 their_subteam = db.session.query(Subteam).filter(Subteam.id == subteam).first()
-                slack.chat.post_message("#updates",
-                                        "New user has registered!\n>>>*{0} {1}*\n*{2}*\n_{3}_\n_*{4}*_".format(
-                                            first_name,
-                                            last_name,
-                                            username,
-                                            email,
-                                            their_subteam.name),
-                                        username="MORT Registration Bot",
-                                        icon_url="https://cdn2.iconfinder.com/data/icons/windows-8-metro-style/256/add_user.png")
                 return redirect(url_for('auth.login'))
             except Exception as e:
                 db.session.rollback()

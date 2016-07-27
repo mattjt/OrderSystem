@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash
-from flask.ext.classy import route
+from flask.ext.classy import route, FlaskView
 from flask.ext.login import login_required, current_user
 
 from CRUDBase import CRUDBase
@@ -9,7 +9,7 @@ from OrderSystem.sql.ORM import User
 from OrderSystem.utilities.Helpers import verify_password, hash_password, flash_errors
 
 
-class Users(CRUDBase):
+class Users(FlaskView, CRUDBase):
     """
     The Users class handles managing a user's account settings
     """
