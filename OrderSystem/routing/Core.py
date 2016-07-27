@@ -3,9 +3,9 @@ import os
 from flask import render_template, redirect, url_for, Blueprint, abort, send_from_directory
 from flask.ext.login import current_user, login_required
 
+from OrderSystem import forms
 from OrderSystem import login_manager, db
 from OrderSystem.sql.ORM import User
-from OrderSystem import forms
 from OrderSystem.utilities.Helpers import hash_password, flash_errors, needs_password_reset_check
 
 main = Blueprint('main', __name__)
