@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block page_title %}Setting Budget...{% endblock %}
+{% block page_content %}
+    <div class="row">
+        <div class="col-md-12">
+            {% include 'bases/validation-error-base.html' %}
+            <h2>Setting Subteam Budget...</h2>
+            <hr>
+
+            <form method="post">
+                {{ form.csrf_token }}
+                {% if value != None %}
+                    {{ form.amount.label }}{{ form.amount(class="form-control", step="any", value=val) }}
+                {% else %}
+                    {{ form.amount.label }}{{ form.amount(class="form-control", step="any") }}
+                {% endif %}
+
+                <input type="submit" id="submit-btn" class="btn btn-danger" value="Set">
+            </form>
+        </div>
+    </div>
+{% endblock %}

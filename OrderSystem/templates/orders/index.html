@@ -1,0 +1,680 @@
+{% extends 'base.html' %}
+{% block page_title %}Orders{% endblock %}
+{% block page_content %}
+    <h2 class="text-center"><strong>Order Manager</strong></h2>
+    <hr>
+    <strong><p>If your order does not show up in <em>Not Processed</em>, it is more than likely pending mentor
+        approval. Ask your subteam mentor to approve the order for you.</p>
+    </strong>
+    <hr>
+    <div class="row">
+
+        <div class="col-md-9">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#notProcessed" role="tab">Not
+                    Processed</a></li>
+                <li role="presentation"><a href="#inProgress" role="tab">In Progress</a></li>
+                <li role="presentation"><a href="#shipped" role="tab">Shipped</a></li>
+                <li role="presentation"><a href="#complete" role="tab">Complete</a></li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active fade in" id="notProcessed">
+                    <!-- Not Processed Orders Tab -->
+                    <div class="well">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <strong>Item</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Vendor</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Subteam</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Ordered On</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Needed By</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Total Cost*</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="notProcessedAccordion">
+                        {% for order in orders %}
+                            {% if order.order_status == "notProcessed" %}
+                                <div class="row accordion-toggle">
+                                    <div class="col-sm-2"><h5>{{ order.part_name }}</h5></div>
+                                    <div class="col-sm-2"><h5>{{ order.vendor.vendor_name }}</h5></div>
+                                    <div class="col-sm-2"><h5>{{ order.subteam.name }}</h5></div>
+                                    <div class="col-sm-2"><h5>{{ order.part_ordered_on }}</h5></div>
+                                    <div class="col-sm-2"><h5>{{ order.part_needed_by }}</h5></div>
+                                    <div class="col-sm-2"><h5>
+                                        {% if order.credit == 0 and order.part_shipping_cost > 0 %}
+                                            <strong>${{ "%0.2f"|format(order.total) }} + S&H</strong>
+                                        {% elif order.credit > 0 and order.part_shipping_cost > 0 %}
+                                            <strong>${{ "%0.2f"|format(order.total) }}* + S&H</strong>
+                                        {% elif order.credit > 0 and order.part_shipping_cost == 0 %}
+                                            <strong>${{ "%0.2f"|format(order.total) }}*</strong>
+                                        {% else %}
+                                            ${{ "%0.2f"|format(order.total) }}
+                                        {% endif %}
+                                    </h5></div>
+                                </div>
+
+                                <div class="accordion-content">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="row well">
+                                                <fieldset class="scheduler-border">
+                                                    <legend class="scheduler-border">Order</legend>
+                                                    <div class="col-md-6">Order ID -</div>
+                                                    <div class="col-md-6">{{ order.id }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Part URL -</div>
+                                                    <div class="col-md-6"><a href="{{ order.part_url }}"
+                                                                             target="_blank">{{ order.part_url }}</a>
+                                                    </div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Part Number -</div>
+                                                    <div class="col-md-6">{{ order.part_number }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Price per unit -</div>
+                                                    <div class="col-md-6">
+                                                        ${{ "%0.2f"|format(order.part_unit_price) }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Quantity -</div>
+                                                    <div class="col-md-6">{{ order.part_quantity }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Ordered By -</div>
+                                                    <div class="col-md-6"><a
+                                                            href="/member/~{{ order.ordering_user.username }}">{{ order.ordering_user.first_name }} {{ order.ordering_user.last_name }}</a>
+                                                    </div>
+                                                </fieldset>
+
+                                                {% if current_user.can_update_order_status %}
+                                                    <fieldset class="scheduler-border">
+                                                        <legend class="scheduler-border">Update Order Status
+                                                        </legend>
+                                                        <input type="hidden" name="orderId" id="oID{{ order.id }}"
+                                                               value="{{ order.id }}">
+                                                        <select name="newTable" id="newTable{{ order.id }}"
+                                                                class="form-control">
+                                                            <option value="notProcessed" selected="selected">Not
+                                                                Processed
+                                                            </option>
+                                                            <option value="inProgress">In
+                                                                Progress
+                                                            </option>
+                                                            <option value="shipped">Shipped
+                                                            </option>
+                                                            <option value="complete">Complete</option>
+                                                        </select>
+                                                    </fieldset>
+                                                    <div class="col-md-4">
+                                                        <button type="button"
+                                                                class="btn btn-success btn-block"
+                                                                onclick='updatePartStatus($("#oID{{ order.id }}").val(), $("#newTable{{ order.id }}").val())'>
+                                                            Update
+                                                        </button>
+                                                    </div>
+                                                {% endif %}
+                                                {% if order.part_ordered_by == current_user.id or current_user.can_approve_orders %}
+                                                    <div class="col-md-4">
+                                                        <form action="{{ url_for('orders.delete_order') }}"
+                                                              onsubmit="return confirm('Are you sure you want to delete this order?');"
+                                                              method="post">
+                                                            <input type="hidden" name="orderId" value="{{ order.id }}">
+                                                            <input class="btn btn-danger btn-block"
+                                                                   type="submit"
+                                                                   value="Delete">
+                                                        </form>
+                                                    </div>
+                                                    <div class="col-md-4"><a href="/orders/edit/{{ order.id }}"
+                                                                             class="btn btn-danger btn-block">Modify</a>
+                                                    </div>
+                                                {% endif %}
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row well">
+                                                <fieldset class="scheduler-border">
+                                                    <legend class="scheduler-border">Vendor</legend>
+                                                    <div class="col-md-6">Name -</div>
+                                                    <div class="col-md-6">{{ order.vendor.vendor_name }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">URL -</div>
+                                                    <div class="col-md-6"><a target="_blank"
+                                                                             href="{{ order.vendor.vendor_url }}">{{ order.vendor.vendor_url }}</a>
+                                                    </div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Phone -</div>
+                                                    <div class="col-md-6">{{ order.vendor.vendor_phone }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Email -</div>
+                                                    <div class="col-md-6"><a
+                                                            href="mailto:{{ order.vendor.vendor_email }}">{{ order.vendor.vendor_email }}</a>
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="inProgress">
+                    <!-- In Progress Orders Tab -->
+                    <div class="well">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <strong>Item</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Vendor</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Subteam</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Ordered On</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Needed By</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Total Cost*</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="inProgressAccordion">
+                        {% for order in orders %}
+                            {% if order.order_status == "inProgress" %}
+                                <div class="row accordion-toggle">
+                                    <div class="col-sm-2"><h5>{{ order.part_name }}</h5></div>
+                                    <div class="col-sm-2"><h5>{{ order.vendor.vendor_name }}</h5></div>
+                                    <div class="col-sm-2"><h5>{{ order.subteam.name }}</h5></div>
+                                    <div class="col-sm-2"><h5>{{ order.part_ordered_on }}</h5></div>
+                                    <div class="col-sm-2"><h5>{{ order.part_needed_by }}</h5></div>
+                                    <div class="col-sm-2"><h5>
+                                        {% if order.credit == 0 and order.part_shipping_cost > 0 %}
+                                            <strong>${{ "%0.2f"|format(order.total) }} + S&H</strong>
+                                        {% elif order.credit > 0 and order.part_shipping_cost > 0 %}
+                                            <strong>${{ "%0.2f"|format(order.total) }}* + S&H</strong>
+                                        {% elif order.credit > 0 and order.part_shipping_cost == 0 %}
+                                            <strong>${{ "%0.2f"|format(order.total) }}*</strong>
+                                        {% else %}
+                                            ${{ "%0.2f"|format(order.total) }}
+                                        {% endif %}
+                                    </h5></div>
+                                </div>
+
+                                <div class="accordion-content">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="row well">
+                                                <fieldset class="scheduler-border">
+                                                    <legend class="scheduler-border">Order</legend>
+                                                    <div class="col-md-6">Order ID -</div>
+                                                    <div class="col-md-6">{{ order.id }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Part URL -</div>
+                                                    <div class="col-md-6"><a href="{{ order.part_url }}"
+                                                                             target="_blank">{{ order.part_url }}</a>
+                                                    </div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Part Number -</div>
+                                                    <div class="col-md-6">{{ order.part_number }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Price per unit -</div>
+                                                    <div class="col-md-6">
+                                                        ${{ "%0.2f"|format(order.part_unit_price) }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Quantity -</div>
+                                                    <div class="col-md-6">{{ order.part_quantity }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Ordered By -</div>
+                                                    <div class="col-md-6"><a
+                                                            href="/member/~{{ order.ordering_user.username }}">{{ order.ordering_user.first_name }} {{ order.ordering_user.last_name }}</a>
+                                                    </div>
+                                                </fieldset>
+
+                                                {% if current_user.can_update_order_status %}
+                                                    <fieldset class="scheduler-border">
+                                                        <legend class="scheduler-border">Update Order Status
+                                                        </legend>
+                                                        <input type="hidden" name="orderId" id="oID{{ order.id }}"
+                                                               value="{{ order.id }}">
+                                                        <select name="newTable" id="newTable{{ order.id }}"
+                                                                class="form-control">
+                                                            <option value="notProcessed">Not
+                                                                Processed
+                                                            </option>
+                                                            <option value="inProgress" selected="selected">In
+                                                                Progress
+                                                            </option>
+                                                            <option value="shipped">Shipped
+                                                            </option>
+                                                            <option value="complete">Complete</option>
+                                                        </select>
+                                                    </fieldset>
+                                                    <div class="col-md-4">
+                                                        <button type="button"
+                                                                class="btn btn-success btn-block"
+                                                                onclick='updatePartStatus($("#oID{{ order.id }}").val(), $("#newTable{{ order.id }}").val())'>
+                                                            Update
+                                                        </button>
+                                                    </div>
+                                                {% endif %}
+                                                {% if order.part_ordered_by == current_user.id or current_user.can_approve_orders %}
+                                                    <div class="col-md-4">
+                                                        <form action="{{ url_for('orders.delete_order') }}"
+                                                              onsubmit="return confirm('Are you sure you want to delete this order?');"
+                                                              method="post">
+                                                            <input type="hidden" name="orderId" value="{{ order.id }}">
+                                                            <input class="btn btn-danger btn-block"
+                                                                   type="submit"
+                                                                   value="Delete">
+                                                        </form>
+                                                    </div>
+                                                    <div class="col-md-4"><a href="/orders/edit/{{ order.id }}"
+                                                                             class="btn btn-danger btn-block">Modify</a>
+                                                    </div>
+                                                {% endif %}
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row well">
+                                                <fieldset class="scheduler-border">
+                                                    <legend class="scheduler-border">Vendor</legend>
+                                                    <div class="col-md-6">Name -</div>
+                                                    <div class="col-md-6">{{ order.vendor.vendor_name }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">URL -</div>
+                                                    <div class="col-md-6"><a target="_blank"
+                                                                             href="{{ order.vendor.vendor_url }}">{{ order.vendor.vendor_url }}</a>
+                                                    </div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Phone -</div>
+                                                    <div class="col-md-6">{{ order.vendor.vendor_phone }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Email -</div>
+                                                    <div class="col-md-6"><a
+                                                            href="mailto:{{ order.vendor.vendor_email }}">{{ order.vendor.vendor_email }}</a>
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div role="tabpanel" class="tab-pane fade" id="shipped">
+                    <!-- Shipped Orders Tab -->
+                    <div class="well">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <strong>Item</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Vendor</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Subteam</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Ordered On</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Needed By</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Total Cost*</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="shippedAccordion">
+                        {% for order in orders %}
+                            {% if order.order_status == "shipped" %}
+                                <div class="row accordion-toggle">
+                                    <div class="col-sm-2"><h5>{{ order.part_name }}</h5></div>
+                                    <div class="col-sm-2"><h5>{{ order.vendor.vendor_name }}</h5></div>
+                                    <div class="col-sm-2"><h5>{{ order.subteam.name }}</h5></div>
+                                    <div class="col-sm-2"><h5>{{ order.part_ordered_on }}</h5></div>
+                                    <div class="col-sm-2"><h5>{{ order.part_needed_by }}</h5></div>
+                                    <div class="col-sm-2"><h5>
+                                        {% if order.credit == 0 and order.part_shipping_cost > 0 %}
+                                            <strong>${{ "%0.2f"|format(order.total) }} + S&H</strong>
+                                        {% elif order.credit > 0 and order.part_shipping_cost > 0 %}
+                                            <strong>${{ "%0.2f"|format(order.total) }}* + S&H</strong>
+                                        {% elif order.credit > 0 and order.part_shipping_cost == 0 %}
+                                            <strong>${{ "%0.2f"|format(order.total) }}*</strong>
+                                        {% else %}
+                                            ${{ "%0.2f"|format(order.total) }}
+                                        {% endif %}
+                                    </h5></div>
+                                </div>
+
+                                <div class="accordion-content">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="row well">
+                                                <fieldset class="scheduler-border">
+                                                    <legend class="scheduler-border">Order</legend>
+                                                    <div class="col-md-6">Order ID -</div>
+                                                    <div class="col-md-6">{{ order.id }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Part URL -</div>
+                                                    <div class="col-md-6"><a href="{{ order.part_url }}"
+                                                                             target="_blank">{{ order.part_url }}</a>
+                                                    </div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Part Number -</div>
+                                                    <div class="col-md-6">{{ order.part_number }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Price per unit -</div>
+                                                    <div class="col-md-6">
+                                                        ${{ "%0.2f"|format(order.part_unit_price) }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Quantity -</div>
+                                                    <div class="col-md-6">{{ order.part_quantity }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Ordered By -</div>
+                                                    <div class="col-md-6"><a
+                                                            href="/member/~{{ order.ordering_user.username }}">{{ order.ordering_user.first_name }} {{ order.ordering_user.last_name }}</a>
+                                                    </div>
+                                                </fieldset>
+
+                                                {% if current_user.can_update_order_status %}
+                                                    <fieldset class="scheduler-border">
+                                                        <legend class="scheduler-border">Update Order Status
+                                                        </legend>
+                                                        <input type="hidden" name="orderId" id="oID{{ order.id }}"
+                                                               value="{{ order.id }}">
+                                                        <select name="newTable" id="newTable{{ order.id }}"
+                                                                class="form-control">
+                                                            <option value="notProcessed">Not
+                                                                Processed
+                                                            </option>
+                                                            <option value="inProgress">In
+                                                                Progress
+                                                            </option>
+                                                            <option value="shipped" selected="selected">Shipped
+                                                            </option>
+                                                            <option value="complete">Complete</option>
+                                                        </select>
+                                                    </fieldset>
+                                                    <div class="col-md-4">
+                                                        <button type="button"
+                                                                class="btn btn-success btn-block"
+                                                                onclick='updatePartStatus($("#oID{{ order.id }}").val(), $("#newTable{{ order.id }}").val())'>
+                                                            Update
+                                                        </button>
+                                                    </div>
+                                                {% endif %}
+                                                {% if order.part_ordered_by == current_user.id or current_user.can_approve_orders %}
+                                                    <div class="col-md-4">
+                                                        <form action="{{ url_for('orders.delete_order') }}"
+                                                              onsubmit="return confirm('Are you sure you want to delete this order?');"
+                                                              method="post">
+                                                            <input type="hidden" name="orderId" value="{{ order.id }}">
+                                                            <input class="btn btn-danger btn-block"
+                                                                   type="submit"
+                                                                   value="Delete">
+                                                        </form>
+                                                    </div>
+                                                    <div class="col-md-4"><a href="/orders/edit/{{ order.id }}"
+                                                                             class="btn btn-danger btn-block">Modify</a>
+                                                    </div>
+                                                {% endif %}
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row well">
+                                                <fieldset class="scheduler-border">
+                                                    <legend class="scheduler-border">Vendor</legend>
+                                                    <div class="col-md-6">Name -</div>
+                                                    <div class="col-md-6">{{ order.vendor.vendor_name }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">URL -</div>
+                                                    <div class="col-md-6"><a target="_blank"
+                                                                             href="{{ order.vendor.vendor_url }}">{{ order.vendor.vendor_url }}</a>
+                                                    </div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Phone -</div>
+                                                    <div class="col-md-6">{{ order.vendor.vendor_phone }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Email -</div>
+                                                    <div class="col-md-6"><a
+                                                            href="mailto:{{ order.vendor.vendor_email }}">{{ order.vendor.vendor_email }}</a>
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="complete">
+                    <!-- Complete -->
+                    <div class="well">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <strong>Item</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Vendor</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Subteam</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Ordered On</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Needed By</strong>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Total Cost*</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="completedAccordion">
+                        {% for order in orders %}
+                            {% if order.order_status == "complete" %}
+                                <div class="row accordion-toggle">
+                                    <div class="col-sm-2"><h5>{{ order.part_name }}</h5></div>
+                                    <div class="col-sm-2"><h5>{{ order.vendor.vendor_name }}</h5></div>
+                                    <div class="col-sm-2"><h5>{{ order.subteam.name }}</h5></div>
+                                    <div class="col-sm-2"><h5>{{ order.part_ordered_on }}</h5></div>
+                                    <div class="col-sm-2"><h5>{{ order.part_needed_by }}</h5></div>
+                                    <div class="col-sm-2"><h5>
+                                        {% if order.credit == 0 and order.part_shipping_cost > 0 %}
+                                            <strong>${{ "%0.2f"|format(order.total) }} + S&H</strong>
+                                        {% elif order.credit > 0 and order.part_shipping_cost > 0 %}
+                                            <strong>${{ "%0.2f"|format(order.total) }}* + S&H</strong>
+                                        {% elif order.credit > 0 and order.part_shipping_cost == 0 %}
+                                            <strong>${{ "%0.2f"|format(order.total) }}*</strong>
+                                        {% else %}
+                                            ${{ "%0.2f"|format(order.total) }}
+                                        {% endif %}
+                                    </h5></div>
+                                </div>
+
+                                <div class="accordion-content">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="row well">
+                                                <fieldset class="scheduler-border">
+                                                    <legend class="scheduler-border">Order</legend>
+                                                    <div class="col-md-6">Order ID -</div>
+                                                    <div class="col-md-6">{{ order.id }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Part URL -</div>
+                                                    <div class="col-md-6"><a href="{{ order.part_url }}"
+                                                                             target="_blank">{{ order.part_url }}</a>
+                                                    </div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Part Number -</div>
+                                                    <div class="col-md-6">{{ order.part_number }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Price per unit -</div>
+                                                    <div class="col-md-6">
+                                                        ${{ "%0.2f"|format(order.part_unit_price) }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Quantity -</div>
+                                                    <div class="col-md-6">{{ order.part_quantity }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Ordered By -</div>
+                                                    <div class="col-md-6"><a
+                                                            href="/member/~{{ order.ordering_user.username }}">{{ order.ordering_user.first_name }} {{ order.ordering_user.last_name }}</a>
+                                                    </div>
+                                                </fieldset>
+
+                                                {% if current_user.can_update_order_status %}
+                                                    <fieldset class="scheduler-border">
+                                                        <legend class="scheduler-border">Update Order Status
+                                                        </legend>
+                                                        <input type="hidden" name="orderId" id="oID{{ order.id }}"
+                                                               value="{{ order.id }}">
+                                                        <select name="newTable" id="newTable{{ order.id }}"
+                                                                class="form-control">
+                                                            <option value="notProcessed">Not
+                                                                Processed
+                                                            </option>
+                                                            <option value="inProgress">In
+                                                                Progress
+                                                            </option>
+                                                            <option value="shipped">Shipped
+                                                            </option>
+                                                            <option value="complete" selected="selected">Complete
+                                                            </option>
+                                                        </select>
+                                                    </fieldset>
+                                                    <div class="col-md-4">
+                                                        <button type="button"
+                                                                class="btn btn-success btn-block"
+                                                                onclick='updatePartStatus($("#oID{{ order.id }}").val(), $("#newTable{{ order.id }}").val())'>
+                                                            Update
+                                                        </button>
+                                                    </div>
+                                                {% endif %}
+                                                {% if order.part_ordered_by == current_user.id or current_user.can_approve_orders %}
+                                                    <div class="col-md-4">
+                                                        <form action="{{ url_for('orders.delete_order') }}"
+                                                              onsubmit="return confirm('Are you sure you want to delete this order?');"
+                                                              method="post">
+                                                            <input type="hidden" name="orderId" value="{{ order.id }}">
+                                                            <input class="btn btn-danger btn-block"
+                                                                   type="submit"
+                                                                   value="Delete">
+                                                        </form>
+                                                    </div>
+                                                    <div class="col-md-4"><a href="/orders/edit/{{ order.id }}"
+                                                                             class="btn btn-danger btn-block">Modify</a>
+                                                    </div>
+                                                {% endif %}
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row well">
+                                                <fieldset class="scheduler-border">
+                                                    <legend class="scheduler-border">Vendor</legend>
+                                                    <div class="col-md-6">Name -</div>
+                                                    <div class="col-md-6">{{ order.vendor.vendor_name }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">URL -</div>
+                                                    <div class="col-md-6"><a target="_blank"
+                                                                             href="{{ order.vendor.vendor_url }}">{{ order.vendor.vendor_url }}</a>
+                                                    </div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Phone -</div>
+                                                    <div class="col-md-6">{{ order.vendor.vendor_phone }}</div>
+                                                    <br>
+
+                                                    <div class="col-md-6">Email -</div>
+                                                    <div class="col-md-6"><a
+                                                            href="mailto:{{ order.vendor.vendor_email }}">{{ order.vendor.vendor_email }}</a>
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="well">
+                <a href="/orders/budgets/{{ this_year }}" class="btn btn-warning btn-block">Budgets</a>
+                <a href="{{ url_for('Vendors:index') }}" class="btn btn-info btn-block">Vendors</a>
+                {% if current_user.can_approve_orders %}
+                    <hr>
+                    <a href="{{ url_for('PendingOrders:index') }}"
+                       class="btn btn-success btn-block">Pending</a>
+                {% endif %}
+                {% if current_user.can_edit_orders %}
+                    <hr>
+                    <a href="{{ url_for('OrderSystem:create') }}" class="btn btn-danger btn-block">New Order</a>
+                {% endif %}
+                <hr>
+                <h4><strong>Key</strong></h4>
+                <strong>&lowast;</strong> <em>&rarr; Received credit back on order</em>
+                <br>
+                <strong>+ S&H</strong> <em>&rarr; Total includes Shipping & Handling charges</em>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="/static/js/mort/orders.js"></script>
+{% endblock %}

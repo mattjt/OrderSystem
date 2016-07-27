@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block page_title %}Editing Post - {{ post.id }}{% endblock %}
+{% block page_content %}
+    <div class="row">
+        <div class="col-md-12">
+            {% include 'bases/validation-error-base.html' %}
+            <form method="post" name="newpost">
+                {{ form.csrf_token }}
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            {{ form.post_title.label }}
+                            {{ form.post_title(class="form-control", value=post.post_title, maxlength="500") }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.post_url.label }}
+                            <div class="input-group">
+                                <div class="input-group-addon">http://mort11.org/blog/&ltcategory&gt</div>
+                                {{ form.post_url(class="form-control", value=post.post_url, maxlength="500") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 pull-right form-group">
+                        <label>Post Category</label>
+                        <select name="post_category" id="post_category" class="form-control" required>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}"
+                                        {% if post.post_category == category.id %}selected{% endif %}>{{ category.category_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <a class="pull-right" href="{{ url_for('blog.categories_overview') }}">Manage Categories</a>
+                    </div>
+
+                    <!-- Styling Guide PopUp -->
+                    <div class="modal fade" id="stylingguide" tabindex="-1" role="dialog"
+                         aria-labelledby="Styling Guide">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                            aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Some Styling Resources</h4>
+                                </div>
+                                <div class="modal-body">
+                                    Here are some resources you may want to make use of when creating/editing pages
+                                    <ul>
+                                        <li><a href="http://getbootstrap.com/" target="_blank">Bootstrap 3 Docs</a></li>
+                                        <li><a href="http://fortawesome.github.io/Font-Awesome/icons/" target="_blank">FontAwesome
+                                            Icons</a></li>
+                                    </ul>
+                                    <hr>
+                                    <strong>Bootstrap Note:</strong> Rounded edges were disabled sitewide as a stylistic
+                                    choice, so
+                                    any Bootstrap elements that have rounded edges will now have sharp edges.
+                                    <hr>
+                                    <strong>FontAwesome note:</strong> Make sure that when you add icons, you put
+                                    <strong>&amp;nbsp</strong>
+                                    between the &lt;i&gt; tags, otherwise your editor will remove the icon.
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 form-group">
+                        {{ form.post_content.label }} <a class="pull-right" data-toggle="modal"
+                                                         data-target="#stylingguide">Styling Guide</a>
+                        <textarea rows="25" id="post-content" class="form-control" name="post_content">
+                            {{ post.post_content }}
+                        </textarea>
+                    </div>
+                    <div class="col-md-12 form-group">
+                        <input type="submit" class="btn btn-success btn-block" style="margin-top: 15px"
+                               value="Update Post">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    {% include 'cms/mce_post_settings.html' %}
+
+    <script src="/static/js/bootstrap-maxlength.min.js" type="text/javascript"></script>
+    <script>
+        $('input[maxlength]').maxlength({
+            placement: 'bottom-right'
+        });
+    </script>
+{% endblock %}

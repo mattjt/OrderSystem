@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block page_title %}New Page{% endblock %}
+{% block page_content %}
+    <div class="row">
+        <div class="col-md-12">
+            {% include 'bases/validation-error-base.html' %}
+            <form method="post" name="newpage" action="{{ url_for('pages.new_page') }}">
+                {{ form.csrf_token }}
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            {{ form.page_title.label }}
+                            {{ form.page_title(placeholder='Ex. Sponsorship Information', class="form-control", maxlength="350") }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form.page_url.label }}
+                            <div class="input-group">
+                                <div class="input-group-addon">http://mort11.org/</div>
+                                {{ form.page_url(class="form-control", maxlength="150") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 form-group">
+                        {{ form.page_mode.label }}
+                        {{ form.page_mode(class="form-control") }}
+                    </div>
+
+                    <!-- Styling Guide PopUp -->
+                    <div class="modal fade" id="stylingguide" tabindex="-1" role="dialog"
+                         aria-labelledby="Styling Guide">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                            aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Some Styling Resources</h4>
+                                </div>
+                                <div class="modal-body">
+                                    Here are some resources you may want to make use of when creating/editing pages
+                                    <ul>
+                                        <li><a href="http://getbootstrap.com/" target="_blank">Bootstrap 3 Docs</a></li>
+                                        <li><a href="http://fortawesome.github.io/Font-Awesome/icons/" target="_blank">FontAwesome
+                                            Icons</a></li>
+                                    </ul>
+                                    <hr>
+                                    <strong>Bootstrap Note:</strong> Rounded edges were disabled sitewide as a stylistic
+                                    choice, so
+                                    any Bootstrap elements that have rounded edges will now have sharp edges.
+                                    <hr>
+                                    <strong>FontAwesome note:</strong> Make sure that when you add icons, you put "&
+                                    nbsp" without spaces
+                                    between the
+                                    &lt;i&gt; tags, otherwise your editor will remove the icon.
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 form-group">
+                        {{ form.page_content.label }} <a class="pull-right" data-toggle="modal"
+                                                         data-target="#stylingguide">Styling Guide</a>
+                        {{ form.page_content(rows=25, id="page-content", class="form-control") }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.page_scripts.label }}
+                        {{ form.page_scripts(rows=5, class="form-control") }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.page_styles.label }}
+                        {{ form.page_styles(rows=5, class="form-control") }}
+                    </div>
+
+                    <!-- Revision Info PopUp -->
+                    <div class="modal fade" id="revisioninfo" tabindex="-1" role="dialog"
+                         aria-labelledby="Revision Info">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                            aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">{{ form.revision_description.label }}</h4>
+                                </div>
+                                <div class="modal-body">
+                                    Briefly describe the changes you made to the page
+                                    {{ form.revision_description(class="form-control", required='required') }}
+                                </div>
+                                <div class="modal-footer">
+                                    <input type="submit" class="btn btn-success btn-block" value="Done">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <a class="btn btn-success btn-block" style="margin-top: 15px" data-toggle="modal"
+                           data-target="#revisioninfo">Add
+                            Page</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    {% include 'cms/mce_page_settings.html' %}
+
+    <script src="/static/js/bootstrap-maxlength.min.js" type="text/javascript"></script>
+    <script>
+        $('input[maxlength]').maxlength({
+            placement: 'bottom-right'
+        });
+    </script>
+{% endblock %}

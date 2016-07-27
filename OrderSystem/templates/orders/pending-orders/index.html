@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block page_title %}Pending Orders{% endblock %}
+{% block page_content %}
+    {% include 'bases/validation-error-base.html' %}
+    <a href="{{ url_for('orders.orders_index') }}" class="btn btn-info pull-right">Back to Orders</a>
+    <h1><strong>Pending Orders</strong></h1>
+    <hr>
+    {% if is_order_system_admin %}
+        <div class="alert alert-info">
+            You are viewing pending orders as admin. You can approve/deny <strong>any</strong> subteam's
+            orders
+        </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-5"><strong>Part Details</strong></div>
+        <div class="col-md-3"><strong>Subteam</strong></div>
+        <div class="col-md-4"><strong>Actions</strong></div>
+    </div>
+    <hr>
+    {% if orders.count() == 0 %}
+        <h1 class="text-center">None :)</h1>
+    {% else %}
+        {% for order in orders %}
+            <div class="row vdivide">
+                <div class="col-md-5">
+                    <strong>Part -</strong> {{ order.part_name }}<br>
+                    <strong>Vendor -</strong> {{ order.vendor.vendor_name }}
+                    <br>
+                    <strong>URL -</strong> <a href="{{ order.part_url }}" target="_blank">Part Link</a>
+                    <br>
+                    {{ order.part_quantity }} x ${{ order.part_unit_price }} = ${{ order.total }}
+                    <br>
+                    <strong>Ordered By
+                        -</strong> {{ order.ordering_user.first_name }} {{ order.ordering_user.last_name }}
+                </div>
+                <div class="col-md-3 text-center">
+                    {{ order.subteam.name }}
+                </div>
+                <div class="col-md-2"><a href="/orders/pending/approve/{{ order.id }}"
+                                         class="btn btn-success btn-block">Approve</a>
+                </div>
+                <div class="col-md-2">
+                    <a href="/orders/pending/deny/{{ order.id }}" class="btn btn-danger btn-block">Deny</a>
+                </div>
+            </div>
+            <hr>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

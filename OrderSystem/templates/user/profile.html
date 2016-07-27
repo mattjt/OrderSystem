@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block page_title %}{{ user.first_name }} {{ user.last_name }}{% endblock %}
+{% block page_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <img class="img-thumbnail img-responsive"
+                             style="display: block; margin-left: auto; margin-right: auto;"
+                             src="{{ user.profile_img_url }}" alt="{{ user.first_name }} {{ user.last_name }}"/>
+
+                        <div class="col-md-12">
+                            <hr/>
+                            <div class="well">
+                                <p><strong>Name - </strong> {{ user.first_name }} {{ user.last_name }}</p>
+
+                                <p>Class of <strong>{{ user.grad_year }}</strong></p>
+
+                                <p><strong>Subteam - </strong>
+                                    <a href="/subteam/{{ (user.subteam_ref.name).replace(" ", "-").lower() }}">{{ user.subteam_ref.name }}</a>
+                                </p>
+
+                                <p><strong>Team Role - </strong> {{ user.team_role }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-offset-1 col-md-7">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4>Bio -</h4>
+
+                        <p>{{ user.bio|safe }}</p>
+                        <hr>
+                    </div>
+                    <div class="col-md-12 well">
+                        <h4>Posts by <strong>{{ user.first_name }} {{ user.last_name }}</strong> -</h4>
+                        {% if posts.count() > 0 %}
+                            <ul>
+                                {% for post in posts %}
+                                    <li>
+                                        <a href="/blog/{{ post.category.category_url }}/{{ post.post_url }}">{{ post.post_title }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No posts :(</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
