@@ -1,12 +1,11 @@
 import base64
-from functools import wraps
-import random
 import os
+import random
+from functools import wraps
 
-from flask import flash, url_for, redirect
-
-from flask.ext.login import current_user
 import scrypt
+from flask import flash, url_for, redirect
+from flask.ext.login import current_user
 
 from OrderSystem import db
 from OrderSystem.sql.ORM import User
@@ -36,9 +35,9 @@ def flash_errors(form):
 
 def get_order_notification_recipients():
     """
-    Gets all users with the receive_order_notifications permission
+    Gets all users with the can_receive_order_notifications permission
 
-    @return: Array of all users with receive_order_notifications permission
+    @return: Array of all users with can_receive_order_notifications permission
     """
 
     all_users = db.session.query(User)
