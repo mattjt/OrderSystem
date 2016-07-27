@@ -29,7 +29,7 @@ def login():
             return render_template('auth/login.html', form=form)
 
         # Check if passwords match
-        if verify_password(user.passwd_hash, password):
+        if verify_password(user.password, password):
             login_user(user, remember=True)
 
             # Redirect to previous page

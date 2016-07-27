@@ -31,9 +31,9 @@ class Users(FlaskView, CRUDBase):
     def update(self):
         form = forms.ChangePassword(request.form)
         if form.validate_on_submit():
-            if verify_password(current_user.passwd_hash, form.current_password.data):
+            if verify_password(current_user.password, form.current_password.data):
                 user = db.session.query(User).filter(User.id == current_user.id).first()
-                user.passwd_hash = hash_password(form.new_password.data)
+                user.password = hash_password(form.new_password.data)
                 db.session.commit()
                 flash("Successfully changed password!")
                 return redirect(url_for('auth.logout'))

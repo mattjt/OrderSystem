@@ -28,9 +28,9 @@ def force_password_reset():
 
     if form.validate_on_submit():
         passwd_raw = form.password.data
-        new_passwd_hash = hash_password(passwd_raw)
+        new_password = hash_password(passwd_raw)
 
-        user.passwd_hash = new_passwd_hash
+        user.password = new_password
         user.needs_passwd_reset = False
         db.session.commit()
         return redirect(url_for('auth.logout'))

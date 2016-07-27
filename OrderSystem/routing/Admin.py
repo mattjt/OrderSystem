@@ -177,7 +177,7 @@ class UserManager(FlaskView, CRUDBase):
         user = db.session.query(User).filter(User.id == user_id).first()
         user.needs_passwd_reset = True
         password = generate_random_password()
-        user.passwd_hash = hash_password(password)
+        user.password = hash_password(password)
         mail_forced_password_reset(user, password)
         db.session.commit()
         return redirect(url_for('usermanager.index'))
