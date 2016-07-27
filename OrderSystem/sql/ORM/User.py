@@ -20,8 +20,6 @@ class User(db.Model):
 
     # Permissions
     is_admin = db.Column(db.Boolean, nullable=False)
-    can_view_orders = db.Column(db.Boolean, nullable=False)
-    can_edit_orders = db.Column(db.Boolean, nullable=False)
     can_approve_orders = db.Column(db.Boolean, nullable=False)
     receive_order_notifications = db.Column(db.Boolean, nullable=False)
     can_update_order_status = db.Column(db.Boolean, nullable=False)
