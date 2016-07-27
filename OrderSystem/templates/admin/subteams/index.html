@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block page_title %}Subteam Manager{% endblock %}
+{% block page_content %}
+    {% include 'bases/validation-error-base.html' %}
+    <div class="row">
+        <div class="col-md-12">
+            <h4>Subteam Management</h4>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Subteam Name</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for subteam in subteams %}
+                    <tr>
+                        <td>{{ subteam.id }}</td>
+                        <td>{{ subteam.name }}</td>
+                        <td><a href="/admin/subteams/edit/{{ subteam.id }}"
+                               class="kube-btn kube-btn-smaller kube-btn-green">Edit</a>
+                            <a href="/admin/subteams/delete/{{ subteam.id }}"
+                               class="kube-btn kube-btn-smaller kube-btn-red">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <a href="{{ url_for('admin.add_subteam') }}" class="btn btn-success">Add Subteam</a>
+        </div>
+    </div>
+{% endblock %}

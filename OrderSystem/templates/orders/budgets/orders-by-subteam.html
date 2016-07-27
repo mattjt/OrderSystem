@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block page_title %}Budgets Summary for {{ subteam.name }}{% endblock %}
+{% block page_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="text-center">
+                    <h2>Orders from <strong>{{ subteam.name }}</strong></h2>
+                </div>
+                <hr>
+            </div>
+        </div>
+        <div class="row">
+            <button type="button" class="btn btn-success" onclick="printContent('order-summary')">
+                Print Summary <i class="fa fa-print"></i>
+            </button>
+            <div class="pull-right"><h4><strong>Showing only approved orders!</strong></h4></div>
+            <hr>
+            <div class="col-md-12" id="order-summary">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="text-center"><strong>Summary for {{ subteam.name }}</strong></h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-condensed">
+                                <thead>
+                                <tr>
+                                    <td><strong>Product Name</strong></td>
+                                    <td class="text-center"><strong>Unit Price</strong></td>
+                                    <td class="text-center"><strong>Quantity</strong></td>
+                                    <td class="text-center"><strong>Ordered On</strong></td>
+                                    <td class="text-center"><strong>Ordered By</strong></td>
+                                    <td class="text-right"><strong>Total</strong></td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for order in orders_by_subteam %}
+                                    <tr>
+                                        <td>{{ order.part_name }}</td>
+                                        <td class="text-center">
+                                            ${{ "%0.2f"|format(order.part_unit_price) }}</td>
+                                        <td class="text-center">{{ order.part_quantity }}</td>
+                                        <td class="text-center">{{ order.part_ordered_on }}</td>
+                                        <td class="text-center">{{ order.ordering_user.first_name }} {{ order.ordering_user.last_name }}</td>
+                                        <td class="text-right">
+                                            ${{ "%0.2f"|format(order.part_total_price) }}</td>
+                                    </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td class="highrow"></td>
+                                    <td class="highrow"></td>
+                                    <td class="highrow"></td>
+                                    <td class="highrow"></td>
+                                    <td class="highrow text-center"><strong>Subtotal</strong></td>
+                                    <td class="highrow text-right">
+                                        ${{ "%0.2f"|format(total) }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="emptyrow"></td>
+                                    <td class="emptyrow"></td>
+                                    <td class="emptyrow"></td>
+                                    <td class="emptyrow"></td>
+                                    <td class="emptyrow text-center"><strong>Total Expenditures</strong></td>
+                                    <td class="emptyrow text-right">
+                                        ${{ "%0.2f"|format(total) }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block styles %}
+    <style>
+        .table > tbody > tr > .emptyrow {
+            border-top: none;
+        }
+
+        .table > thead > tr > .emptyrow {
+            border-bottom: none;
+        }
+
+        .table > tbody > tr > .highrow {
+            border-top: 3px solid;
+        }
+    </style>
+{% endblock %}
+{% block scripts %}
+    <script>
+        function printContent(element) {
+            var original = document.body.innerHTML;
+            document.body.innerHTML = document.getElementById(element).innerHTML;
+            window.print();
+            document.body.innerHTML = original;
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block page_title %}Vendors{% endblock %}
+{% block page_content %}
+    <div class="row">
+        {% include 'bases/validation-error-base.html' %}
+        <div class="col-md-12">
+            <h4>Vendors</h4>
+            <table class="table" id="vendors">
+                <thead>
+                <tr>
+                    <th>Vendor Name</th>
+                    <th>Vendor URL</th>
+                    <th>Vendor Email</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for vendor in vendors %}
+                    <tr>
+                        <td>{{ vendor.vendor_name }}</td>
+                        <td><a target="_blank" href="{{ vendor.vendor_url }}">{{ vendor.vendor_url }}</a></td>
+                        <td><a target="_blank" href="mailto:{{ vendor.vendor_email }}">{{ vendor.vendor_email }}</a>
+                        </td>
+                        <td>
+                            {% if current_user.can_edit_orders %}
+                                <div class="row">
+                                    <div class="col-md-6"><a href="/orders/vendor-edit/{{ vendor.id }}"
+                                                             class="btn btn-warning btn-block">Edit</a></div>
+                                    <div class="col-md-6"><a href="/orders/vendor-delete/{{ vendor.id }}"
+                                                             class="btn btn-danger btn-block"
+                                                             onclick="return confirm('Are you sure you want to delete this vendor?')">Delete</a>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p>No actions available....</p>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% if current_user.can_edit_orders %}
+                <a href="{{ url_for('orders.add_vendor') }}" class="btn btn-success">Add Vendor</a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.7/css/jquery.dataTables.min.css">
+{% endblock %}
+{% block scripts %}
+    <script src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
+    <script>
+        $('#vendors').DataTable();
+    </script>
+{% endblock %}

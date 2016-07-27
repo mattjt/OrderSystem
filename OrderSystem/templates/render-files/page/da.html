@@ -1,0 +1,22 @@
+
+    {% set mode = 'public' %}
+    {% if mode == 'login_required' and not current_user.is_authenticated() %}
+    <script>
+    window.location.replace("/login");
+    </script>
+    <noscript>You must be <a href='/login'>logged in</a> to view this page!</noscript>
+    {% else %}
+    {% extends 'base.html' %}
+    {% block page_title %}ads{% endblock %}
+    {% block page_content %}
+    <div class="container">
+        <p>dfasd</p>
+    {% if current_user.can_use_cms %}
+        <a href="/cms/pages/edit/1" class="btn btn-danger btn-block" style="margin-top: 15px">Edit page</a>
+    {% endif %}
+    </div>
+    {% endblock %}
+    {% block scripts %}{% endblock %}
+    {% block styles %}{% endblock %}
+    {% endif %}
+    

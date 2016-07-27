@@ -1,0 +1,160 @@
+<nav class="navbar navbar-default" id="main-navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                data-target="#collapsed-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+    </div>
+
+    <div class="collapse navbar-collapse" id="collapsed-navbar">
+        <ul class="nav navbar-nav">
+
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                   aria-haspopup="true" aria-expanded="false">About<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/about">About MORT</a></li>
+                    <li><a href="/about/alumni">Alumni</a></li>
+                    <li><a href="/about/awards">Awards</a></li>
+                    <li><a href="/about/community-outreach">Community Outreach</a></li>
+                    <li class="divider"></li>
+                    <li><a href="/about/beta">MORT Beta</a></li>
+                    <li class="divider"></li>
+                    <li><a href="/about/robots">Robots</a></li>
+                    <li><a href="/about/website">Website</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                   aria-haspopup="true" aria-expanded="false">FIRST<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/first/frc">FRC - STRONGHOLD</a></li>
+                    <li class="divider"></li>
+                    <li><a href="/first/ftc">FTC - FIRST RES-Q</a></li>
+                    <li class="divider"></li>
+                    <li><a href="/first/fll">FLL - TRASH TREK</a></li>
+                    <li><a href="/fllchampionship">FLL - Championship Info</a></li>
+                    <!--<li><a href="/fllchampsinfo">FLL - Championship Info</a></li>-->
+                    <!--<li><a href="/fllchampionship">FLL - Championship Registration</a></li>-->
+                    <li class="divider"></li>
+                    <li><a href="/district">MO District Event</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                   aria-haspopup="true" aria-expanded="false">Resources<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/member-docs">Member Docs</a></li>
+                    <li><a href="/mort-university">MORT University</a></li>
+                    <li><a href="/calendar">Calendar</a></li>
+                    <li><a href="/summer-sessions">Summer Sessions</a></li>
+                    <li class="divider"></li>
+                    <li><a href="/resources/branding">Branding</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                   aria-haspopup="true" aria-expanded="false">Team Structure<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li class="dropdown-submenu">
+                        <a tabindex="-1" href="#">Subteams</a>
+                        <ul class="dropdown-menu">
+
+                            <!-- Directive -->
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#">Directive</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/subteam/directors">Directors</a></li>
+                                    <li><a href="/subteam/project-managers">Project Managers</a></li>
+                                    <li><a href="/subteam/leaders">Leaders</a></li>
+                                </ul>
+                            </li>
+
+                            <!-- Design -->
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#">Design</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/subteam/mechanical-design">Mechanical Design</a></li>
+                                    <li><a href="/subteam/controls-design">Controls Design</a></li>
+                                    <li><a href="/subteam/competitive-intelligence">Competitive Intelligence</a></li>
+                                </ul>
+                            </li>
+
+                            <!-- Fabrication -->
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#">Fabrication</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/subteam/mechanical-fabrication">Mechanical Fabrication</a></li>
+                                    <li><a href="/subteam/controls-fabrication">Controls Fabrication</a></li>
+                                    <li><a href="/subteam/competitive-preparedness">Competitive Preparedness</a></li>
+                                    <li><a href="/subteam/safety">Safety</a></li>
+                                </ul>
+                            </li>
+
+                            <!-- Team Development -->
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#">Team Development</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/subteam/awards">Awards</a></li>
+                                    <li><a href="/subteam/business">Business</a></li>
+                                    <li><a href="/subteam/digital-media">Digital Media</a></li>
+                                    <!--  <li><a href="/subteam/research-development">Research & Development</a></li> -->
+                                </ul>
+                            </li>
+
+
+                            <li><a href="/subteam/drive-team">Drive Team</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/mentors">Mentors</a></li>
+                </ul>
+            </li>
+
+            <li><a href="/sponsors">Sponsors</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/mortinminutes">MORT In Minutes</a></li>
+            <li><a href="https://shop.mort11.org">Apparel Shop</a></li>
+            <!-- Spacing -->
+            <li><a href=""></a></li>
+            <li><a href=""></a></li>
+            <li><a href=""></a></li>
+
+            {% if current_user.is_authenticated() %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-haspopup="true"
+                       aria-expanded="false">{{ current_user.first_name }} {{ current_user.last_name }}<span
+                            class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        {% if current_user.is_admin %}
+                            <li><a href="{{ url_for('admin.admin_index') }}"><i class="fa fa-cogs"></i> Admin</a></li>
+                        {% endif %}
+                        {% if current_user.can_use_cms %}
+                            <li><a href="{{ url_for('cms') }}"><i class="fa fa-pencil-square-o"></i> CMS Admin</a></li>
+                        {% endif %}
+                        {% if current_user.can_view_orders %}
+                            <li><a href="{{ url_for('OrderSystem:index') }}"><i class="fa fa-cart-arrow-down"></i>
+                                Orders</a></li>
+                        {% endif %}
+                        <li class="divider"></li>
+                        <li><a href="https://frc11.slack.com" target="_blank"><i class="fa fa-slack"></i> Slack</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{{ url_for('users.my_profile') }}"><i class="fa fa-user"></i> My Profile</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{{ url_for('auth.logout') }}"><i class="fa fa-sign-out"></i> Logout</a></li>
+                    </ul>
+                </li>
+            {% else %}
+                <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                <li><a href="#">|</a></li>
+                <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
