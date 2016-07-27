@@ -23,11 +23,10 @@ class CreateNewUser(Form):
     last_name = StringField('Last Name', validators=[InputRequired("Last name is required!")])
     email = EmailField('Email', validators=[InputRequired(), Email("Email is required!")])
     is_admin = BooleanField('Is Admin')
-    can_view_orders = BooleanField('Can view orders')
-    can_edit_orders = BooleanField('Can create/edit/delete orders')
+    can_receive_pending_orders = BooleanField('Can receive pending orders')
     can_approve_orders = BooleanField('Can approve/deny orders')
-    receive_site_mail = BooleanField('Receives order notifications')
     can_update_order_status = BooleanField('Can update order status')
+    can_receive_order_notifications = BooleanField('Can receive order notifications')
 
 
 class NewVendor(Form):

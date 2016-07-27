@@ -41,6 +41,9 @@ class User(db.Model):
         self.can_receive_order_notifications = can_receive_order_notifications
         self.subteam = subteam
 
+        # New users need their password reset always
+        self.needs_password_reset = True
+
     @staticmethod
     def is_authenticated():
         return True
