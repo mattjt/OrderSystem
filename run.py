@@ -9,7 +9,7 @@ from OrderSystem import app
                                  |___/
 
      Developed by M. Turi
-     Copyright (C) 1996-2017
+     Copyright (C) 2015-2017
 """
 
 app.run(
