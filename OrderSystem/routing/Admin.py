@@ -50,42 +50,43 @@ class UserManager(FlaskView, CRUDBase):
                 username = form.username.data
                 first_name = form.first_name.data
                 last_name = form.last_name.data
-                raw_passwd = base64.urlsafe_b64encode(os.urandom(8))
+                password = base64.urlsafe_b64encode(os.urandom(8))
                 email = form.email.data
                 is_admin = form.is_admin.data
-                can_view_orders = form.can_view_orders.data
-                can_edit_orders = form.can_edit_orders.data
+                can_receive_pending_orders = form.can_receive_pending_orders.data
                 can_approve_orders = form.can_approve_orders.data
-                receive_site_mail = form.receive_site_mail.data
                 can_update_order_status = form.can_update_order_status.data
+                can_receive_order_notifications = form.can_receive_order_notifications.data
                 subteam = request.form['subteam']
 
+                # Check if username is already taken
                 username_exists = db.session.query(User).filter(User.username == username).first()
 
-                # Check if username is already taken
                 if username_exists is not None:
                     flash("Username already taken!")
                     return render_template('admin/users/add-user.html', form=form, subteams=subteams)
 
+                # Check if email is already in use
                 email_exists = db.session.query(User).filter(User.email == email).first()
 
-                # Check if email is already in use
                 if email_exists is not None:
                     flash("Email exists!")
                     return render_template('admin/users/add-user.html', form=form, subteams=subteams)
 
-                    # CreateNewUser them
+                # Create the user
                 db.session.add(
-                    User(username, first_name, last_name, hash_password(raw_passwd), email, is_admin,
-                         can_view_orders, can_edit_orders, can_approve_orders, receive_site_mail,
-                         can_update_order_status, subteam, True))
-
-                db.session.commit()
-                log_event('AUDIT', "{0} registered user {1}".format(current_user.username, username))
+                    User(username, first_name, last_name, hash_password(password), email,
+                         is_admin,
+                         can_receive_pending_orders,
+                         can_approve_orders,
+                         can_update_order_status,
+                         can_receive_order_notifications,
+                         subteam)).commit()
+                log_event('AUDIT', "{0} added new user [{1}]".format(current_user.username, username))
 
                 # Send user email with temp password
-                mail_registration(email, first_name, last_name, username, raw_passwd)
-                return redirect(url_for('admin.users_overview'))
+                mail_registration(email, first_name, last_name, username, password)
+                return redirect(url_for('usermanager.index'))
             except Exception as e:
                 db.session.rollback()
                 flash("Unknown database error! [{0}]".format(e))
@@ -111,36 +112,35 @@ class UserManager(FlaskView, CRUDBase):
             try:
                 user_to_update = User.query.filter(User.id == user_id).first()
 
+                # Gather information
                 username = form.username.data
                 first_name = form.first_name.data
                 last_name = form.last_name.data
                 email = form.email.data
                 is_admin = form.is_admin.data
-                can_view_orders = form.can_view_orders.data
-                can_edit_orders = form.can_edit_orders.data
+                can_receive_pending_orders = form.can_receive_pending_orders.data
                 can_approve_orders = form.can_approve_orders.data
-                receive_site_mail = form.receive_site_mail.data
                 can_update_order_status = form.can_update_order_status.data
+                can_receive_order_notifications = form.can_receive_order_notifications.data
                 subteam = request.form['subteam']
-                team_role = request.form['team_role']
 
+                # Update user object
                 user_to_update.username = username
                 user_to_update.first_name = first_name
                 user_to_update.last_name = last_name
                 user_to_update.email = email
                 user_to_update.is_admin = is_admin
-                user_to_update.can_view_orders = can_view_orders
-                user_to_update.can_edit_orders = can_edit_orders
+                user_to_update.can_receive_pending_orders = can_receive_pending_orders
                 user_to_update.can_approve_orders = can_approve_orders
-                user_to_update.receive_site_mail = receive_site_mail
-                user_to_update.subteam = subteam
-                user_to_update.team_role = team_role
                 user_to_update.can_update_order_status = can_update_order_status
+                user_to_update.can_receive_order_notifications = can_receive_order_notifications
+                user_to_update.subteam = subteam
 
+                # Commit changes
                 db.session.commit()
             except Exception as e:
                 db.session.rollback()
-                flash("Unknown database error! [{0}]".format(e))
+                flash("Unknown database error! [{0}]".format(e))  # TODO: Get better error code
 
             return redirect(url_for('usermanager.index'))
 
