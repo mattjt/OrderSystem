@@ -1,11 +1,11 @@
 from OrderSystem import app
-from OrderSystem.routing import errors
+from OrderSystem.routing import ErrorHandler
+from OrderSystem.routing.Admin import Admin, UserManager, SubteamManager
+from OrderSystem.routing.Authentication import auth
 from OrderSystem.routing.Budgets import Budgets
+from OrderSystem.routing.Core import main
 from OrderSystem.routing.OrderBackend import OrderBackend, Vendors, PendingOrders
 from OrderSystem.routing.Users import Users
-from OrderSystem.routing.admin import admin
-from OrderSystem.routing.auth import auth
-from OrderSystem.routing.core import main
 from OrderSystem.utilities.ServerLogger import console_print
 
 
@@ -13,11 +13,13 @@ def init():
     app.register_blueprint(main)
     console_print('INFO', 'Loaded core routes', always_show=False)
 
-    app.register_blueprint(admin)
-    console_print('INFO', 'Loaded admin routes', always_show=False)
-
     app.register_blueprint(auth)
     console_print('INFO', 'Loaded authentication routes', always_show=False)
+
+    Admin.register(app, route_prefix="/admin", trailing_slash=False)
+    UserManager.register(app, route_prefix="/admin/users", trailing_slash=False)
+    SubteamManager.register(app, route_prefix="/admin/subteams", trailing_slash=False)
+    console_print('INFO', 'Loaded admin routes', always_show=False)
 
     OrderBackend.register(app, route_prefix='/orders', trailing_slash=False)
     Vendors.register(app, route_prefix='/orders/vendors', trailing_slash=False)
@@ -28,5 +30,5 @@ def init():
     Users.register(app, route_prefix="/user", trailing_slash=False)
     console_print('INFO', 'Loaded user routes', always_show=False)
 
-    errors.init()
+    ErrorHandler.init()
     console_print('INFO', 'Loaded error routes', always_show=False)

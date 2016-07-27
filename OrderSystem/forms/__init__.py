@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms import StringField, PasswordField, BooleanField, IntegerField, SelectField, TextAreaField
+from wtforms import StringField, PasswordField, BooleanField, IntegerField, TextAreaField
 
 from wtforms.fields.html5 import EmailField, DecimalField
 
@@ -17,7 +17,7 @@ class ResetPasswd(Form):
     confirm = PasswordField('Repeat Password', validators=[InputRequired(message="Password confirmation required!")])
 
 
-class Register(Form):
+class CreateNewUser(Form):
     username = StringField('Username', validators=[InputRequired("Username is required!")])
     first_name = StringField('First Name', validators=[InputRequired("First name is required!")])
     last_name = StringField('Last Name', validators=[InputRequired("Last name is required!")])
@@ -38,7 +38,7 @@ class NewVendor(Form):
     vendor_email = EmailField('Vendor Email')
 
 
-class NewSubteam(Form):
+class CreateSubteam(Form):
     subteam_name = StringField('Subteam Name', validators=[InputRequired(message="Subteam name is required!")])
     subteam_description = TextAreaField('Description')
     hide_from_subteams = BooleanField('Hide from Subteams list')
