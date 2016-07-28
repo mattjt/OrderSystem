@@ -175,7 +175,7 @@ class UserManager(FlaskView, CRUDBase):
         @return: Redirect to user manager dashboard
         """
         user = db.session.query(User).filter(User.id == user_id).first()
-        user.needs_passwd_reset = True
+        user.needs_password_reset = True
         password = generate_random_password()
         user.password = hash_password(password)
         mail_forced_password_reset(user, password)
