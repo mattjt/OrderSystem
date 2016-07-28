@@ -8,7 +8,7 @@ from flask import flash, url_for, redirect
 from flask.ext.login import current_user
 
 from OrderSystem import db
-from OrderSystem.sql.ORM import User
+from OrderSystem.sql.ORM import User, Settings
 
 
 def randstr(length):
@@ -60,7 +60,7 @@ def needs_password_reset_check(function):
 
     @wraps(function)
     def wrapper(*args, **kwargs):
-        if current_user.is_authenticated() and current_user.needs_passwd_reset:
+        if current_user.is_authenticated() and current_user.needs_password_reset:
             return redirect(url_for('main.force_password_reset'))
         else:
             return function(*args, **kwargs)
@@ -74,3 +74,12 @@ def generate_random_password():
     @return: 8 character base64 password
     """
     return base64.urlsafe_b64encode(os.urandom(8))
+
+
+def get_fiscal_year():
+    """
+    @return: Current fiscal year
+    """
+    # Get current fiscal_year
+    fiscal_year = db.session.query(Settings).filter(Settings.key == "fiscal_year").first()
+    return fiscal_year.value

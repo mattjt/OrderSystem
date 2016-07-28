@@ -5,8 +5,8 @@
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-aqua">
                 <div class="inner">
-                    <h3>150</h3>
-                    <p>Orders in 2016</p>
+                    <h3>{{ orders_this_year }}</h3>
+                    <p>Orders in {{ fiscal_year }}</p>
                 </div>
                 <div class="icon">
                     <i class="ion-android-cart"></i>
@@ -16,7 +16,7 @@
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-green">
                 <div class="inner">
-                    <h3><sup style="font-size: 20px">$</sup>16000</h3>
+                    <h3><sup style="font-size: 20px">$</sup>{{ money_spent_this_season }}</h3>
                     <p>Spent this season</p>
                 </div>
                 <div class="icon">
@@ -27,7 +27,7 @@
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-yellow">
                 <div class="inner">
-                    <h3>44</h3>
+                    <h3>{{ num_of_vendors }}</h3>
                     <p>Vendors</p>
                 </div>
                 <div class="icon">
@@ -38,7 +38,7 @@
         <div class="col-lg-3 col-xs-6">
             <div class="small-box bg-red">
                 <div class="inner">
-                    <h3>2016</h3>
+                    <h3>{{ fiscal_year }}</h3>
                     <p>Fiscal Year</p>
                 </div>
                 <div class="icon">

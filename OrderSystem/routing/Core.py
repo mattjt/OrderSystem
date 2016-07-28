@@ -1,12 +1,12 @@
 import os
 
-from flask import render_template, redirect, url_for, Blueprint, abort, send_from_directory
+from flask import render_template, redirect, url_for, Blueprint, send_from_directory
 from flask.ext.login import current_user, login_required
 
 from OrderSystem import forms
 from OrderSystem import login_manager, db
-from OrderSystem.sql.ORM import User
-from OrderSystem.utilities.Helpers import hash_password, flash_errors, needs_password_reset_check
+from OrderSystem.sql.ORM import User, Order, Vendor
+from OrderSystem.utilities.Helpers import hash_password, flash_errors, needs_password_reset_check, get_fiscal_year
 
 main = Blueprint('main', __name__)
 
@@ -15,11 +15,25 @@ main = Blueprint('main', __name__)
 @main.route('/')
 @needs_password_reset_check
 def index():
-    return render_template('index.html', page="dashboard")
+    fiscal_year = get_fiscal_year()
+
+    orders_this_fiscal_year = db.session.query(Order).filter(Order.fiscal_year == fiscal_year)
+    all_vendors = db.session.query(Vendor)
+
+    # Some simple statistics
+    num_of_orders_this_year = orders_this_fiscal_year.count()
+    money_spent_this_season = 0
+    for order in orders_this_fiscal_year:
+        money_spent_this_season += order.total
+    num_of_vendors = all_vendors.count()
+
+    return render_template('index.html', page="dashboard", orders_this_year=num_of_orders_this_year,
+                           money_spent_this_season=money_spent_this_season, num_of_vendors=num_of_vendors,
+                           fiscal_year=fiscal_year)
 
 
 # Force password reset
-@main.route('/user/force-passwd-reset', methods=['GET', 'POST'])
+@main.route('/user/force-password-reset', methods=['GET', 'POST'])
 @login_required
 def force_password_reset():
     form = forms.ResetPasswd()
@@ -27,11 +41,8 @@ def force_password_reset():
     user = db.session.query(User).filter(User.id == current_user.id).first()
 
     if form.validate_on_submit():
-        passwd_raw = form.password.data
-        new_password = hash_password(passwd_raw)
-
-        user.password = new_password
-        user.needs_passwd_reset = False
+        user.password = hash_password(form.password.data)
+        user.needs_password_reset = False
         db.session.commit()
         return redirect(url_for('auth.logout'))
     else:
@@ -39,22 +50,12 @@ def force_password_reset():
     return render_template('auth/force-passwd-reset.html', form=form, error=error)
 
 
-# Wildcard page loader
-@main.route('/<path:page_url>')
-@needs_password_reset_check
-def page_loader(page_url):
-    try:
-        return render_template("render-files/page/{0}.html".format(page_url))
-    except:
-        abort(404)
-
-
 @main.route('/robots.txt')
 def robots_txt():
     return send_from_directory('{0}/OrderSystem/static'.format(os.environ.get('APPLICATION_ROOT')), 'robots.txt')
 
 
-# Load UserManagement
+# Load User Manager
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.query(User).get(int(user_id))
