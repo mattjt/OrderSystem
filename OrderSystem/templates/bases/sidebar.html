@@ -38,11 +38,14 @@
             <li class="header">SETTINGS</li>
             <li {% if page == "budgets" %}class="active"{% endif %}><a href="{{ url_for('Budgets:index') }}"> <i
                     class="fa fa-area-chart"></i> <span>Budgets</span></a></li>
-            <li {% if page == "vendors" %}class="active"{% endif %}><a href="settings/vendors.html"> <i
+            <li {% if page == "vendors" %}class="active"{% endif %}><a href="{{ url_for('Vendors:index') }}"> <i
                     class="fa fa-credit-card"></i> <span>Vendors</span></a></li>
-            <li class="header">ADMINISTRATION</li>
-            <li {% if page == "admin" %}class="active"{% endif %}><a href="admin/admin.html"> <i class="fa fa-cogs"></i>
-                <span>Admin</span></a></li>
+            {% if current_user.is_admin %}
+                <li class="header">ADMINISTRATION</li>
+                <li {% if page == "admin" %}class="active"{% endif %}><a href="admin/admin.html"> <i
+                        class="fa fa-cogs"></i>
+                    <span>Admin</span></a></li>
+            {% endif %}
         </ul>
     </section>
 </aside>

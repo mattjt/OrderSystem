@@ -1,8 +1,7 @@
 import datetime
 from time import strftime
 
-from django.shortcuts import redirect
-from flask import render_template, request, url_for, flash
+from flask import render_template, request, url_for, flash, redirect
 from flask.ext.classy import FlaskView, route
 from flask.ext.login import current_user, login_required
 from sqlalchemy import and_
@@ -52,12 +51,12 @@ class OrderBackend(FlaskView, CRUDBase):
                 part_url = order_form.part_url.data
                 part_number = order_form.part_number.data
                 part_quantity = int(order_form.part_quantity.data)
-                part_unit_price = float(order_form.part_unit_price.data)
+                part_unit_price = round(float(order_form.part_unit_price.data), 2)
                 part_total_price = round(part_quantity * part_unit_price, 2)
                 part_needed_by = order_form.needed_by.data
                 part_for_subteam = request.form['for_subteam']
-                part_ordered_by = request.form['ordered_by']
-                part_ordered_on = order_form.ordered_on.data
+                part_ordered_by = current_user.id
+                part_ordered_on = self.today_date
                 total = part_total_price
 
                 db.session.add(
@@ -99,7 +98,7 @@ class OrderBackend(FlaskView, CRUDBase):
             "completed": "completed.html",
         }
 
-        return render_template('orders/{0}'.format(return_template.get(order_status, "unprocessed.html")),
+        return render_template('orders/view/{0}'.format(return_template.get(order_status, "unprocessed.html")),
                                today_date=strftime("%m-%d-%Y"), orders=orders, page="orders_" + order_status)
 
     @route('/update/<int:order_id>', methods=['GET', 'POST'])
@@ -224,6 +223,7 @@ class Vendors(FlaskView, CRUDBase):
     route_base = ""
 
     @route('/create', methods=['GET', 'POST'])
+    @login_required
     def create(self):
         """
         Provides the user with a menu to create a new vendor
@@ -233,68 +233,67 @@ class Vendors(FlaskView, CRUDBase):
 
         vendor_form = forms.NewVendor(request.form)
 
-        try:
-            if vendor_form.validate_on_submit():
-                vendor = Vendor(vendor_form.vendor_name.data, vendor_form.vendor_url.data,
-                                vendor_form.vendor_email.data, vendor_form.vendor_phone.data)
-                db.session.add(vendor).commit()
-                return redirect(url_for('Vendors:index'))
-            else:
-                flash_errors(vendor_form)
-        except:
-            db.session.rollback()
-            flash("Vendor with same name probably already exists!")
+        if vendor_form.validate_on_submit():
+            db.session.add(Vendor(vendor_form.vendor_name.data, vendor_form.vendor_url.data,
+                                  vendor_form.vendor_email.data if vendor_form.vendor_email.data != "" else "None",
+                                  vendor_form.vendor_phone.data if vendor_form.vendor_phone.data != "" else "None"))
+            db.session.commit()
+            return redirect(url_for('Vendors:index'))
+        else:
+            flash_errors(vendor_form)
 
-        return render_template('orders/vendors/add.html', form=vendor_form)
+        return render_template('settings/vendors/add-vendor.html', form=vendor_form)
 
     @route('/index')
+    @login_required
     def index(self):
         """
         Shows the user vendors currently entered into the system
 
         @return: A list of the available vendors
         """
-        all_vendors = db.session.query(Vendor).order_by(Vendor.vendor_name)
-        return render_template('orders/vendors/index.html', vendors=all_vendors)
+        vendors = db.session.query(Vendor).order_by(Vendor.vendor_name)
+        return render_template('settings/vendors/vendors.html', vendors=vendors, page="vendors")
 
-    @route('/update/<self>', methods=['GET', 'POST'])
-    def update(self):
+    @route('/update/<int:vendor_id>', methods=['GET', 'POST'])
+    @login_required
+    def update(self, vendor_id):
         """
         Updates an existing vendor
 
         @return: Redirect to Vendors index if successful
         """
-        vendor = db.session.query(Vendor).filter(Vendor.id == self).first_or_404()
+        vendor = db.session.query(Vendor).filter(Vendor.id == vendor_id).first()
 
         vendor_form = forms.NewVendor(request.form)
 
-        try:
-            if vendor_form.validate_on_submit():
-                vendor.vendor_name = vendor_form.vendor_name.data
-                vendor.vendor_url = vendor_form.vendor_url.data
-                vendor.vendor_email = vendor_form.vendor_email.data
-                vendor.vendor_phone = vendor_form.vendor_phone.data
-                db.session.commit()
-                return redirect(url_for('vendors.index'))
-        except:
-            flash("Vendor with same name probably already exists!")
+        if vendor_form.validate_on_submit():
+            vendor.vendor_name = vendor_form.vendor_name.data
+            vendor.vendor_url = vendor_form.vendor_url.data
+            vendor.vendor_email = vendor_form.vendor_email.data
+            vendor.vendor_phone = vendor_form.vendor_phone.data
+            db.session.commit()
+            return redirect(url_for('vendors.index'))
+
         return render_template('orders/vendors/edit.html', form=vendor_form, vendor=vendor)
 
-    @route('/delete/<self>', methods=['GET'])
-    def delete(self):
+    @route('/delete/<int:vendor_id>', methods=['GET'])
+    @login_required
+    def delete(self, vendor_id):
         """
         Delete a vendor
 
         @return: Redirect to Vendors index if successful
         """
-        vendor_to_delete = db.session.query(Vendor).filter(Vendor.id == self).first()
+        vendor_to_delete = db.session.query(Vendor).filter(Vendor.id == vendor_id).first()
 
         try:
-            db.session.delete(vendor_to_delete).commit()
+            db.session.delete(vendor_to_delete)
+            db.session.commit()
         except:
             flash(
                 "You can't delete this! There are orders that are dependant on this vendor! Please delete them first!")
-        return redirect(url_for('vendors.index'))
+        return redirect(url_for('Vendors:index'))
 
 
 class PendingOrders(FlaskView, CRUDBase):

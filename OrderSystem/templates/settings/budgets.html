@@ -9,9 +9,11 @@
                 </a>
                 <h4 class="pull-right"><strong>$250/$350</strong></h4>
             </div>
-            <div class="col-md-2 well">
-                <a href="#" class="btn btn-danger">Set Budget</a>
-            </div>
+            {% if current_user.is_admin %}
+                <div class="col-md-2 well">
+                    <a href="#" class="btn btn-danger">Set Budget</a>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
