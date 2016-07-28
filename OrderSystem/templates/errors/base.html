@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Error {{ error_code }}{% endblock %}
+{% block content %}
+    <div class="error-page">
+        <h2 class="headline text-yellow"> {{ error_code }}</h2>
+
+        <div class="error-content">
+            <h3><i class="fa fa-warning text-yellow"></i> Oops! We've encountered an error!</h3>
+
+            <p>
+                The system has encountered an error.
+                Meanwhile, you may <a href="{{ url_for('main.index') }}">return to dashboard</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

@@ -49,6 +49,6 @@ class Order(db.Model):
         self.part_ordered_by = part_ordered_by
         self.part_ordered_on = part_ordered_on
         self.total = total
-        self.order_status = "notProcessed"
+        self.order_status = "unprocessed"
         self.pending_approval = True
         self.order_dirty = True

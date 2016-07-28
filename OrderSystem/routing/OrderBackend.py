@@ -76,9 +76,9 @@ class OrderBackend(FlaskView, CRUDBase):
         return render_template('orders/new-order.html', today_date=self.today_date, form=order_form, subteams=subteams,
                                vendors=vendors)
 
-    @route('/index')
+    @route('/<order_status>')
     @order_view_access_required
-    def index(self):
+    def index(self, order_status):
         """
         Shows the user an overview of all unprocessed, in progress, and completed orders.
 
@@ -86,13 +86,21 @@ class OrderBackend(FlaskView, CRUDBase):
         mentor
         @return: OrderSystem home page
         """
-        all_orders = db.session.query(Order).filter(
-            Order.pending_approval is False,
-            or_(Order.fiscal_year == self.this_year, Order.fiscal_year == self.this_year - 1)
-        ).order_by(Order.id.desc())
+        orders = db.session.query(Order).filter(
+            Order.pending_approval == False,
+            Order.fiscal_year == self.this_year,
+            Order.order_status == order_status
+        ).order_by(Order.part_ordered_on.asc())
 
-        return render_template('orders/index.html', today_date=strftime("%m-%d-%Y"), orders=all_orders,
-                               this_year=self.this_year)
+        return_template = {
+            "unprocessed": "unprocessed.html",
+            "in-progress": "in-progress.html",
+            "shipped": "shipped.html",
+            "completed": "completed.html",
+        }
+
+        return render_template('orders/{0}'.format(return_template.get(order_status, "unprocessed.html")),
+                               today_date=strftime("%m-%d-%Y"), orders=orders, page=order_status)
 
     @route('/update/<self>', methods=['GET', 'POST'])
     @order_edit_access_required
