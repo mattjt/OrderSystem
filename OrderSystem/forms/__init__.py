@@ -49,15 +49,11 @@ class SetBudgetForm(Form):
 
 
 class Order(Form):
-    fiscal_year = IntegerField(validators=[InputRequired('Fiscal year is required!')])
-
     part_name = StringField('Part Name', validators=[InputRequired("Part name is required!")])
     part_url = StringField('Part URL', validators=[InputRequired("Part URL is required!"), URL("Part URL is invalid!")])
     part_number = StringField('Part Number')
     part_quantity = DecimalField('Part Quantity', validators=[InputRequired("Part quantity is required!")])
     part_unit_price = DecimalField('Part Unit Price', validators=[InputRequired("Part unit price is required!")])
-
-    ordered_on = StringField('Ordered on', validators=[InputRequired("Ordered on is required!")])
     needed_by = StringField('Needed by', validators=[InputRequired("Needed by is required!")])
 
 

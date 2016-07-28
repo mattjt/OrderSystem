@@ -3,6 +3,7 @@
 {% block content %}
     <div class="row">
         <div class="col-md-12">
+            {% include 'bases/validation-error-base.html' %}
             <div class="box box-solid">
                 <div class="box-header with-border">
                     <div class="row">
@@ -14,318 +15,170 @@
                 </div>
                 <div class="box-body">
                     <div class="box-group" id="accordion">
-                        <div class="panel box box-danger">
-                            <div class="box-header with-border">
-                                <h4>
-                                    <a data-toggle="collapse" data-parent="#accordion" href="#oid1">
-                                        <div class="row">
-                                            <div class="col-md-6">Refurbished Lenovo T410 Laptop</div>
-                                            <div class="col-md-2">NewEgg</div>
-                                            <div class="col-md-2">Programming</div>
-                                            <div class="col-md-2"><strong>$203.76 + S&H</strong></div>
-                                        </div>
-                                    </a>
-                                </h4>
-                            </div>
-                            <div id="oid1" class="panel-collapse collapse">
-                                <div class="box-body">
-                                    <div class="col-md-12">
-                                        <div class="nav-tabs-custom">
-                                            <ul class="nav nav-tabs">
-                                                <li class="active"><a href="#orderDetailsOID1"
-                                                                      data-toggle="tab">Order
-                                                    Details</a>
-                                                </li>
-                                                <li><a href="#vendorDetailsOID1" data-toggle="tab">Vendor
-                                                    Details</a></li>
-                                                <li><a href="#manageOrderOID1" data-toggle="tab">Manage</a></li>
-                                            </ul>
-                                            <div class="tab-content">
-                                                <div class="tab-pane active" id="orderDetailsOID1">
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <fieldset>
-                                                                <legend>Order</legend>
-                                                                <p><strong>OID - </strong> 1</p>
-                                                                <p><strong>Part URL - </strong>
-                                                                    <a href="http://www.newegg.com/Product/Product.aspx?Item=N82E16834319211"
-                                                                       target="_blank">http://www.newegg.com/Product/Product.aspx?Item=N82E16834319211</a>
-                                                                </p>
-                                                                <p><strong>Part Number - </strong>
-                                                                    N82E16834319211</p>
-                                                                <p><strong>Unit Price - </strong> $139.99</p>
-                                                                <p><strong>Quantity - </strong> 1</p>
-                                                                <hr>
-                                                                <table class="table table-bordered text-center">
-                                                                    <tr>
-                                                                        <td><strong>Subtotal</strong></td>
-                                                                        <td>$139.99</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><strong>S&H</strong></td>
-                                                                        <td>$63.77</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><strong>Credit</strong></td>
-                                                                        <td>$0</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><strong>Total</strong></td>
-                                                                        <td>$203.76</td>
-                                                                    </tr>
-                                                                </table>
-                                                            </fieldset>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <fieldset>
-                                                                <legend>Metadata</legend>
-                                                                <p><strong>Ordering Subteam - </strong>
-                                                                    Programming</p>
-                                                                <p><strong>Ordered By - </strong> Matt Turi</p>
-                                                                <p><strong>Ordered On - </strong> February 23,
-                                                                    2016</p>
-                                                                <p><strong>Needed By - </strong> April 22, 2016
-                                                                </p>
-                                                            </fieldset>
-                                                        </div>
-                                                    </div>
+                        {% if num_of_orders > 0 %}
+                            {% for order in orders %}
+                                <div class="panel box box-danger">
+                                    <div class="box-header with-border">
+                                        <h4>
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#oid1">
+                                                <div class="row">
+                                                    <div class="col-md-6">{{ order.part_name }}</div>
+                                                    <div class="col-md-2">{{ order.vendor.vendor_name }}</div>
+                                                    <div class="col-md-2">{{ order.subteam.name }}</div>
+                                                    <div class="col-md-2"><strong>${{ order.total }}</strong></div>
                                                 </div>
-                                                <!-- /.tab-pane -->
-                                                <div class="tab-pane" id="vendorDetailsOID1">
-                                                    <fieldset>
-                                                        <legend>Vendor Details</legend>
-                                                        <p><strong>Name - </strong> Newegg</p>
-                                                        <p><strong>URL - </strong> <a href="http://newegg.com/"
-                                                                                      target="_blank">http://newegg.com/</a>
-                                                        </p>
-                                                        <p><strong>Phone - </strong> 1-(800)-390-1119</p>
-                                                        <p><strong>Email - </strong> NULL</p>
-                                                    </fieldset>
-                                                </div>
-                                                <!-- /.tab-pane -->
-                                                <div class="tab-pane" id="manageOrderOID1">
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <fieldset>
-                                                                <legend>Order Status</legend>
-                                                                <div class="form-group">
-                                                                    <form>
-                                                                        <select class="form-control"
-                                                                                title="status">
-                                                                            <option selected>Unprocessed
-                                                                            </option>
-                                                                            <option>In Progress</option>
-                                                                            <option>Shipped</option>
-                                                                            <option>Completed</option>
-                                                                        </select>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="oid1" class="panel-collapse collapse">
+                                        <div class="box-body">
+                                            <div class="col-md-12">
+                                                <div class="nav-tabs-custom">
+                                                    <ul class="nav nav-tabs">
+                                                        <li class="active"><a href="#orderDetailsOID{{ order.id }}"
+                                                                              data-toggle="tab">Order
+                                                            Details</a>
+                                                        </li>
+                                                        <li><a href="#vendorDetailsOID{{ order.id }}" data-toggle="tab">Vendor
+                                                            Details</a></li>
+                                                        <li><a href="#manageOrderOID{{ order.id }}"
+                                                               data-toggle="tab">Manage</a></li>
+                                                    </ul>
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane active" id="orderDetailsOID{{ order.id }}">
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <fieldset>
+                                                                        <legend>Order</legend>
+                                                                        <p><strong>ID - </strong> {{ order.id }}</p>
+                                                                        <p><strong>Part URL - </strong>
+                                                                            <a href="{{ order.part_url }}"
+                                                                               target="_blank">{{ order.part_url }}</a>
+                                                                        </p>
+                                                                        <p><strong>Part Number - </strong>
+                                                                            {{ order.part_number }}</p>
+                                                                        <p><strong>Unit Price - </strong>
+                                                                            ${{ order.part_unit_price }}</p>
+                                                                        <p><strong>Quantity
+                                                                            - </strong> {{ order.part_quantity }}</p>
                                                                         <hr>
-                                                                        <button type="submit"
-                                                                                class="btn btn-block btn-success btn-flat">
-                                                                            Update
-                                                                        </button>
-                                                                    </form>
+                                                                        <table class="table table-bordered text-center">
+                                                                            <tr>
+                                                                                <td><strong>Subtotal</strong></td>
+                                                                                <td>${{ order.part_total_price }}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td><strong>S&H</strong></td>
+                                                                                <td>TBD</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td><strong>Credit</strong></td>
+                                                                                <td>TBD</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td><strong>Total</strong></td>
+                                                                                <td>${{ order.total }}</td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </fieldset>
                                                                 </div>
+                                                                <div class="col-md-6">
+                                                                    <fieldset>
+                                                                        <legend>Metadata</legend>
+                                                                        <p><strong>Ordering Subteam - </strong>
+                                                                            {{ order.subteam.name }}</p>
+                                                                        <p><strong>Ordered By
+                                                                            - </strong> {{ order.ordering_user.first_name }} {{ order.ordering_user.last_name }}
+                                                                        </p>
+                                                                        <p><strong>Ordered On
+                                                                            - </strong> {{ order.part_ordered_on }}</p>
+                                                                        <p><strong>Needed By
+                                                                            - </strong> {{ order.part_needed_by }}
+                                                                        </p>
+                                                                    </fieldset>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane" id="vendorDetailsOID{{ order.id }}">
+                                                            <fieldset>
+                                                                <legend>Vendor Details</legend>
+                                                                <p><strong>Name
+                                                                    - </strong> {{ order.vendor.vendor_name }}
+                                                                </p>
+                                                                <p><strong>URL - </strong> <a
+                                                                        href="{{ order.vendor.vendor_url }}"
+                                                                        target="_blank">{{ order.vendor.vendor_url }}</a>
+                                                                </p>
+                                                                <p><strong>Phone
+                                                                    - </strong> {{ order.vendor.vendor_phone }}
+                                                                </p>
+                                                                <p><strong>Email
+                                                                    - </strong> {{ order.vendor.vendor_email }}
+                                                                </p>
                                                             </fieldset>
                                                         </div>
-                                                        <div class="col-md-6">
-                                                            <fieldset>
-                                                                <legend>Modify Order</legend>
-                                                                <button type="button"
-                                                                        class="btn btn-block btn-success btn-flat">
-                                                                    Edit
-                                                                </button>
-                                                                <button type="button"
-                                                                        class="btn btn-block btn-warning btn-flat">
-                                                                    Suggest alternate vendor
-                                                                </button>
-                                                                <button type="button"
-                                                                        class="btn btn-block btn-danger btn-flat">
-                                                                    Delete
-                                                                </button>
-                                                            </fieldset>
+                                                        <div class="tab-pane" id="manageOrderOID{{ order.id }}">
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <fieldset>
+                                                                        <legend>Order Status</legend>
+                                                                        <div class="form-group">
+                                                                            <!--suppress HtmlUnknownTarget -->
+                                                                            <form action="{{ url_for('OrderBackend:update_part_status') }}"
+                                                                                  method="post">
+                                                                                <input type="hidden"
+                                                                                       value="{{ order.id }}"
+                                                                                       name="oID">
+                                                                                <input type="hidden"
+                                                                                       name="currentStatus"
+                                                                                       value="completed">
+                                                                                <select class="form-control"
+                                                                                        title="status"
+                                                                                        name="updatedStatus">
+                                                                                    <option>Unprocessed</option>
+                                                                                    <option>In Progress</option>
+                                                                                    <option>Shipped</option>
+                                                                                    <option selected>Completed</option>
+                                                                                </select>
+                                                                                <hr>
+                                                                                <button type="submit"
+                                                                                        class="btn btn-block btn-success btn-flat">
+                                                                                    Update
+                                                                                </button>
+                                                                            </form>
+                                                                        </div>
+                                                                    </fieldset>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <fieldset>
+                                                                        <legend>Modify Order</legend>
+                                                                        <a href="{{ url_for('OrderBackend:update', order_id = order.id) }}"
+                                                                           class="btn btn-block btn-success btn-flat">
+                                                                            Edit
+                                                                        </a>
+                                                                        <button type="button"
+                                                                                class="btn btn-block btn-warning btn-flat">
+                                                                            Suggest alternate vendor
+                                                                        </button>
+                                                                        <a href="{{ url_for('OrderBackend:delete', order_id = order.id) }}"
+                                                                           class="btn btn-block btn-danger btn-flat">
+                                                                            Delete
+                                                                        </a>
+                                                                    </fieldset>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+
                                         </div>
                                     </div>
-
                                 </div>
-                            </div>
-                        </div>
-                        <div class="panel box box-danger">
-                            <div class="box-header with-border">
-                                <h4>
-                                    <a data-toggle="collapse" data-parent="#accordion" href="#oid2">
-                                        <div class="row">
-                                            <div class="col-md-6">VersaPlanetary CIM Adaptor</div>
-                                            <div class="col-md-2">Vex Pro</div>
-                                            <div class="col-md-2">Mechanical</div>
-                                            <div class="col-md-2"><strong>$21.54 + S&H</strong></div>
-                                        </div>
-                                    </a>
-                                </h4>
-                            </div>
-                            <div id="oid2" class="panel-collapse collapse">
-                                <div class="box-body">
-                                    <div class="col-md-12">
-                                        <!-- Custom Tabs -->
-                                        <div class="nav-tabs-custom">
-                                            <ul class="nav nav-tabs">
-                                                <li class="active"><a href="#orderDetailsOID2"
-                                                                      data-toggle="tab">Order
-                                                    Details</a>
-                                                </li>
-                                                <li><a href="#vendorDetailsOID2" data-toggle="tab">Vendor
-                                                    Details</a></li>
-                                                <li><a href="#manageOrderOID2" data-toggle="tab">Manage</a></li>
-                                                <li><a href="#reviewVendorsOID2" data-toggle="tab">Review
-                                                    Vendors</a></li>
-                                            </ul>
-                                            <div class="tab-content">
-                                                <div class="callout callout-warning">
-                                                    <h4>This order has an alternative vendor [VexPro]
-                                                        suggested by <strong>Matt Turi</strong></h4>
-
-                                                    <p>Please compare the current and suggested vendor(s) to
-                                                        find
-                                                        the better deal!</p>
-                                                </div>
-                                                <div class="tab-pane active" id="orderDetailsOID2">
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <fieldset>
-                                                                <legend>Order</legend>
-                                                                <p><strong>OID - </strong> 2</p>
-                                                                <p><strong>Part URL - </strong>
-                                                                    <a href="http://www.vexrobotics.com/217-4018.html"
-                                                                       target="_blank">http://www.vexrobotics.com/217-4018.html</a>
-                                                                </p>
-                                                                <p><strong>Part Number - </strong>
-                                                                    217-4018</p>
-                                                                <p><strong>Unit Price - </strong> $4.99</p>
-                                                                <p><strong>Quantity - </strong> 4</p>
-                                                                <hr>
-                                                                <table class="table table-bordered text-center">
-                                                                    <tr>
-                                                                        <td><strong>Subtotal</strong></td>
-                                                                        <td>$139.99</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><strong>S&H</strong></td>
-                                                                        <td>$1.58</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><strong>Credit</strong></td>
-                                                                        <td>$0</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><strong>Total</strong></td>
-                                                                        <td>$21.54</td>
-                                                                    </tr>
-                                                                </table>
-                                                            </fieldset>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <fieldset>
-                                                                <legend>Metadata</legend>
-                                                                <p><strong>Ordering Subteam - </strong>
-                                                                    Mechanical</p>
-                                                                <p><strong>Ordered By - </strong> Matt Turi</p>
-                                                                <p><strong>Ordered On - </strong> February 23,
-                                                                    2016</p>
-                                                                <p><strong>Needed By - </strong> April 22, 2016
-                                                                </p>
-                                                            </fieldset>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <!-- /.tab-pane -->
-                                                <div class="tab-pane" id="vendorDetailsOID2">
-                                                    <fieldset>
-                                                        <legend>Vendor Details</legend>
-                                                        <p><strong>Name - </strong> Newegg</p>
-                                                        <p><strong>URL - </strong> http://newegg.com/</p>
-                                                        <p><strong>Phone - </strong> 1-(800)-390-1119</p>
-                                                        <p><strong>Email - </strong> NULL</p>
-                                                    </fieldset>
-                                                </div>
-                                                <!-- /.tab-pane -->
-                                                <div class="tab-pane" id="manageOrderOID2">
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <fieldset>
-                                                                <legend>Order Status</legend>
-                                                                <div class="form-group">
-                                                                    <form>
-                                                                        <select class="form-control"
-                                                                                title="status">
-                                                                            <option selected>Unprocessed
-                                                                            </option>
-                                                                            <option>In Progress</option>
-                                                                            <option>Shipped</option>
-                                                                            <option>Completed</option>
-                                                                        </select>
-                                                                        <hr>
-                                                                        <button type="submit"
-                                                                                class="btn btn-block btn-success btn-flat">
-                                                                            Update
-                                                                        </button>
-                                                                    </form>
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <fieldset>
-                                                                <legend>Modify Order</legend>
-                                                                <button type="button"
-                                                                        class="btn btn-block btn-success btn-flat">
-                                                                    Edit
-                                                                </button>
-                                                                <button type="button"
-                                                                        class="btn btn-block btn-warning btn-flat">
-                                                                    Suggest alternate vendor
-                                                                </button>
-                                                                <button type="button"
-                                                                        class="btn btn-block btn-danger btn-flat">
-                                                                    Delete
-                                                                </button>
-                                                            </fieldset>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="tab-pane" id="reviewVendorsOID2">
-                                                    <table class="table table-bordered text-center">
-                                                        <tr>
-                                                            <th>Vendor</th>
-                                                            <th>URL</th>
-                                                            <th>Price</th>
-                                                            <th>Options</th>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Andymark</td>
-                                                            <td><a href="http://google.com" target="_blank">http://google.com</a>
-                                                            </td>
-                                                            <td>$50</td>
-                                                            <td>
-                                                                <button type="button"
-                                                                        class="btn btn-warning btn-flat">Set
-                                                                    vendor
-                                                                </button>
-                                                                <button type="button"
-                                                                        class="btn btn-danger btn-flat">Remove
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                            {% endfor %}
+                        {% else %}
+                            <h3 style="text-align: center;"><strong>No orders</strong></h3>
+                        {% endif %}
                     </div>
                 </div>
             </div>

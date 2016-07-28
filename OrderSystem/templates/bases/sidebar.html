@@ -42,7 +42,7 @@
                     class="fa fa-credit-card"></i> <span>Vendors</span></a></li>
             {% if current_user.is_admin %}
                 <li class="header">ADMINISTRATION</li>
-                <li {% if page == "admin" %}class="active"{% endif %}><a href="admin/admin.html"> <i
+                <li {% if page == "admin" %}class="active"{% endif %}><a href="{{ url_for('Admin:index') }}"> <i
                         class="fa fa-cogs"></i>
                     <span>Admin</span></a></li>
             {% endif %}

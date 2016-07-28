@@ -1,7 +1,40 @@
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
+{% with errors = get_flashed_messages(category_filter=["error"]) %}
+    {% if errors %}
         <div class="alert alert-danger">
-            {% for message in messages %}
+            {% for message in errors %}
+                {{ message }}<br>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+
+{% with errors = get_flashed_messages(category_filter=["success"]) %}
+    {% if errors %}
+        <div class="alert alert-success">
+            {% for message in errors %}
+                {{ message }}<br>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+
+{% with errors = get_flashed_messages(category_filter=["warning"]) %}
+    {% if errors %}
+        <div class="alert alert-warning">
+            {% for message in errors %}
+                {{ message }}<br>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+
+{% with errors = get_flashed_messages(category_filter=["info"]) %}
+    {% if errors %}
+        <div class="alert alert-info">
+            {% for message in errors %}
                 {{ message }}<br>
             {% endfor %}
         </div>
