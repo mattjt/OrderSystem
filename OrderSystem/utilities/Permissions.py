@@ -1,7 +1,7 @@
 from functools import wraps
 
-from flask.ext.login import current_user
 from flask import abort, redirect, url_for, request
+from flask.ext.login import current_user
 
 
 def get_path():
@@ -32,34 +32,6 @@ def order_admin_access_required(func):
                 abort(403)
         else:
             return redirect(url_for('auth.login') + "?prev={0}".format(get_path()))
-
-    return wrapper
-
-
-def order_view_access_required(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if not current_user.is_authenticated():
-            return redirect(url_for('auth.login') + "?prev={0}".format(get_path()))
-        else:
-            if current_user.can_view_orders or current_user.is_admin:
-                return func(*args, **kwargs)
-            else:
-                abort(403)
-
-    return wrapper
-
-
-def order_edit_access_required(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if not current_user.is_authenticated():
-            return redirect(url_for('auth.login') + "?prev={0}".format(get_path()))
-        else:
-            if current_user.can_edit_orders or current_user.is_admin:
-                return func(*args, **kwargs)
-            else:
-                abort(403)
 
     return wrapper
 

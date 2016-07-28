@@ -5,15 +5,14 @@ from django.shortcuts import redirect
 from flask import render_template, request, url_for, flash
 from flask.ext.classy import FlaskView, route
 from flask.ext.login import current_user
-from sqlalchemy import or_, and_
+from sqlalchemy import and_
 
 from OrderSystem import db
 from OrderSystem import forms
 from OrderSystem.routing.CRUDBase import CRUDBase
 from OrderSystem.sql.ORM import Order, Subteam, Vendor
 from OrderSystem.utilities.Helpers import flash_errors
-from OrderSystem.utilities.Permissions import order_view_access_required, order_edit_access_required, \
-    update_order_status_required, approve_order_required
+from OrderSystem.utilities.Permissions import update_order_status_required, approve_order_required
 
 
 class OrderBackend(FlaskView, CRUDBase):
@@ -29,7 +28,6 @@ class OrderBackend(FlaskView, CRUDBase):
     this_year = datetime.datetime.today().year
 
     @route('/create', methods=['GET', 'POST'])
-    @order_edit_access_required
     def create(self):
         """
         Creates a new order from user input, records it to the database, and queues it up to be emailed to subteam
@@ -77,7 +75,6 @@ class OrderBackend(FlaskView, CRUDBase):
                                vendors=vendors)
 
     @route('/<order_status>')
-    @order_view_access_required
     def index(self, order_status):
         """
         Shows the user an overview of all unprocessed, in progress, and completed orders.
@@ -92,6 +89,7 @@ class OrderBackend(FlaskView, CRUDBase):
             Order.order_status == order_status
         ).order_by(Order.part_ordered_on.asc())
 
+        # Python switch-case equivalent
         return_template = {
             "unprocessed": "unprocessed.html",
             "in-progress": "in-progress.html",
@@ -100,11 +98,10 @@ class OrderBackend(FlaskView, CRUDBase):
         }
 
         return render_template('orders/{0}'.format(return_template.get(order_status, "unprocessed.html")),
-                               today_date=strftime("%m-%d-%Y"), orders=orders, page=order_status)
+                               today_date=strftime("%m-%d-%Y"), orders=orders, page="orders_" + order_status)
 
-    @route('/update/<self>', methods=['GET', 'POST'])
-    @order_edit_access_required
-    def update(self):
+    @route('/update/<int:order_id>', methods=['GET', 'POST'])
+    def update(self, order_id):
         """
         Updates an existing order, at whatever stage it may be in
 
@@ -114,7 +111,7 @@ class OrderBackend(FlaskView, CRUDBase):
         """
 
         # Return 404 if the supplied order ID doesn't exist
-        order_to_update = db.session.query(Order).filter(Order.id == self).first_or_404()
+        order_to_update = db.session.query(Order).filter(Order.id == order_id).first_or_404()
 
         # Get available vendors and sort alphabetically
         available_vendors = db.session.query(Vendor).order_by(Vendor.vendor_name)
@@ -173,15 +170,14 @@ class OrderBackend(FlaskView, CRUDBase):
         return render_template('orders/edit-order.html', order=order_to_update, form=order_form,
                                vendors=available_vendors, subteams=available_subteams)
 
-    @route('/delete/<self>', methods=['GET'])
-    @order_edit_access_required
-    def delete(self):
+    @route('/delete/<int:order_id>', methods=['GET'])
+    def delete(self, order_id):
         """
         Delete an existing order
 
         @return: Redirect to OrderSystem index
         """
-        order_to_delete = db.session.query(Order).filter(Order.id == self).first_or_404()
+        order_to_delete = db.session.query(Order).filter(Order.id == order_id).first_or_404()
 
         try:
             db.session.delete(order_to_delete).commit()
@@ -222,7 +218,6 @@ class Vendors(FlaskView, CRUDBase):
     route_base = ""
 
     @route('/create', methods=['GET', 'POST'])
-    @order_edit_access_required
     def create(self):
         """
         Provides the user with a menu to create a new vendor
@@ -247,7 +242,6 @@ class Vendors(FlaskView, CRUDBase):
         return render_template('orders/vendors/add.html', form=vendor_form)
 
     @route('/index')
-    @order_view_access_required
     def index(self):
         """
         Shows the user vendors currently entered into the system
@@ -258,7 +252,6 @@ class Vendors(FlaskView, CRUDBase):
         return render_template('orders/vendors/index.html', vendors=all_vendors)
 
     @route('/update/<self>', methods=['GET', 'POST'])
-    @order_edit_access_required
     def update(self):
         """
         Updates an existing vendor
@@ -282,7 +275,6 @@ class Vendors(FlaskView, CRUDBase):
         return render_template('orders/vendors/edit.html', form=vendor_form, vendor=vendor)
 
     @route('/delete/<self>', methods=['GET'])
-    @order_edit_access_required
     def delete(self):
         """
         Delete a vendor
