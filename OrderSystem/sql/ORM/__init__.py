@@ -4,3 +4,4 @@ from User import *
 from Vendor import *
 from Order import *
 from Budget import *
+from Settings import *

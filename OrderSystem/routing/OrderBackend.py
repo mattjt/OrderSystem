@@ -161,7 +161,7 @@ class OrderBackend(FlaskView, CRUDBase):
 
                 db.session.commit()
 
-                return redirect(url_for('orders.index'))
+                return redirect(url_for('OrderBackend:index'))
             except Exception as e:
                 db.session.rollback()
                 flash("Unknown database error! [{0}]".format(e))
@@ -181,11 +181,11 @@ class OrderBackend(FlaskView, CRUDBase):
 
         try:
             db.session.delete(order_to_delete).commit()
-            return redirect(url_for('orders.index'))
+            return redirect(url_for('OrderBackend:index'))
         except:
             db.session.rollback()
             flash("Error deleting order!")
-            return redirect(url_for('orders.index'))
+            return redirect(url_for('OrderBackend:index'))
 
     # #################### NON-CRUD METHODS #################### #
 
@@ -193,18 +193,20 @@ class OrderBackend(FlaskView, CRUDBase):
     @update_order_status_required
     def update_part_status(self):
         """
-        Changes the status of a part. Available part statuses are Not Processed, In Progress, Shipped, and Completed
+        Changes the status of a part. Available part statuses are Unprocessed, In Progress, Shipped, and Completed
 
         @return: Nothing. Method is called from some type of asynchronous segment of code
         """
         item_id = request.values['oId']
         new_status = request.values['newTable']
 
-        item = db.session.query(Order).filter(Order.id == item_id).first_or_404()
-
-        item.order_status = new_status
-        db.session.commit()
-        return "Successfully updated order status!"
+        item = db.session.query(Order).filter(Order.id == item_id).first()
+        if item is not None:
+            item.order_status = new_status
+            db.session.commit()
+            return "Successfully updated order status!"
+        else:
+            return "ERROR! Order requested was not found!"
 
 
 class Vendors(FlaskView, CRUDBase):
@@ -232,7 +234,7 @@ class Vendors(FlaskView, CRUDBase):
                 vendor = Vendor(vendor_form.vendor_name.data, vendor_form.vendor_url.data,
                                 vendor_form.vendor_email.data, vendor_form.vendor_phone.data)
                 db.session.add(vendor).commit()
-                return redirect(url_for('vendors.index'))
+                return redirect(url_for('Vendors:index'))
             else:
                 flash_errors(vendor_form)
         except:

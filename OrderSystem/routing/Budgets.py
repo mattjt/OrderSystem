@@ -31,16 +31,14 @@ class Budgets(FlaskView, CRUDBase):
         """
         pass
 
-    @route('/<fiscal_year>')
-    def index(self, fiscal_year):
+    @route('/')
+    def index(self):
         """
         Shows the user an overview of the budgets for subteams this year
 
-        @param fiscal_year: The current FRC season
         @return: List of subteams color-coded with their amount of money remaining
         """
-        subteams = db.session.query(Subteam).filter(Subteam.hidden_from_budgets_list == False).order_by(
-            Subteam.id.asc())
+        subteams = db.session.query(Subteam).all()
 
         ids = []
         names = []
@@ -51,10 +49,10 @@ class Budgets(FlaskView, CRUDBase):
         for subteam in subteams:
             try:
                 budget = db.session.query(Budget).filter(
-                    and_(Budget.fiscal_year == fiscal_year, Budget.subteam_id == subteam.id)).first()
+                    and_(Budget.fiscal_year == 2016, Budget.subteam_id == subteam.id)).first()
 
                 curr_orders = db.session.query(Order).filter(
-                    and_(Order.fiscal_year == fiscal_year, Order.part_for_subteam == subteam.id,
+                    and_(Order.fiscal_year == 2016, Order.part_for_subteam == subteam.id,
                          Order.pending_approval is False))
 
                 dollars_left = Decimal(budget.dollar_amount)
@@ -84,8 +82,8 @@ class Budgets(FlaskView, CRUDBase):
                 cash_left.append(0)
                 started_with.append(0)
 
-        return render_template('orders/budgets/index.html', subteams=names, cash_left=cash_left,
-                               started_with=started_with, css_classes=css_classes, fiscal_year=fiscal_year, ids=ids,
+        return render_template('settings/budgets.html', subteams=names, cash_left=cash_left,
+                               started_with=started_with, css_classes=css_classes, fiscal_year=2016, ids=ids,
                                thresholds=[self.BUDGET_FULL_THRESH, self.BUDGET_MEDIUM_THRESH, self.BUDGET_LOW_THRESH])
 
     @route('/<fiscal_year>/<subteam_id>/set', methods=['GET', 'POST'])
