@@ -13,6 +13,7 @@ main = Blueprint('main', __name__)
 
 # Index
 @main.route('/')
+@login_required
 @needs_password_reset_check
 def index():
     fiscal_year = get_fiscal_year()

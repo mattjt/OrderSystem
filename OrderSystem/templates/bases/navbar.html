@@ -13,12 +13,12 @@
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <i class="fa fa-user" aria-hidden="true"></i>
-                        <span class="hidden-xs">Matt Turi</span>
+                        <span class="hidden-xs">{{ current_user.first_name }} {{ current_user.last_name }}</span>
                     </a>
                     <ul class="dropdown-menu">
                         <li class="user-footer">
                             <div class="pull-right">
-                                <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                <a href="{{ url_for('auth.logout') }}" class="btn btn-default btn-flat">Sign out</a>
                             </div>
                         </li>
                     </ul>
