@@ -4,7 +4,7 @@ from time import strftime
 from django.shortcuts import redirect
 from flask import render_template, request, url_for, flash
 from flask.ext.classy import FlaskView, route
-from flask.ext.login import current_user
+from flask.ext.login import current_user, login_required
 from sqlalchemy import and_
 
 from OrderSystem import db
@@ -28,6 +28,7 @@ class OrderBackend(FlaskView, CRUDBase):
     this_year = datetime.datetime.today().year
 
     @route('/create', methods=['GET', 'POST'])
+    @login_required
     def create(self):
         """
         Creates a new order from user input, records it to the database, and queues it up to be emailed to subteam
@@ -75,6 +76,7 @@ class OrderBackend(FlaskView, CRUDBase):
                                vendors=vendors)
 
     @route('/<order_status>')
+    @login_required
     def index(self, order_status):
         """
         Shows the user an overview of all unprocessed, in progress, and completed orders.
@@ -101,6 +103,7 @@ class OrderBackend(FlaskView, CRUDBase):
                                today_date=strftime("%m-%d-%Y"), orders=orders, page="orders_" + order_status)
 
     @route('/update/<int:order_id>', methods=['GET', 'POST'])
+    @login_required
     def update(self, order_id):
         """
         Updates an existing order, at whatever stage it may be in
@@ -171,6 +174,7 @@ class OrderBackend(FlaskView, CRUDBase):
                                vendors=available_vendors, subteams=available_subteams)
 
     @route('/delete/<int:order_id>', methods=['GET'])
+    @login_required
     def delete(self, order_id):
         """
         Delete an existing order

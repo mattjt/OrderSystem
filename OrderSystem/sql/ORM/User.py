@@ -12,7 +12,7 @@ class User(db.Model):
     username = db.Column('username', db.String(30), unique=True, nullable=False)
     first_name = db.Column('first_name', db.String(30), nullable=False)
     last_name = db.Column('last_name', db.String(30), nullable=False)
-    password = db.Column(db.BINARY, nullable=False)
+    password = db.Column(db.LargeBinary, nullable=False)
     email = db.Column('email', db.String(50), unique=True, nullable=False)
     subteam = db.Column('subteam', db.Integer, db.ForeignKey('subteams.id'), nullable=False)
     subteam_ref = db.relationship(Subteam, backref=backref('user'))
@@ -35,14 +35,14 @@ class User(db.Model):
         self.password = password
         self.email = email
         self.is_admin = is_admin
-        self.can_receive_order_notifications = can_receive_pending_orders
+        self.can_receive_pending_orders = can_receive_pending_orders
         self.can_approve_orders = can_approve_orders
         self.can_update_order_status = can_update_order_status
         self.can_receive_order_notifications = can_receive_order_notifications
         self.subteam = subteam
 
         # New users need their password reset always
-        self.needs_password_reset = True
+        self.needs_password_reset = False
 
     @staticmethod
     def is_authenticated():
