@@ -1,145 +1,154 @@
 {% extends 'base.html' %}
 {% block title %}New Order{% endblock %}
 {% block content %}
-    <div id="newOrder">
-        <h3><strong>Vendor/Part Info</strong></h3>
-        <section>
-            <div class="row">
-                <div class="col-md-6">
-                    <fieldset>
-                        <legend>Vendor Details</legend>
-                        <div class="form-group">
-                            <label>Vendor</label>
-                            <select class="form-control" title="vendor">
-                                <option value="adafruit">Adafruit</option>
-                                <option value="vexpro">VexPro</option>
-                            </select>
-                            <hr>
-                            <button type="submit"
-                                    class="btn btn-block btn-warning btn-flat">
-                                Manage Vendors
-                            </button>
-                        </div>
-                    </fieldset>
-                </div>
-                <div class="col-md-6">
-                    <fieldset>
-                        <legend>Part Info</legend>
-                        <div class="form-group">
-                            <label>Name</label>
-                            <input type="text" class="form-control" placeholder="Enter ...">
-                        </div>
-                        <div class="form-group">
-                            <label>URL</label>
-                            <input type="text" class="form-control" placeholder="Enter ...">
-                        </div>
-                        <div class="form-group">
-                            <label>Part #</label>
-                            <input type="text" class="form-control" placeholder="Enter ...">
-                        </div>
-                        <div class="form-group">
-                            <label>Quantity</label>
-                            <input type="text" class="form-control" placeholder="Enter ...">
-                        </div>
-                        <div class="form-group">
-                            <label>Unit Price</label>
-                            <input type="text" class="form-control" placeholder="Enter ...">
-                        </div>
-                    </fieldset>
-                </div>
-            </div>
-        </section>
-        <h3><strong>Metadata</strong></h3>
-        <section>
-            <fieldset>
-                <legend>Metadata</legend>
+    <form method="post">
+        {{ form.csrf_token }}
+        <div id="newOrder">
+            <h3><strong>Vendor/Part Info</strong></h3>
+            <section>
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Ordering Group</label>
-                            <select class="form-control" title="orderingGroup">
-                                <option value="programming">Programming</option>
-                                <option value="electrical">Electrical</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Needed By</label>
-
-                            <div class="input-group date">
-                                <div class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
-                                </div>
-                                <input type="text" class="form-control pull-right" id="datepicker">
+                        <fieldset>
+                            <legend>Vendor Details</legend>
+                            <div class="form-group">
+                                <label>Vendor</label>
+                                <select class="form-control" name="vendor">
+                                    {% for vendor in vendors %}
+                                        <option value="{{ vendor.id }}">{{ vendor.vendor_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <hr>
+                                <a href="{{ url_for('Vendors:index') }}" class="btn btn-block btn-warning btn-flat">
+                                    Manage Vendors
+                                </a>
                             </div>
-                            <!-- /.input group -->
-                        </div>
+                        </fieldset>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Ordered By</label>
-                            <input type="text" class="form-control" value="Matt Turi" disabled
-                                   title="orderedBy">
-                        </div>
-                        <div class="form-group">
-                            <label>Order Placed On</label>
-                            <input type="text" class="form-control" value="7/9/16" disabled title="orderedOn">
-                        </div>
+                        <fieldset>
+                            <legend>Part Info</legend>
+                            <div class="form-group">
+                                {{ form.part_name.label }}
+                                {{ form.part_name(class="form-control", placeholder="Part Name") }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.part_url.label }}
+                                {{ form.part_url(class="form-control", placeholder="Part URL") }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.part_number.label }}
+                                {{ form.part_number(class="form-control", placeholder="Part Number") }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.part_quantity.label }}
+                                {{ form.part_quantity(class="form-control", placeholder="Part Quantity") }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.part_unit_price.label }}
+                                {{ form.part_unit_price(class="form-control", placeholder="Part Unit Price") }}
+                            </div>
+                        </fieldset>
                     </div>
                 </div>
-            </fieldset>
-        </section>
-        <h3><strong>Review</strong></h3>
-        <section>
-            <p>Please review your order before submitting</p>
-            <div class="row">
-                <div class="col-md-6">
-                    <table class="table table-bordered" style="background: whitesmoke;">
-                        <tbody>
-                        <tr>
-                            <td><strong>Part</strong></td>
-                            <td>CIM Motor</td>
-                        </tr>
-                        <tr>
-                            <td><strong>URL</strong></td>
-                            <td><a href="http://google.com" target="_blank">http://google.com</a></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Quantity</strong></td>
-                            <td>1</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Unit Price</strong></td>
-                            <td>$12</td>
-                        </tr>
-                        </tbody>
-                    </table>
+            </section>
+            <h3><strong>Metadata</strong></h3>
+            <section>
+                <fieldset>
+                    <legend>Metadata</legend>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Ordering Subteam</label>
+                                <select class="form-control" name="for_subteam"
+                                        {% if not current_user.is_admin %}disabled{% endif %}>
+                                    {% if current_user.is_admin %}
+                                        {% for subteam in subteams %}
+                                            <option value="{{ subteam.id }}">{{ subteam.name }}</option>
+                                        {% endfor %}
+                                    {% else %}
+                                        <option value="{{ current_user.subteam_ref.id }}">{{ current_user.subteam_ref.name }}</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                {{ form.needed_by.label }}
+                                <div class="input-group date">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    {{ form.needed_by(class="form-control pull-right", id="datepicker") }}
+                                </div>
+                                <!-- /.input group -->
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Ordered By</label>
+                                <input type="text" class="form-control"
+                                       value="{{ current_user.first_name }} {{ current_user.last_name }}" disabled
+                                       title="orderedBy">
+                            </div>
+                            <div class="form-group">
+                                <label>Order Placed On</label>
+                                <input type="text" class="form-control" value="7/9/16" disabled title="orderedOn">
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </section>
+            <h3><strong>Review</strong></h3>
+            <section>
+                <p>Please review your order before submitting</p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-bordered" style="background: whitesmoke;">
+                            <tbody>
+                            <tr>
+                                <td><strong>Part</strong></td>
+                                <td>CIM Motor</td>
+                            </tr>
+                            <tr>
+                                <td><strong>URL</strong></td>
+                                <td><a href="http://google.com" target="_blank">http://google.com</a></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Quantity</strong></td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Unit Price</strong></td>
+                                <td>$12</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-bordered" style="background: whitesmoke;">
+                            <tbody>
+                            <tr>
+                                <td><strong>Subtotal</strong></td>
+                                <td>$20</td>
+                            </tr>
+                            <tr>
+                                <td><strong>S&H</strong></td>
+                                <td>TBD</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Credit</strong></td>
+                                <td>TBD</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total</strong></td>
+                                <td>$20</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="submit" class="btn btn-flat btn-success btn-block">Submit</button>
                 </div>
-                <div class="col-md-6">
-                    <table class="table table-bordered" style="background: whitesmoke;">
-                        <tbody>
-                        <tr>
-                            <td><strong>Subtotal</strong></td>
-                            <td>$20</td>
-                        </tr>
-                        <tr>
-                            <td><strong>S&H</strong></td>
-                            <td>TBD</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Credit</strong></td>
-                            <td>TBD</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Total</strong></td>
-                            <td>$20</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <button type="submit" class="btn btn-flat btn-success btn-block">Submit</button>
-            </div>
-        </section>
-    </div>
+            </section>
+        </div>
+    </form>
 {% endblock %}
 {% block stylesheets %}
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">

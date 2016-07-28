@@ -33,8 +33,8 @@ class NewVendor(Form):
     vendor_name = StringField('Vendor Name', validators=[InputRequired("Vendor name is required!")])
     vendor_url = StringField('Vendor URL', validators=[InputRequired("Vendor URL is required!"),
                                                        URL("Vendor URL is invalid!")])
-    vendor_phone = StringField('Vendor Phone')
-    vendor_email = EmailField('Vendor Email')
+    vendor_phone = StringField('Vendor Phone [Leave blank for none]')
+    vendor_email = EmailField('Vendor Email [Leave blank for none]')
 
 
 class CreateSubteam(Form):
@@ -53,7 +53,7 @@ class Order(Form):
 
     part_name = StringField('Part Name', validators=[InputRequired("Part name is required!")])
     part_url = StringField('Part URL', validators=[InputRequired("Part URL is required!"), URL("Part URL is invalid!")])
-    part_number = StringField('Part #')
+    part_number = StringField('Part Number')
     part_quantity = DecimalField('Part Quantity', validators=[InputRequired("Part quantity is required!")])
     part_unit_price = DecimalField('Part Unit Price', validators=[InputRequired("Part unit price is required!")])
 
