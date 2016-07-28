@@ -1,0 +1,45 @@
+<!--suppress ALL -->
+<aside class="main-sidebar">
+    <section class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="header">MAIN NAVIGATION</li>
+            <li {% if page == "dashboard" %}class="active"{% endif %}><a href="{{ url_for('main.index') }}"> <i
+                    class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
+            <li class="treeview  {% if page == ("orders_unprocessed" or "orders_in-progress" or "orders_shipped" or "orders_completed") %}active{% endif %}">
+                <a href="#">
+                    <i class="fa fa-shopping-cart"></i>
+                    <span>Orders</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="/orders/unprocessed"><i
+                            class="fa fa-circle-o {% if page == "orders_unprocessed" %}text-red{% endif %}"></i> Unprocessed</a>
+                    </li>
+                    <li><a href="/orders/in-progress"><i
+                            class="fa fa-circle-o {% if page == "orders_in-progress" %}text-red{% endif %}"></i> In Progress</a>
+                    </li>
+                    <li><a href="/orders/shipped"><i
+                            class="fa fa-circle-o {% if page == "orders_shipped" %}text-red{% endif %}"></i> Shipped</a></li>
+                    <li><a href="/orders/completed"><i
+                            class="fa fa-circle-o  {% if page == "orders_completed" %}text-red{% endif %}"></i> Complete</a>
+                    </li>
+                </ul>
+            </li>
+            <li {% if page == "new_order" %}class="active"{% endif %}><a href="orders/new-order.html"> <i
+                    class="fa fa-plus"></i> <span>New Order</span></a></li>
+            <li class="header">DATA</li>
+            <li {% if page == "export_data" %}class="active"{% endif %}><a href="#"> <i class="fa fa-table"></i> <span>Export Data</span></a>
+            </li>
+            <li class="header">SETTINGS</li>
+            <li {% if page == "budgets" %}class="active"{% endif %}><a href="settings/budgets.html"> <i
+                    class="fa fa-area-chart"></i> <span>Budgets</span></a></li>
+            <li {% if page == "vendors" %}class="active"{% endif %}><a href="settings/vendors.html"> <i
+                    class="fa fa-credit-card"></i> <span>Vendors</span></a></li>
+            <li class="header">ADMINISTRATION</li>
+            <li {% if page == "admin" %}class="active"{% endif %}><a href="admin/admin.html"> <i class="fa fa-cogs"></i>
+                <span>Admin</span></a></li>
+        </ul>
+    </section>
+</aside>

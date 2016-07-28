@@ -15,7 +15,7 @@ main = Blueprint('main', __name__)
 @main.route('/')
 @needs_password_reset_check
 def index():
-    return render_template('index.html')
+    return render_template('index.html', page="dashboard")
 
 
 # Force password reset
