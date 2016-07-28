@@ -10,7 +10,7 @@ from OrderSystem import forms
 from OrderSystem.routing.CRUDBase import CRUDBase
 from OrderSystem.sql.ORM import Budget, Subteam, Order
 from OrderSystem.utilities.Helpers import flash_errors
-from OrderSystem.utilities.Permissions import order_admin_access_required, order_view_access_required
+from OrderSystem.utilities.Permissions import order_admin_access_required
 
 
 class Budgets(FlaskView, CRUDBase):
@@ -32,7 +32,6 @@ class Budgets(FlaskView, CRUDBase):
         pass
 
     @route('/<fiscal_year>')
-    @order_view_access_required
     def index(self, fiscal_year):
         """
         Shows the user an overview of the budgets for subteams this year
@@ -127,7 +126,6 @@ class Budgets(FlaskView, CRUDBase):
         pass
 
     @route('/<fiscal_year>/<subteam_id>')
-    @order_view_access_required
     def view_orders_by_subteam(self, fiscal_year, subteam_id):
         """
         Shows a list of orders for the given subteam

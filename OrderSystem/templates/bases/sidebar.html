@@ -5,7 +5,7 @@
             <li class="header">MAIN NAVIGATION</li>
             <li {% if page == "dashboard" %}class="active"{% endif %}><a href="{{ url_for('main.index') }}"> <i
                     class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
-            <li class="treeview  {% if page == ("orders_unprocessed" or "orders_in-progress" or "orders_shipped" or "orders_completed") %}active{% endif %}">
+            <li class="treeview  {% if (page == "orders_unprocessed") or (page == "orders_in-progress") or (page == "orders_shipped") or (page == "orders_completed") %}active{% endif %}">
                 <a href="#">
                     <i class="fa fa-shopping-cart"></i>
                     <span>Orders</span>
@@ -15,13 +15,16 @@
                 </a>
                 <ul class="treeview-menu">
                     <li><a href="/orders/unprocessed"><i
-                            class="fa fa-circle-o {% if page == "orders_unprocessed" %}text-red{% endif %}"></i> Unprocessed</a>
+                            class="fa fa-circle-o {% if page == "orders_unprocessed" %}text-red{% endif %}"></i>
+                        Unprocessed</a>
                     </li>
                     <li><a href="/orders/in-progress"><i
-                            class="fa fa-circle-o {% if page == "orders_in-progress" %}text-red{% endif %}"></i> In Progress</a>
+                            class="fa fa-circle-o {% if page == "orders_in-progress" %}text-red{% endif %}"></i> In
+                        Progress</a>
                     </li>
                     <li><a href="/orders/shipped"><i
-                            class="fa fa-circle-o {% if page == "orders_shipped" %}text-red{% endif %}"></i> Shipped</a></li>
+                            class="fa fa-circle-o {% if page == "orders_shipped" %}text-red{% endif %}"></i> Shipped</a>
+                    </li>
                     <li><a href="/orders/completed"><i
                             class="fa fa-circle-o  {% if page == "orders_completed" %}text-red{% endif %}"></i> Complete</a>
                     </li>
