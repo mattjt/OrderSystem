@@ -24,7 +24,7 @@ class Admin(FlaskView, CRUDBase):
     @route('')
     @admin_access_required
     def index(self):
-        pass
+        return render_template('admin/admin.html')
 
     def update(self):
         pass
@@ -63,14 +63,14 @@ class UserManager(FlaskView, CRUDBase):
                 username_exists = db.session.query(User).filter(User.username == username).first()
 
                 if username_exists is not None:
-                    flash("Username already taken!")
+                    flash("Username already taken!", 'error')
                     return render_template('admin/users/add-user.html', form=form, subteams=subteams)
 
                 # Check if email is already in use
                 email_exists = db.session.query(User).filter(User.email == email).first()
 
                 if email_exists is not None:
-                    flash("Email exists!")
+                    flash("Email exists!", 'error')
                     return render_template('admin/users/add-user.html', form=form, subteams=subteams)
 
                 # Create the user
@@ -89,7 +89,7 @@ class UserManager(FlaskView, CRUDBase):
                 return redirect(url_for('usermanager.index'))
             except Exception as e:
                 db.session.rollback()
-                flash("Unknown database error! [{0}]".format(e))
+                flash("Unknown database error! [{0}]".format(e), 'error')
         else:
             flash_errors(form)
         return render_template('admin/users/add-user.html', form=form, subteams=subteams)
@@ -140,7 +140,7 @@ class UserManager(FlaskView, CRUDBase):
                 db.session.commit()
             except Exception as e:
                 db.session.rollback()
-                flash("Unknown database error! [{0}]".format(e))  # TODO: Get better error code
+                flash("Unknown database error! [{0}]".format(e), 'error')  # TODO: Get better error code
 
             return redirect(url_for('usermanager.index'))
 
@@ -207,7 +207,7 @@ class SubteamManager(FlaskView, CRUDBase):
                 return redirect(url_for('subteammanager.index'))
             except:
                 db.session.rollback()
-                flash("Unknown database error!")
+                flash("Unknown database error!", 'error')
         else:
             flash_errors(form)
         return render_template('admin/subteams/add-subteam.html', form=form)
@@ -244,7 +244,7 @@ class SubteamManager(FlaskView, CRUDBase):
                 return redirect(url_for('subteammanager.index'))
             except:
                 db.session.rollback()
-                flash("Unknown database error!")
+                flash("Unknown database error!", 'error')
         else:
             flash_errors(form)
         return render_template('admin/subteams/edit-subteam.html', form=form, subteam=subteam)
@@ -263,6 +263,6 @@ class SubteamManager(FlaskView, CRUDBase):
             db.session.commit()
 
         except:
-            flash("You can't delete this subteam! There are team members that are still members of it!")
+            flash("You can't delete this subteam! There are team members that are still members of it!", 'warning')
 
         return redirect(url_for('subteammanager.index'))

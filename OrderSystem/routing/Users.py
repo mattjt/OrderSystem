@@ -35,10 +35,10 @@ class Users(FlaskView, CRUDBase):
                 user = db.session.query(User).filter(User.id == current_user.id).first()
                 user.password = hash_password(form.new_password.data)
                 db.session.commit()
-                flash("Successfully changed password!")
+                flash("Successfully changed password!", 'success')
                 return redirect(url_for('auth.logout'))
             else:
-                flash("Current password is incorrect!")
+                flash("Current password is incorrect!", 'error')
         else:
             flash_errors(form)
         return render_template('user/change-password.html', form=form)

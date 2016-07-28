@@ -30,7 +30,7 @@ def verify_password(hashed_password, guessed_password):
 def flash_errors(form):
     for field, errors in form.errors.items():
         for error in errors:
-            flash("{0}".format(error))
+            flash("{0}".format(error), 'error')
 
 
 def get_order_notification_recipients():

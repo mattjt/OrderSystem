@@ -23,7 +23,7 @@ class OrderBackend(FlaskView, CRUDBase):
     # Configure routing for Order sub-component. All OrderSystem routes are prefixed with /orders
     route_base = ""
 
-    today_date = strftime("%m-%d-%Y")  # Month/Day/Year Format
+    today_date = strftime("%m/%d/%Y")  # Month/Day/Year Format
     this_year = datetime.datetime.today().year
 
     @route('/create', methods=['GET', 'POST'])
@@ -51,7 +51,7 @@ class OrderBackend(FlaskView, CRUDBase):
                 part_url = order_form.part_url.data
                 part_number = order_form.part_number.data
                 part_quantity = int(order_form.part_quantity.data)
-                part_unit_price = round(float(order_form.part_unit_price.data), 2)
+                part_unit_price = float(order_form.part_unit_price.data)
                 part_total_price = round(part_quantity * part_unit_price, 2)
                 part_needed_by = order_form.needed_by.data
                 part_for_subteam = request.form['for_subteam']
@@ -63,12 +63,13 @@ class OrderBackend(FlaskView, CRUDBase):
                     Order(fiscal_year, vendor_id, part_name, part_url, part_number, part_quantity,
                           part_unit_price, part_total_price, part_needed_by, part_for_subteam,
                           part_ordered_by, part_ordered_on, total)
-                ).commit()
+                )
+                db.session.commit()
 
-                return redirect(url_for('orders.index'))
+                return redirect(url_for('OrderBackend:index', order_status="unprocessed"))
             except Exception as e:
                 db.session.rollback()
-                flash("Unknown database error! [{0}]".format(e))  # TODO Get a better error code for this
+                flash("Unknown database error! [{0}]".format(e), 'error')  # TODO Get a better error code for this
         else:
             flash_errors(order_form)
         return render_template('orders/new-order.html', today_date=self.today_date, form=order_form, subteams=subteams,
@@ -99,7 +100,8 @@ class OrderBackend(FlaskView, CRUDBase):
         }
 
         return render_template('orders/view/{0}'.format(return_template.get(order_status, "unprocessed.html")),
-                               today_date=strftime("%m-%d-%Y"), orders=orders, page="orders_" + order_status)
+                               today_date=strftime("%m-%d-%Y"), orders=orders, num_of_orders=orders.count(),
+                               page="orders_" + order_status)
 
     @route('/update/<int:order_id>', methods=['GET', 'POST'])
     @login_required
@@ -166,7 +168,7 @@ class OrderBackend(FlaskView, CRUDBase):
                 return redirect(url_for('OrderBackend:index'))
             except Exception as e:
                 db.session.rollback()
-                flash("Unknown database error! [{0}]".format(e))
+                flash("Unknown database error! [{0}]".format(e), 'error')
         else:
             flash_errors(order_form)
         return render_template('orders/edit-order.html', order=order_to_update, form=order_form,
@@ -187,7 +189,7 @@ class OrderBackend(FlaskView, CRUDBase):
             return redirect(url_for('OrderBackend:index'))
         except:
             db.session.rollback()
-            flash("Error deleting order!")
+            flash("Error deleting order!", 'error')
             return redirect(url_for('OrderBackend:index'))
 
     # #################### NON-CRUD METHODS #################### #
@@ -200,16 +202,18 @@ class OrderBackend(FlaskView, CRUDBase):
 
         @return: Nothing. Method is called from some type of asynchronous segment of code
         """
-        item_id = request.values['oId']
-        new_status = request.values['newTable']
-
+        item_id = request.values['oID']
+        current_status = request.values['currentStatus']
+        new_status = request.values['updatedStatus']
         item = db.session.query(Order).filter(Order.id == item_id).first()
         if item is not None:
-            item.order_status = new_status
+            item.order_status = str(new_status).lower().replace(" ", "-")
             db.session.commit()
-            return "Successfully updated order status!"
+            flash("Successfully updated order status", 'success')
+            return redirect(url_for('OrderBackend:index', order_status=current_status))
         else:
-            return "ERROR! Order requested was not found!"
+            flash("ERROR! Order requested was not found!", 'error')
+            return redirect(url_for('OrderBackend:index', order_status=current_status))
 
 
 class Vendors(FlaskView, CRUDBase):
@@ -292,7 +296,8 @@ class Vendors(FlaskView, CRUDBase):
             db.session.commit()
         except:
             flash(
-                "You can't delete this! There are orders that are dependant on this vendor! Please delete them first!")
+                "You can't delete this! There are orders that are dependant on this vendor! Please delete them first!",
+                'warning')
         return redirect(url_for('Vendors:index'))
 
 
@@ -351,7 +356,7 @@ class PendingOrders(FlaskView, CRUDBase):
         approved_order = db.session.query(Order).filter(Order.id == order_id).first_or_404()
         approved_order.pending_approval = False
         db.session.commit()
-        flash("Successfully approved order!")
+        flash("Successfully approved order!", 'success')
         return redirect(url_for('pending_orders.index'))
 
     @route('/deny/<order_id>')
@@ -364,5 +369,5 @@ class PendingOrders(FlaskView, CRUDBase):
         """
         denied_order = db.session.query(Order).filter(Order.id == order_id).first_or_404()
         db.session.delete(denied_order).commit()
-        flash("Successfully denied order!")
+        flash("Successfully denied order!", 'error')
         return redirect(url_for('pending_orders.index'))
