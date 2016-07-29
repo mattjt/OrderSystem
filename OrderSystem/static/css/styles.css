@@ -1,0 +1,27 @@
+.budget, .budget-full, .budget-medium, .budget-low, .budget-verylow, .budget-critical, .budget-empty {
+  border: 1px solid #2c2c2c; }
+
+.budget a, .budget-full a, .budget-medium a, .budget-low a, .budget-verylow a, .budget-critical a, .budget-empty a {
+  color: inherit; }
+
+.budget-full {
+  background-color: #17bd1a; }
+
+.budget-medium {
+  background-color: #a7bd2d; }
+
+.budget-low {
+  background-color: #bda421; }
+
+.budget-verylow {
+  background-color: #bd5434; }
+
+.budget-critical {
+  background-color: #bd0006;
+  color: #fff; }
+
+.budget-empty {
+  background-color: black;
+  color: white; }
+
+/*# sourceMappingURL=styles.css.map */
