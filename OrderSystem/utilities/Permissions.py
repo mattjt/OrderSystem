@@ -22,21 +22,7 @@ def admin_access_required(func):
     return wrapper
 
 
-def order_admin_access_required(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if current_user.is_authenticated():
-            if current_user.receive_order_notifications and current_user.can_update_order_status:
-                return func(*args, **kwargs)
-            else:
-                abort(403)
-        else:
-            return redirect(url_for('auth.login') + "?prev={0}".format(get_path()))
-
-    return wrapper
-
-
-def update_order_status_required(func):
+def update_order_status_access_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if not current_user.is_authenticated():
@@ -50,7 +36,7 @@ def update_order_status_required(func):
     return wrapper
 
 
-def approve_order_required(func):
+def approve_order_access_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if not current_user.is_authenticated():

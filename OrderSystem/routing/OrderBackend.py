@@ -11,7 +11,7 @@ from OrderSystem import forms
 from OrderSystem.routing.CRUDBase import CRUDBase
 from OrderSystem.sql.ORM import Order, Subteam, Vendor
 from OrderSystem.utilities.Helpers import flash_errors
-from OrderSystem.utilities.Permissions import update_order_status_required, approve_order_required
+from OrderSystem.utilities.Permissions import update_order_status_access_required, approve_order_access_required
 
 
 class OrderBackend(FlaskView, CRUDBase):
@@ -195,7 +195,7 @@ class OrderBackend(FlaskView, CRUDBase):
     # #################### NON-CRUD METHODS #################### #
 
     @route('/update-part-status', methods=['GET', 'POST'])
-    @update_order_status_required
+    @update_order_status_access_required
     def update_part_status(self):
         """
         Changes the status of a part. Available part statuses are Unprocessed, In Progress, Shipped, and Completed
@@ -309,7 +309,7 @@ class PendingOrders(FlaskView, CRUDBase):
 
     route_base = ""
 
-    @approve_order_required
+    @approve_order_access_required
     def create(self):
         """
         No implementation
@@ -317,7 +317,7 @@ class PendingOrders(FlaskView, CRUDBase):
         pass
 
     @route('/index')
-    @approve_order_required
+    @approve_order_access_required
     def index(self):
         """
         Shows a mentor a list of all orders that are currently pending for their subteam.
@@ -346,7 +346,7 @@ class PendingOrders(FlaskView, CRUDBase):
                                is_order_system_admin=is_order_system_admin)
 
     @route('/approve/<order_id>')
-    @approve_order_required
+    @approve_order_access_required
     def update(self, order_id):
         """
         Approve an order and send it off for processing by Treasurer
@@ -360,7 +360,7 @@ class PendingOrders(FlaskView, CRUDBase):
         return redirect(url_for('pending_orders.index'))
 
     @route('/deny/<order_id>')
-    @approve_order_required
+    @approve_order_access_required
     def delete(self, order_id):
         """
         Deny an order and have it deleted

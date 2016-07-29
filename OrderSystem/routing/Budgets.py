@@ -1,7 +1,8 @@
 from decimal import Decimal
 
-from flask import render_template
+from flask import render_template, url_for
 from flask.ext.classy import FlaskView, route
+from flask.ext.login import login_required
 from sqlalchemy import and_
 from werkzeug.utils import redirect
 
@@ -9,8 +10,8 @@ from OrderSystem import db
 from OrderSystem import forms
 from OrderSystem.routing.CRUDBase import CRUDBase
 from OrderSystem.sql.ORM import Budget, Subteam, Order
-from OrderSystem.utilities.Helpers import flash_errors
-from OrderSystem.utilities.Permissions import order_admin_access_required
+from OrderSystem.utilities.Helpers import flash_errors, get_fiscal_year
+from OrderSystem.utilities.Permissions import admin_access_required
 
 
 class Budgets(FlaskView, CRUDBase):
@@ -25,6 +26,7 @@ class Budgets(FlaskView, CRUDBase):
     BUDGET_MEDIUM_THRESH = 0.50  # 50%
     BUDGET_LOW_THRESH = 0.25  # 25%
 
+    @login_required
     def create(self):
         """
         No implementation
@@ -32,6 +34,7 @@ class Budgets(FlaskView, CRUDBase):
         pass
 
     @route('/')
+    @login_required
     def index(self):
         """
         Shows the user an overview of the budgets for subteams this year
@@ -39,6 +42,7 @@ class Budgets(FlaskView, CRUDBase):
         @return: List of subteams color-coded with their amount of money remaining
         """
         subteams = db.session.query(Subteam).all()
+        fiscal_year = get_fiscal_year()
 
         ids = []
         names = []
@@ -49,11 +53,11 @@ class Budgets(FlaskView, CRUDBase):
         for subteam in subteams:
             try:
                 budget = db.session.query(Budget).filter(
-                    and_(Budget.fiscal_year == 2016, Budget.subteam_id == subteam.id)).first()
+                    and_(Budget.fiscal_year == fiscal_year, Budget.subteam_id == subteam.id)).first()
 
                 curr_orders = db.session.query(Order).filter(
-                    and_(Order.fiscal_year == 2016, Order.part_for_subteam == subteam.id,
-                         Order.pending_approval is False))
+                    and_(Order.fiscal_year == fiscal_year, Order.part_for_subteam == subteam.id,
+                         Order.pending_approval == False))
 
                 dollars_left = Decimal(budget.dollar_amount)
                 for order in curr_orders:
@@ -82,13 +86,14 @@ class Budgets(FlaskView, CRUDBase):
                 cash_left.append(0)
                 started_with.append(0)
 
-        return render_template('settings/budgets.html', subteams=names, cash_left=cash_left,
-                               started_with=started_with, css_classes=css_classes, fiscal_year=2016, ids=ids,
+        return render_template('settings/budgets/index.html', subteams=names, cash_left=cash_left,
+                               started_with=started_with, css_classes=css_classes, fiscal_year=fiscal_year,
+                               ids=ids,
                                thresholds=[self.BUDGET_FULL_THRESH, self.BUDGET_MEDIUM_THRESH, self.BUDGET_LOW_THRESH])
 
     @route('/<fiscal_year>/<subteam_id>/set', methods=['GET', 'POST'])
-    @order_admin_access_required
-    def update(self, subteam_id, fiscal_year):
+    @admin_access_required
+    def update(self, fiscal_year, subteam_id):
         """
         Changes the amount of money that a subteam is marked as having available
 
@@ -110,13 +115,14 @@ class Budgets(FlaskView, CRUDBase):
                 existing_budget.dollar_amount = form.amount.data
 
             db.session.commit()
-            return redirect('/orders/budgets/%s' % fiscal_year)
+            return redirect(url_for('Budgets:index'))
 
         else:
             flash_errors(form)
 
-        return render_template('orders/budgets/set.html', form=form)
+        return render_template('settings/budgets/set.html', form=form)
 
+    @login_required
     def delete(self):
         """
         No implementation
@@ -124,6 +130,7 @@ class Budgets(FlaskView, CRUDBase):
         pass
 
     @route('/<fiscal_year>/<subteam_id>')
+    @login_required
     def view_orders_by_subteam(self, fiscal_year, subteam_id):
         """
         Shows a list of orders for the given subteam
@@ -134,7 +141,7 @@ class Budgets(FlaskView, CRUDBase):
         """
         orders_by_subteam = db.session.query(Order).filter(
             and_(Order.fiscal_year == fiscal_year, Order.part_for_subteam == subteam_id,
-                 Order.pending_approval is False))
+                 Order.pending_approval == False))
 
         subteam = db.session.query(Subteam).filter(Subteam.id == subteam_id).first()
 
@@ -142,5 +149,5 @@ class Budgets(FlaskView, CRUDBase):
         for order in orders_by_subteam:
             total += order.total
 
-        return render_template('orders/budgets/orders-by-subteam.html', orders_by_subteam=orders_by_subteam,
+        return render_template('settings/budgets/orders-by-subteam.html', orders_by_subteam=orders_by_subteam,
                                total=total, subteam=subteam)
