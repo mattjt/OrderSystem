@@ -72,7 +72,8 @@ class OrderBackend(FlaskView, CRUDBase):
                 flash("Unknown database error! [{0}]".format(e), 'error')  # TODO Get a better error code for this
         else:
             flash_errors(order_form)
-        return render_template('orders/new-order.html', today_date=self.today_date, form=order_form, subteams=subteams,
+        return render_template('orders/manage/new-order.html', today_date=self.today_date, form=order_form,
+                               subteams=subteams,
                                vendors=vendors)
 
     @route('/<order_status>')
@@ -103,9 +104,9 @@ class OrderBackend(FlaskView, CRUDBase):
                                today_date=strftime("%m-%d-%Y"), orders=orders, num_of_orders=orders.count(),
                                page="orders_" + order_status)
 
-    @route('/update/<int:order_id>', methods=['GET', 'POST'])
+    @route('/update/<string:order_status>/<int:order_id>', methods=['GET', 'POST'])
     @login_required
-    def update(self, order_id):
+    def update(self, order_status, order_id):
         """
         Updates an existing order, at whatever stage it may be in
 
@@ -114,65 +115,58 @@ class OrderBackend(FlaskView, CRUDBase):
         @return: Redirect to OrderSystem index if successful
         """
 
-        # Return 404 if the supplied order ID doesn't exist
-        order_to_update = db.session.query(Order).filter(Order.id == order_id).first_or_404()
+        order = db.session.query(Order).filter(Order.id == order_id).first()
 
-        # Get available vendors and sort alphabetically
-        available_vendors = db.session.query(Vendor).order_by(Vendor.vendor_name)
+        if order.part_ordered_by == current_user.id:
+            # Get available vendors and sort alphabetically
+            vendors = db.session.query(Vendor).order_by(Vendor.vendor_name)
 
-        # Get subteams that are actual subteams
-        available_subteams = db.session.query(Subteam).filter(Subteam.hidden_from_budgets_list is False)
+            # Get subteams that are actual subteams
+            subteams = db.session.query(Subteam).all()
 
-        order_form = forms.Order(request.form)
+            form = forms.Order(request.form)
 
-        if order_form.validate_on_submit():
-            try:
-                fiscal_year = order_form.fiscal_year.data
-
+            if form.validate_on_submit():
                 vendor_id = request.form['vendor']
 
-                part_name = order_form.part_name.data
-                part_url = order_form.part_url.data
-                part_no = order_form.part_number.data
-                part_quantity = int(request.form['part_quantity'])
-                part_unit_price = float(request.form['part_unit_price'])
-                part_shipping_cost = float(request.form['part_shipping_cost'])
-                part_credit = float(request.form['part_credit'])
+                part_name = form.part_name.data
+                part_url = form.part_url.data
+                part_number = form.part_number.data
+                part_quantity = float(form.part_quantity.data)
+                part_unit_price = float(form.part_unit_price.data)
+                part_shipping_cost = float(request.values['shipping'] if request.values['shipping'] is not None else 0)
+                part_credit = float(request.values['credit'] if request.values['credit'] is not None else 0)
                 part_total_price = round(((part_unit_price * part_quantity) + part_shipping_cost) - part_credit, 2)
-
-                part_needed_by = order_form.needed_by.data
+                print request.values['shipping'], request.values['credit']
+                part_needed_by = form.needed_by.data
                 part_for_subteam = request.form['for_subteam']
-                part_ordered_by = request.form['ordered_by']
-                part_ordered_on = order_form.ordered_on.data
 
                 total = part_total_price
 
-                order_to_update.fiscal_year = fiscal_year
-                order_to_update.vendor_id = vendor_id
-                order_to_update.part_name = part_name
-                order_to_update.part_url = part_url
-                order_to_update.part_no = part_no
-                order_to_update.part_quantity = part_quantity
-                order_to_update.part_unit_price = part_unit_price
-                order_to_update.part_total_price = part_total_price
-                order_to_update.part_shipping_cost = part_shipping_cost
-                order_to_update.part_needed_by = part_needed_by
-                order_to_update.part_for_subteam = part_for_subteam
-                order_to_update.part_ordered_by = part_ordered_by
-                order_to_update.part_ordered_on = part_ordered_on
-                order_to_update.credit = part_credit
-                order_to_update.total = total
+                order.vendor_id = vendor_id
+                order.part_name = part_name
+                order.part_url = part_url
+                order.part_number = part_number
+                order.part_quantity = part_quantity
+                order.part_unit_price = part_unit_price
+                order.part_total_price = part_total_price
+                order.part_shipping_cost = part_shipping_cost
+                order.part_needed_by = part_needed_by
+                order.part_for_subteam = part_for_subteam
+                order.credit = part_credit
+                order.total = total
 
                 db.session.commit()
 
-                return redirect(url_for('OrderBackend:index'))
-            except Exception as e:
-                db.session.rollback()
-                flash("Unknown database error! [{0}]".format(e), 'error')
+                return redirect(url_for('OrderBackend:index', order_status=order_status))
+
+            else:
+                flash_errors(form)
+            return render_template('orders/manage/edit-order.html', order=order, form=form, vendors=vendors,
+                                   subteams=subteams)
         else:
-            flash_errors(order_form)
-        return render_template('orders/edit-order.html', order=order_to_update, form=order_form,
-                               vendors=available_vendors, subteams=available_subteams)
+            flash("You can't delete an order that you didn't create!", 'error')
+            return redirect(url_for('OrderBackend:index', order_status=order_status))
 
     @route('/delete/<int:order_id>', methods=['GET'])
     @login_required
@@ -277,9 +271,9 @@ class Vendors(FlaskView, CRUDBase):
             vendor.vendor_email = vendor_form.vendor_email.data
             vendor.vendor_phone = vendor_form.vendor_phone.data
             db.session.commit()
-            return redirect(url_for('vendors.index'))
+            return redirect(url_for('Vendors:index'))
 
-        return render_template('orders/vendors/edit.html', form=vendor_form, vendor=vendor)
+        return render_template('settings/vendors/edit-vendor.html', form=vendor_form, vendor=vendor)
 
     @route('/delete/<int:vendor_id>', methods=['GET'])
     @login_required
