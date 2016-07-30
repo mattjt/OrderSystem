@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Subteam Manager{% endblock %}
+{% block content %}
+    {% include 'bases/validation-error-base.html' %}
+    <table id="subteamsTable" class="table table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for subteam in subteams %}
+            <tr>
+                <td>{{ subteam.name }}</td>
+                <td>
+                    <a href="{{ url_for('SubteamManager:update', subteam_id=subteam.id) }}"
+                       class="btn btn-flat btn-warning">Edit</a>
+                    <a href="{{ url_for('SubteamManager:delete', subteam_id=subteam.id) }}"
+                       class="btn btn-flat btn-danger">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div style="padding: 25px">
+        <a href="{{ url_for('SubteamManager:create') }}" class="btn btn-flat btn-block btn-primary">Add Subteam</a>
+    </div>
+{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+{% endblock %}
+{% block scripts %}
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#subteamsTable').DataTable();
+        });
+    </script>
+{% endblock %}

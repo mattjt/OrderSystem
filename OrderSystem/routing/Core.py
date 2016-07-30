@@ -37,7 +37,7 @@ def index():
 @main.route('/user/force-password-reset', methods=['GET', 'POST'])
 @login_required
 def force_password_reset():
-    form = forms.ResetPasswd()
+    form = forms.ResetPassword()
     error = None
     user = db.session.query(User).filter(User.id == current_user.id).first()
 
