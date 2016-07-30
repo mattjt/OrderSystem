@@ -42,7 +42,7 @@ class User(db.Model):
         self.subteam = subteam
 
         # New users need their password reset always
-        self.needs_password_reset = False
+        self.needs_password_reset = True
 
     @staticmethod
     def is_authenticated():
