@@ -113,7 +113,8 @@ class OrderBackend(FlaskView, CRUDBase):
 
         order = db.session.query(Order).filter(Order.id == order_id).first()
 
-        if order.part_ordered_by == current_user.id:
+        if order.part_ordered_by == current_user.id or current_user.is_admin or (
+                        current_user.subteam == order.part_for_subteam and current_user.can_approve_orders):
             # Get available vendors and sort alphabetically
             vendors = db.session.query(Vendor).order_by(Vendor.vendor_name)
 
@@ -121,7 +122,6 @@ class OrderBackend(FlaskView, CRUDBase):
             subteams = db.session.query(Subteam).all()
 
             form = forms.Order(request.form)
-
             if form.validate_on_submit():
                 vendor_id = request.form['vendor']
 
@@ -130,13 +130,16 @@ class OrderBackend(FlaskView, CRUDBase):
                 part_number = form.part_number.data
                 part_quantity = float(form.part_quantity.data)
                 part_unit_price = float(form.part_unit_price.data)
-                part_shipping_cost = float(request.values['shipping'] if request.values['shipping'] is not None else 0)
-                part_credit = float(request.values['credit'] if request.values['credit'] is not None else 0)
-                part_total_price = round(((part_unit_price * part_quantity) + part_shipping_cost) - part_credit, 2)
-                print request.values['shipping'], request.values['credit']
-                part_needed_by = form.needed_by.data
-                part_for_subteam = request.form['for_subteam']
+                part_shipping_cost = 0
+                part_credit = 0
 
+                if current_user.can_update_order_status:
+                    part_shipping_cost = float(request.values['shipping'])
+                    part_credit = float(request.values['credit'])
+
+                part_total_price = round(((part_unit_price * part_quantity) + part_shipping_cost) - part_credit, 2)
+                part_needed_by = form.needed_by.data
+                part_for_subteam = request.values['for_subteam']
                 total = part_total_price
 
                 order.vendor_id = vendor_id
@@ -153,7 +156,6 @@ class OrderBackend(FlaskView, CRUDBase):
                 order.total = total
 
                 db.session.commit()
-
                 return redirect(url_for('OrderBackend:index', order_status=order_status))
 
             else:
@@ -161,7 +163,7 @@ class OrderBackend(FlaskView, CRUDBase):
             return render_template('orders/manage/edit-order.html', order=order, form=form, vendors=vendors,
                                    subteams=subteams)
         else:
-            flash("You can't delete an order that you didn't create!", 'error')
+            flash("You can't edit an order that you didn't create!", 'error')
             return redirect(url_for('OrderBackend:index', order_status=order_status))
 
     @route('/delete/<string:order_status>/<int:order_id>', methods=['GET'])
@@ -173,15 +175,19 @@ class OrderBackend(FlaskView, CRUDBase):
         @return: Redirect to OrderSystem index
         """
         order_to_delete = db.session.query(Order).filter(Order.id == order_id).first()
-        if (not current_user.is_admin) or (order_to_delete.part_ordered_by != current_user.id):
-            flash("You can't delete an order that you didn't place!")
+
+        if order_to_delete.part_ordered_by != current_user.id and not current_user.is_admin:
+            flash("You can't delete an order that you didn't place!", "error")
             return redirect(url_for('OrderBackend:index', order_status=order_status))
+
         try:
-            db.session.delete(order_to_delete).commit()
+            db.session.delete(order_to_delete)
+            db.session.commit()
+            flash("Successfully deleted order!", "success")
             return redirect(url_for('OrderBackend:index', order_status=order_status))
-        except:
+        except Exception as e:
             db.session.rollback()
-            flash("Error deleting order!", 'error')
+            flash("Error deleting order! [{0}]".format(e), 'error')
             return redirect(url_for('OrderBackend:index', order_status=order_status))
 
     # #################### NON-CRUD METHODS #################### #
@@ -330,7 +336,7 @@ class PendingOrders(FlaskView, CRUDBase):
         else:
             # User is a normal mentor
             orders_for_subteam = db.session.query(Order).filter(and_(
-                Order.part_for_subteam == current_user.subteam, Order.pending_approva == True))
+                Order.part_for_subteam == current_user.subteam, Order.pending_approval == True))
         return render_template('orders/pending/index.html', orders=orders_for_subteam,
                                is_order_system_admin=is_order_system_admin)
 
