@@ -161,7 +161,7 @@
                                                                                 class="btn btn-block btn-warning btn-flat disabled">
                                                                             Suggest alternate vendor
                                                                         </button>
-                                                                        <a href="{{ url_for('OrderBackend:delete', order_id = order.id) }}"
+                                                                        <a href="{{ url_for('OrderBackend:delete', order_status="in-progress", order_id = order.id) }}"
                                                                            class="btn btn-block btn-danger btn-flat">
                                                                             Delete
                                                                         </a>
