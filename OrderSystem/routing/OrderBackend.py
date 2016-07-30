@@ -164,23 +164,25 @@ class OrderBackend(FlaskView, CRUDBase):
             flash("You can't delete an order that you didn't create!", 'error')
             return redirect(url_for('OrderBackend:index', order_status=order_status))
 
-    @route('/delete/<int:order_id>', methods=['GET'])
+    @route('/delete/<string:order_status>/<int:order_id>', methods=['GET'])
     @login_required
-    def delete(self, order_id):
+    def delete(self, order_status, order_id):
         """
         Delete an existing order
 
         @return: Redirect to OrderSystem index
         """
-        order_to_delete = db.session.query(Order).filter(Order.id == order_id).first_or_404()
-
+        order_to_delete = db.session.query(Order).filter(Order.id == order_id).first()
+        if (not current_user.is_admin) or (order_to_delete.part_ordered_by != current_user.id):
+            flash("You can't delete an order that you didn't place!")
+            return redirect(url_for('OrderBackend:index', order_status=order_status))
         try:
             db.session.delete(order_to_delete).commit()
-            return redirect(url_for('OrderBackend:index'))
+            return redirect(url_for('OrderBackend:index', order_status=order_status))
         except:
             db.session.rollback()
             flash("Error deleting order!", 'error')
-            return redirect(url_for('OrderBackend:index'))
+            return redirect(url_for('OrderBackend:index', order_status=order_status))
 
     # #################### NON-CRUD METHODS #################### #
 
