@@ -8,7 +8,7 @@ from flask.ext.login import current_user
 from CRUDBase import CRUDBase
 from OrderSystem import db
 from OrderSystem import forms
-from OrderSystem.sql.ORM import User, Subteam, Budget
+from OrderSystem.sql.ORM import User, Subteam, Budget, Settings
 from OrderSystem.utilities.Helpers import hash_password, flash_errors, generate_random_password
 from OrderSystem.utilities.Mailer import mail_registration, mail_forced_password_reset
 from OrderSystem.utilities.Permissions import admin_access_required
@@ -31,6 +31,18 @@ class Admin(FlaskView, CRUDBase):
 
     def delete(self):
         pass
+
+    @route('/set-fiscal-year', methods=['GET', 'POST'])
+    @admin_access_required
+    def set_fiscal_year(self):
+        fiscal_setting = db.session.query(Settings).filter(Settings.key == "fiscal_year").first()
+
+        if request.method == "POST":
+            new_fiscal_year = request.values['newFiscalYear']
+            fiscal_setting.value = new_fiscal_year
+            db.session.commit()
+            return redirect(url_for('Admin:index'))
+        return render_template('admin/fiscal-year.html', current_year=fiscal_setting.value)
 
 
 class UserManager(FlaskView, CRUDBase):
