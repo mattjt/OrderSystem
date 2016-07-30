@@ -1,4 +1,3 @@
-import datetime
 from time import strftime
 
 from flask import render_template, request, url_for, flash, redirect
@@ -10,7 +9,7 @@ from OrderSystem import db
 from OrderSystem import forms
 from OrderSystem.routing.CRUDBase import CRUDBase
 from OrderSystem.sql.ORM import Order, Subteam, Vendor
-from OrderSystem.utilities.Helpers import flash_errors
+from OrderSystem.utilities.Helpers import flash_errors, get_fiscal_year
 from OrderSystem.utilities.Permissions import update_order_status_access_required, approve_order_access_required
 
 
@@ -22,9 +21,6 @@ class OrderBackend(FlaskView, CRUDBase):
 
     # Configure routing for Order sub-component. All OrderSystem routes are prefixed with /orders
     route_base = ""
-
-    today_date = strftime("%m/%d/%Y")  # Month/Day/Year Format
-    this_year = datetime.datetime.today().year
 
     @route('/create', methods=['GET', 'POST'])
     @login_required
@@ -45,7 +41,7 @@ class OrderBackend(FlaskView, CRUDBase):
 
         if order_form.validate_on_submit():
             try:
-                fiscal_year = self.this_year
+                fiscal_year = get_fiscal_year()
                 vendor_id = request.form['vendor']
                 part_name = order_form.part_name.data
                 part_url = order_form.part_url.data
@@ -56,7 +52,7 @@ class OrderBackend(FlaskView, CRUDBase):
                 part_needed_by = order_form.needed_by.data
                 part_for_subteam = request.form['for_subteam']
                 part_ordered_by = current_user.id
-                part_ordered_on = self.today_date
+                part_ordered_on = strftime("%m/%d/%Y")
                 total = part_total_price
 
                 db.session.add(
@@ -72,7 +68,7 @@ class OrderBackend(FlaskView, CRUDBase):
                 flash("Unknown database error! [{0}]".format(e), 'error')  # TODO Get a better error code for this
         else:
             flash_errors(order_form)
-        return render_template('orders/manage/new-order.html', today_date=self.today_date, form=order_form,
+        return render_template('orders/manage/new-order.html', today_date=strftime("%m/%d/%Y"), form=order_form,
                                subteams=subteams,
                                vendors=vendors)
 
@@ -88,7 +84,7 @@ class OrderBackend(FlaskView, CRUDBase):
         """
         orders = db.session.query(Order).filter(
             Order.pending_approval == False,
-            Order.fiscal_year == self.this_year,
+            Order.fiscal_year == get_fiscal_year(),
             Order.order_status == order_status
         ).order_by(Order.part_ordered_on.asc())
 

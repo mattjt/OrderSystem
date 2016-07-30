@@ -69,11 +69,11 @@
                                                                             </tr>
                                                                             <tr>
                                                                                 <td><strong>S&H</strong></td>
-                                                                                <td>TBD</td>
+                                                                                <td>${{ order.part_shipping_cost }}</td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td><strong>Credit</strong></td>
-                                                                                <td>TBD</td>
+                                                                                <td>${{ order.credit }}</td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td><strong>Total</strong></td>
@@ -157,7 +157,7 @@
                                                                             Edit
                                                                         </a>
                                                                         <button type="button"
-                                                                                class="btn btn-block btn-warning btn-flat">
+                                                                                class="btn btn-block btn-warning btn-flat disabled">
                                                                             Suggest alternate vendor
                                                                         </button>
                                                                         <a href="{{ url_for('OrderBackend:delete', order_id = order.id) }}"
