@@ -46,16 +46,7 @@ def mail_forced_password_reset(user, new_password):
     send_email(
         "MORT | Password Reset",
         [user.email],
-        render_template("emails/registration/register-email.html", first_name=user.first_name, last_name=user.last_name,
+        render_template("emails/accounts/reset-password.html", first_name=user.first_name, last_name=user.last_name,
                         username=user.username, temp_password=new_password),
         sender_name="MORT Support"
-    )
-
-
-def mail_forgotten_password_reset(recipient_email, username, temp_password):
-    send_email(
-        "MORT | Password Reset",
-        [recipient_email],
-        render_template('emails/forgot-password/forgot-password.html', username=username, temp_password=temp_password),
-        sender_name="MORT Support", sender_email="support@mort11.org"
     )

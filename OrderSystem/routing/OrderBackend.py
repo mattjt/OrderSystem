@@ -299,7 +299,6 @@ class PendingOrders(FlaskView, CRUDBase):
 
     route_base = ""
 
-    @approve_order_access_required
     def create(self):
         """
         No implementation
@@ -307,7 +306,7 @@ class PendingOrders(FlaskView, CRUDBase):
         pass
 
     @route('/index')
-    @approve_order_access_required
+    @login_required
     def index(self):
         """
         Shows a mentor a list of all orders that are currently pending for their subteam.
