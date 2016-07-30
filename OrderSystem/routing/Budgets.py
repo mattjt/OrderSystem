@@ -11,7 +11,7 @@ from OrderSystem import forms
 from OrderSystem.routing.CRUDBase import CRUDBase
 from OrderSystem.sql.ORM import Budget, Subteam, Order
 from OrderSystem.utilities.Helpers import flash_errors, get_fiscal_year
-from OrderSystem.utilities.Permissions import admin_access_required
+from OrderSystem.utilities.Permissions import update_order_status_access_required
 
 
 class Budgets(FlaskView, CRUDBase):
@@ -92,7 +92,7 @@ class Budgets(FlaskView, CRUDBase):
                                thresholds=[self.BUDGET_FULL_THRESH, self.BUDGET_MEDIUM_THRESH, self.BUDGET_LOW_THRESH])
 
     @route('/<fiscal_year>/<subteam_id>/set', methods=['GET', 'POST'])
-    @admin_access_required
+    @update_order_status_access_required
     def update(self, fiscal_year, subteam_id):
         """
         Changes the amount of money that a subteam is marked as having available
