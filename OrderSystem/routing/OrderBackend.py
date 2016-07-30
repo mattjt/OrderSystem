@@ -326,20 +326,18 @@ class PendingOrders(FlaskView, CRUDBase):
         """
 
         is_order_system_admin = False
-        if current_user.receive_order_notifications or current_user.is_admin:
+        if current_user.can_receive_order_notifications or current_user.is_admin:
             # User is an OrderSystem admin
-            orders_for_subteam = db.session.query(Order).filter(Order.pending_approval is True)
+            orders_for_subteam = db.session.query(Order).filter(Order.pending_approval == True)
             is_order_system_admin = True
         else:
             # User is a normal mentor
             orders_for_subteam = db.session.query(Order).filter(and_(
-                Order.part_for_subteam == current_user.subteam,
-                Order.pending_approval is True)
-            )
-        return render_template('orders/pending-orders/index.html', orders=orders_for_subteam,
+                Order.part_for_subteam == current_user.subteam, Order.pending_approva == True))
+        return render_template('orders/pending/index.html', orders=orders_for_subteam,
                                is_order_system_admin=is_order_system_admin)
 
-    @route('/approve/<order_id>')
+    @route('/approve/<int:order_id>')
     @approve_order_access_required
     def update(self, order_id):
         """
@@ -347,13 +345,13 @@ class PendingOrders(FlaskView, CRUDBase):
 
         @return: Redirect to PendingOrders index
         """
-        approved_order = db.session.query(Order).filter(Order.id == order_id).first_or_404()
+        approved_order = db.session.query(Order).filter(Order.id == order_id).first()
         approved_order.pending_approval = False
         db.session.commit()
         flash("Successfully approved order!", 'success')
-        return redirect(url_for('pending_orders.index'))
+        return redirect(url_for('PendingOrders:index'))
 
-    @route('/deny/<order_id>')
+    @route('/deny/<int:order_id>')
     @approve_order_access_required
     def delete(self, order_id):
         """
@@ -361,7 +359,8 @@ class PendingOrders(FlaskView, CRUDBase):
 
         @return: Redirect to PendingOrders index
         """
-        denied_order = db.session.query(Order).filter(Order.id == order_id).first_or_404()
-        db.session.delete(denied_order).commit()
+        denied_order = db.session.query(Order).filter(Order.id == order_id).first()
+        db.session.delete(denied_order)
+        db.session.commit()
         flash("Successfully denied order!", 'error')
-        return redirect(url_for('pending_orders.index'))
+        return redirect(url_for('PendingOrders:index'))
