@@ -58,4 +58,6 @@ app_settings.conf
 .bower
 *.map
 
-configuration/*
+configurationBkp/
+configuration/
+logs/

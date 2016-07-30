@@ -8,9 +8,10 @@ from flask.ext.sqlalchemy import SQLAlchemy
 
 from OrderSystem.Common import CONFIG_ROOT
 
-# Load app configuration
+# Load app configurationBkp
 parser = SafeConfigParser()
 parser.read(CONFIG_ROOT + "mysql.ini")
+
 # Instantiate entire application
 app = Flask(__name__, static_url_path='/static')
 
