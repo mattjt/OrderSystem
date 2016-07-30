@@ -40,11 +40,11 @@ def get_order_notification_recipients():
     @return: Array of all users with can_receive_order_notifications permission
     """
 
-    all_users = db.session.query(User)
+    all_users = db.session.query(User).all()
     mailing_list = []
 
     for user in all_users:
-        if user.receive_site_mail:
+        if user.can_receive_order_notifications:
             mailing_list.append(user.email)
     return mailing_list
 

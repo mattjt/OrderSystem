@@ -1,15 +1,16 @@
 from ConfigParser import SafeConfigParser
+
 from Crypto.Random.random import getrandbits
 from Crypto.Util.number import long_to_bytes
 from flask import Flask
 from flask.ext.login import LoginManager
 from flask.ext.sqlalchemy import SQLAlchemy
+
 from OrderSystem.Common import CONFIG_ROOT
 
 # Load app configuration
 parser = SafeConfigParser()
 parser.read(CONFIG_ROOT + "mysql.ini")
-print CONFIG_ROOT + "mysql.ini"
 # Instantiate entire application
 app = Flask(__name__, static_url_path='/static')
 
