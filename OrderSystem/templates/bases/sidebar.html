@@ -32,6 +32,9 @@
             </li>
             <li {% if page == "new_order" %}class="active"{% endif %}><a href="{{ url_for('OrderBackend:create') }}"> <i
                     class="fa fa-plus"></i> <span>New Order</span></a></li>
+            <li {% if page == "pending_orders" %}class="active"{% endif %}><a
+                    href="{{ url_for('PendingOrders:index') }}"> <i
+                    class="fa fa-hourglass-half"></i> <span>Pending Orders</span></a></li>
             <li class="header">DATA</li>
             <li {% if page == "export_data" %}class="active"{% endif %}><a href="#"> <i class="fa fa-table"></i> <span>Export Data</span></a>
             </li>

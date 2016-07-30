@@ -16,7 +16,8 @@
                                     <label>Vendor</label>
                                     <select class="form-control" name="vendor">
                                         {% for vendor in vendors %}
-                                            <option value="{{ vendor.id }}">{{ vendor.vendor_name }}</option>
+                                            <option value="{{ vendor.id }}"
+                                                    {% if vendor.id == order.vendor_id %}selected{% endif %}>{{ vendor.vendor_name }}</option>
                                         {% endfor %}
                                     </select>
                                     <hr>
@@ -31,23 +32,23 @@
                                 <legend>Part Info</legend>
                                 <div class="form-group">
                                     {{ form.part_name.label }}
-                                    {{ form.part_name(class="form-control", placeholder="Part Name", id="partName") }}
+                                    {{ form.part_name(class="form-control", placeholder="Part Name", id="partName", value=order.part_name) }}
                                 </div>
                                 <div class="form-group">
                                     {{ form.part_url.label }}
-                                    {{ form.part_url(class="form-control", placeholder="Part URL", id="partURL") }}
+                                    {{ form.part_url(class="form-control", placeholder="Part URL", id="partURL", value=order.part_url) }}
                                 </div>
                                 <div class="form-group">
                                     {{ form.part_number.label }}
-                                    {{ form.part_number(class="form-control", placeholder="Part Number") }}
+                                    {{ form.part_number(class="form-control", placeholder="Part Number", value=order.part_number) }}
                                 </div>
                                 <div class="form-group">
                                     {{ form.part_quantity.label }}
-                                    {{ form.part_quantity(class="form-control", placeholder="Part Quantity", id="partQuantity") }}
+                                    {{ form.part_quantity(class="form-control", placeholder="Part Quantity", id="partQuantity", value=order.part_quantity) }}
                                 </div>
                                 <div class="form-group">
                                     {{ form.part_unit_price.label }}
-                                    {{ form.part_unit_price(class="form-control", placeholder="Part Unit Price", id="partUnitPrice") }}
+                                    {{ form.part_unit_price(class="form-control", placeholder="Part Unit Price", id="partUnitPrice", value=order.part_unit_price) }}
                                 </div>
                             </fieldset>
                         </div>
@@ -66,10 +67,10 @@
                                         {% if current_user.is_admin %}
                                             {% for subteam in subteams %}
                                                 <option value="{{ subteam.id }}"
-                                                        {% if subteam.id == current_user.subteam_ref.id %}selected{% endif %}>{{ subteam.name }}</option>
+                                                        {% if subteam.id == order.part_for_subteam %}selected{% endif %}>{{ subteam.name }}</option>
                                             {% endfor %}
                                         {% else %}
-                                            <option value="{{ current_user.subteam_ref.id }}">{{ current_user.subteam_ref.name }}</option>
+                                            <option value="{{ order.part_for_subteam }}">{{ order.subteam.name }}</option>
                                         {% endif %}
                                     </select>
                                 </div>
@@ -79,7 +80,7 @@
                                         <div class="input-group-addon">
                                             <i class="fa fa-calendar"></i>
                                         </div>
-                                        {{ form.needed_by(class="form-control pull-right", id="datepicker") }}
+                                        {{ form.needed_by(class="form-control pull-right", id="datepicker", value=order.part_needed_by) }}
                                     </div>
                                 </div>
                             </div>
@@ -87,17 +88,43 @@
                                 <div class="form-group">
                                     <label>Ordered By</label>
                                     <input type="text" class="form-control"
-                                           value="{{ current_user.first_name }} {{ current_user.last_name }}" disabled
+                                           value="{{ order.ordering_user.first_name }} {{ order.ordering_user.last_name }}"
+                                           disabled
                                            title="orderedBy">
                                 </div>
                                 <div class="form-group">
                                     <label>Order Placed On</label>
-                                    <input type="text" class="form-control" value="7/9/16" disabled title="orderedOn">
+                                    <input type="text" class="form-control" value="{{ order.part_ordered_on }}" disabled
+                                           title="orderedOn">
                                 </div>
                             </div>
                         </div>
                     </fieldset>
                 </section>
+                {% if current_user.can_update_order_status %}
+                    <h3><strong>Financing</strong></h3>
+                    <section>
+                        <fieldset>
+                            <legend>Financing</legend>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Credit</label>
+                                        <input type="text" class="form-control" value="{{ order.credit }}"
+                                               name="credit" id="credit">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Shipping & Handling</label>
+                                        <input type="text" class="form-control" value="{{ order.part_shipping_cost }}"
+                                               name="shipping" id="shipping">
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </section>
+                {% endif %}
                 <h3><strong>Review</strong></h3>
                 <section>
                     <p>Please review your order before submitting</p>
@@ -136,7 +163,7 @@
                                     <td id="reviewShipping">TBD</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Credit</strong></td>
+                                    <td><strong>Credit Back</strong></td>
                                     <td id="reviewCredit">TBD</td>
                                 </tr>
                                 <tr>

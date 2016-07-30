@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    updateReviewPage();
+    updateCreditAndShipping();
 });
 
 $(document).on("change", "#partName", function () {
@@ -29,8 +29,12 @@ $(document).on("change", "#shipping", function () {
 function updateCreditAndShipping() {
     var credit = $('#credit').val();
     var shipping = $('#shipping').val();
-    $('#reviewCredit').html("$" + credit);
-    $('#reviewShipping').html("$" + credit);
+    if (typeof credit != "undefined" && typeof shipping != "undefined") {
+        $('#reviewCredit').html("$" + credit);
+        $('#reviewShipping').html("$" + shipping);
+        console.log("not undefined")
+    }
+    updateReviewPage();
 }
 
 function updateReviewPage() {
@@ -43,14 +47,18 @@ function updateReviewPage() {
     if (quantity == "" || unitPrice == "") {
         subtotal = "Not enough information given";
     } else {
-        subtotal = "$" + (quantity * unitPrice);
+        subtotal = "$" + (quantity * unitPrice).toFixed(2);
     }
 
     var credit = $('#reviewCredit').html();
     var shipping = $('#reviewShipping').html();
 
     if (!(credit == "TBD" && shipping == "TBD") && !(quantity == "" && unitPrice == "")) {
-        total = "$" + ((subtotal + shipping.replace("$", "")) - credit.replace("$", ""));
+        console.log(parseFloat(subtotal.replace("$", "")));
+        console.log(parseFloat(shipping.replace("$", "")));
+        console.log(parseFloat(credit.replace("$", "")));
+        total = "$" + ((parseFloat(subtotal.replace("$", "")) + parseFloat(shipping.replace("$", ""))) - parseFloat(credit.replace("$", ""))).toFixed(2);
+        console.log(total);
         console.log("includes cred and ship");
     } else if (quantity == "" || unitPrice == "") {
         total = "Not enough information given";

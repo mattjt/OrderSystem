@@ -6,7 +6,7 @@ class Budget(db.Model):
     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True, nullable=False)
     subteam_id = db.Column(db.Integer, db.ForeignKey('subteams.id'), nullable=False, unique=True)
     subteam = db.relationship('Subteam', foreign_keys=[subteam_id])
-    dollar_amount = db.Column('dollar_amount', db.DECIMAL, nullable=False)
+    dollar_amount = db.Column('dollar_amount', db.Numeric(15, 2), nullable=False)
     fiscal_year = db.Column('fiscal_year', db.Integer, nullable=False)
 
     def __init__(self, subteam_id, dollar_amount, fiscal_year):
