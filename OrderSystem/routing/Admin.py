@@ -24,7 +24,7 @@ class Admin(FlaskView, CRUDBase):
     @route('')
     @admin_access_required
     def index(self):
-        return render_template('admin/admin.html')
+        return render_template('admin/index.html')
 
     def update(self):
         pass
@@ -181,7 +181,7 @@ class UserManager(FlaskView, CRUDBase):
         user.password = hash_password(password)
         mail_forced_password_reset(user, password)
         db.session.commit()
-        return redirect(url_for('usermanager.index'))
+        return redirect(url_for('UserManager:index'))
 
 
 class SubteamManager(FlaskView, CRUDBase):
@@ -192,20 +192,20 @@ class SubteamManager(FlaskView, CRUDBase):
 
     @route('/new', methods=['GET', 'POST'])
     @admin_access_required
-    def create(self, subteam_id):
+    def create(self):
         """
         Add a new subteam
-        @param subteam_id: Subteam ID
         @return: Add subteam page
         """
         form = forms.CreateSubteam()
 
         if form.validate_on_submit():
             try:
-                db.session.add(Subteam(form.subteam_name.data, form.hide_from_subteams.data)).commit()
+                db.session.add(Subteam(form.subteam_name.data, form.hidden_from_choosable_subteams_list.data))
+                db.session.commit()
                 log_event("AUDIT",
                           "{0} created a new subteam called {1}".format(current_user.username, form.subteam_name.data))
-                return redirect(url_for('subteammanager.index'))
+                return redirect(url_for('SubteamManager:index'))
             except:
                 db.session.rollback()
                 flash("Unknown database error!", 'error')
@@ -237,12 +237,10 @@ class SubteamManager(FlaskView, CRUDBase):
         if form.validate_on_submit():
             try:
                 subteam.name = form.subteam_name.data
-                subteam.description = request.values['subteam_description']
-                subteam.hidden_from_budgets_list = form.hide_from_budgets.data
-                subteam.hidden_from_subteams_list = form.hide_from_subteams.data
+                subteam.hidden_from_choosable_subteams_list = form.hidden_from_choosable_subteams_list.data
 
                 db.session.commit()
-                return redirect(url_for('subteammanager.index'))
+                return redirect(url_for('SubteamManager:index'))
             except:
                 db.session.rollback()
                 flash("Unknown database error!", 'error')
@@ -259,11 +257,13 @@ class SubteamManager(FlaskView, CRUDBase):
         @return: Redirect to subteam manager dashboard
         """
         try:
-            db.session.delete(db.session.query(Budget).filter(Budget.subteam_id == subteam_id).first())
+            try:
+                db.session.delete(db.session.query(Budget).filter(Budget.subteam_id == subteam_id).first())
+            except:
+                flash("Budget wasn't set for subteam. Skipping budget deletion!")
             db.session.delete(db.session.query(Subteam).filter(Subteam.id == subteam_id).first())
             db.session.commit()
-
         except:
             flash("You can't delete this subteam! There are team members that are still members of it!", 'warning')
 
-        return redirect(url_for('subteammanager.index'))
+        return redirect(url_for('SubteamManager:index'))

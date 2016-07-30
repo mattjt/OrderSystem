@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Edit Subteam{% endblock %}
+{% block content %}
+    <div class="container">
+        {% include 'bases/validation-error-base.html' %}
+        <form method="post">
+            {{ form.csrf_token }}
+            <div id="newUser">
+                <h3><strong>Subteam Details</strong></h3>
+                <section>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>{{ form.subteam_name.label }}</label>
+                                {{ form.subteam_name(class="form-control", placeholder="Subteam Name", value=subteam.name) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label>{{ form.hidden_from_choosable_subteams_list.label }}</label>
+                            {{ form.hidden_from_choosable_subteams_list(checked=subteam.hidden_from_choosable_subteams_list) }}
+                        </div>
+                        <button type="submit" class="btn btn-flat btn-success btn-block">Update</button>
+                    </div>
+                </section>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="/static/css/jquery.steps.css">
+{% endblock %}
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-steps/1.1.0/jquery.steps.min.js"></script>
+    <script type="text/javascript">
+        $("#newUser").steps({
+            headerTag: "h3",
+            bodyTag: "section",
+            transitionEffect: "slideLeft",
+            autoFocus: true
+        });
+    </script>
+{% endblock %}
