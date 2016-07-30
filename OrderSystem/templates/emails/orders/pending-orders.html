@@ -1,0 +1,13 @@
+{{ orders|length }} new orders are pending approval!<br>
+Please have a look at the order summary below, then view the full order at <a href="http://orders.mort11.org"
+                                                                              target="_blank">orders.mort11.org</a>
+<br>
+{% for order in range(orders|length) %}
+    <br>
+    <strong>Part Name</strong> - {{ orders[order].part_name }}<br>
+    <strong>URL</strong> - {{ orders[order].part_url }}<br>
+    <strong>Ordered on</strong> - {{ orders[order].part_ordered_on }}<br>
+    <strong>Needed by</strong> - {{ orders[order].part_needed_by }}<br>
+    {{ orders[order].part_quantity }} units x ${{ orders[order].part_unit_price }} p/u = ${{ orders[order].total }}
+    <hr>
+{% endfor %}
