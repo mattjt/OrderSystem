@@ -1,15 +1,16 @@
 ***REMOVED***
+
 ***REMOVED***
 ***REMOVED***
 ***REMOVED***
 from flask.ext.login import LoginManager
 from flask.ext.sqlalchemy import SQLAlchemy
+
 ***REMOVED***
 
 ***REMOVED***
 parser = SafeConfigParser()
 parser.read(CONFIG_ROOT + "mysql.ini")
-print CONFIG_ROOT + "mysql.ini"
 ***REMOVED***
 ***REMOVED***
 

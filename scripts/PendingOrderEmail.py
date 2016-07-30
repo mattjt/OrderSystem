@@ -4,6 +4,7 @@
 import MySQLdb
 
 from OrderSystem import Common
+from ServerLogger import log_event
 from scripts.Email import Email
 
 __author__ = "Matt Turi"
@@ -43,38 +44,39 @@ def main():
 
         # Exit subteam if they have no pending orders
         if cursor.rowcount > 0:
-            orders_array = []
+            orders = []
             for order in cursor.fetchall():
-                orders_array.append(order)
+                orders.append(order)
 
-            subteam_mentors = []
+            users_to_notify = []
 
             # Find the subteam mentor(s)
             cursor.execute(
-                "SELECT * FROM users WHERE subteam = %d AND team_role = 'Mentor' AND can_approve_orders = TRUE;" %
+                "SELECT * FROM users WHERE subteam = %d AND can_receive_pending_orders = TRUE;" %
                 subteam['id'])
 
             # If there's not mentor to receive the notification, don't process it
             if cursor.rowcount == 0:
-                print("No mentor setup to receive pending order notifications for {0}".format(subteam["name"]))
+                log_event("MAILING-WARNING",
+                          "No mentor setup to receive pending order notifications for {0}".format(subteam["name"]))
                 continue
             else:
                 for mentor in cursor.fetchall():
-                    subteam_mentors.append(mentor['email'])
+                    users_to_notify.append(mentor['email'])
 
             pending_order_email = Email(
-                "MORT | {0} New Orders pending approval".format(len(orders_array)),
+                "MORT | {0} New orders pending approval".format(len(orders)),
                 "MORT Orders <orders@mort11.org>",
-                subteam_mentors
+                users_to_notify
             )
             template = pending_order_email.get_environment().get_template(
                 "emails/orders/new/new-pending-order-email.html")
-            pending_order_email.set_html(template.render(orders=orders_array))
+            pending_order_email.set_html(template.render(orders=orders))
             pending_order_email.send()
 
-            print("Finished mailing notifications for {0}!".format(subteam['name']))
+            log_event("MAILING-INFO", "Finished mailing notifications for {0}!".format(subteam['name']))
         else:
-            print("WARNING", "No pending orders to mail for {0}".format(subteam['name']))
+            log_event('MAILING-INFO', "No pending orders to mail for {0}".format(subteam['name']))
 
 
 if __name__ == '__main__':

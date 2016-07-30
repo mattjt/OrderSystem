@@ -1,7 +1,11 @@
 import os
+***REMOVED***
 from time import strftime
 
-from OrderSystem import app, Common
+from OrderSystem import Common
+
+parser = SafeConfigParser()
+parser.read(Common.CONFIG_ROOT + "core.ini")
 
 
 def log_event(log_level, msg):
@@ -20,9 +24,9 @@ def log_event(log_level, msg):
 
 
 def console_print(log_level, msg, always_show=True):
-    if app.config["VERBOSE_OUTPUT"]:
+    if parser.get("core", "verbose_output"):
         print("[{0}][{1}] >> {2}".format(get_time(), log_level, msg))
-    elif not app.config["VERBOSE_OUTPUT"] and always_show:
+    elif not parser.get("core", "verbose_output") and always_show:
         print("[{0}][{1}] >> {2}".format(get_time(), log_level, msg))
 
 

@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 ***REMOVED***
 
+import MySQLdb
+
 from OrderSystem import Common
 from OrderSystem.utilities.Helpers import get_order_notification_recipients
+from ServerLogger import log_event
 from scripts.Email import Email
-import MySQLdb
 
 __author__ = "Matt Turi"
 __copyright__ = "Copyright 2016, Mount Olive Robotics Team"
 __license__ = "MIT"
-__version__ = "0.4"
+__version__ = "0.7"
 __maintainer__ = "Matt Turi"
 __email__ = "mturi@mort11.org"
 __status__ = "Production"
@@ -42,9 +44,9 @@ def main():
         order_email.set_html(template.render(orders=orders))
         order_email.send()
 
-        print("Finished mailing dirty orders")
+        log_event("MAILING-INFO", "Finished mailing dirty orders")
     else:
-        print("No orders to process")
+        log_event("MAILING-INFO", "No orders to process")
 
 
 if __name__ == '__main__':
