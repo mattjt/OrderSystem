@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Pending Orders{% endblock %}
+{% block content %}
+    {% include 'bases/validation-error-base.html' %}
+    {% if is_order_system_admin %}
+        <div class="alert alert-info">
+            You are viewing pending orders as admin. Meaning you can approve/deny <strong>any</strong> subteam's
+            orders
+        </div>
+        <div style="border-bottom: 2px solid black"></div>
+    {% endif %}
+    <div class="row" style="padding-bottom:10px; margin: 10px 0 0;border-bottom: 2px solid black">
+        <div class="col-md-6 text-center"><strong>Part Details [p/u = price per unit]</strong></div>
+        <div class="col-md-2 text-center"><strong>Subteam</strong></div>
+        <div class="col-md-4 text-center"><strong>Actions</strong></div>
+    </div>
+    <hr>
+    {% if orders.count() == 0 %}
+        <h1 class="text-center">No orders are currently pending approval</h1>
+    {% else %}
+        {% for order in orders %}
+            <div style="padding-top: 25px;"></div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="well">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Part Name:</strong> {{ order.part_name }}<br>
+                                <strong>Ordered
+                                    By:</strong> {{ order.ordering_user.first_name }} {{ order.ordering_user.last_name }}
+                            </div>
+                            <div class="col-md-6"><h4><strong>
+                                {{ order.part_quantity }} units x ${{ order.part_unit_price }} p/u = ${{ order.total }}
+                            </strong></h4></div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="col-md-2 text-center">
+                    <div class="well">
+                        <h4><strong>{{ order.subteam.name }}</strong></h4>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="well row">
+                        <div class="col-md-6"><a href="{{ url_for('PendingOrders:update', order_id=order.id) }}"
+                                                 class="btn btn-success btn-block">Approve</a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ url_for('PendingOrders:delete', order_id=order.id) }}"
+                               class="btn btn-danger btn-block">Deny</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div style="border-bottom: 2px solid #cdcdcd"></div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
