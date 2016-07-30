@@ -1,5 +1,5 @@
-from flask import render_template
 import requests
+from flask import render_template
 
 from OrderSystem.utilities.ServerLogger import log_event
 
@@ -36,7 +36,7 @@ def mail_registration(recipient_email, first_name, last_name, username, password
     send_email(
         "MORT | Registration Information",
         [recipient_email],
-        render_template("emails/registration/register-email.html", first_name=first_name, last_name=last_name,
+        render_template("emails/accounts/new-account.html", first_name=first_name, last_name=last_name,
                         username=username, temp_password=password),
         sender_name="MORT Registrations"
     )

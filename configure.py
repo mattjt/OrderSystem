@@ -13,5 +13,5 @@ db.session.add(Settings(key="fiscal_year", value=2016))
 
 db.session.add(Subteam("Programming", False))
 db.session.add(
-    User("admin", "MORT", "Admin", hash_password('admin'), "mort11or@mort11.org", True, True, True, True, True, 1))
+    User("admin", "MORT", "Admin", hash_password('admin'), "mort11org@mort11.org", True, True, True, True, True, 1))
 db.session.commit()

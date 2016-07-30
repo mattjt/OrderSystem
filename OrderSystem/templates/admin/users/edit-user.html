@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Add User{% endblock %}
+{% block title %}Edit User{% endblock %}
 {% block content %}
     <div class="container">
         {% include 'bases/validation-error-base.html' %}
@@ -12,20 +12,21 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>{{ form.username.label }}</label>
-                                {{ form.username(class="form-control", placeholder="Username") }}
+                                {{ form.username(class="form-control", placeholder="Username", value=user.username) }}
                                 <label>{{ form.first_name.label }}</label>
-                                {{ form.first_name(class="form-control", placeholder="First Name") }}
+                                {{ form.first_name(class="form-control", placeholder="First Name", value=user.first_name) }}
                                 <label>{{ form.last_name.label }}</label>
-                                {{ form.last_name(class="form-control", placeholder="Last Name") }}
+                                {{ form.last_name(class="form-control", placeholder="Last Name", value=user.last_name) }}
                             </div>
                         </div>
                         <div class="col-md-6">
                             <label>{{ form.email.label }}</label>
-                            {{ form.email(class="form-control", placeholder="Email") }}
+                            {{ form.email(class="form-control", placeholder="Email", value=user.email) }}
                             <label>Subteam</label>
                             <select class="form-control" name="subteam">
                                 {% for subteam in subteams %}
-                                    <option value="{{ subteam.id }}">{{ subteam.name }}</option>
+                                    <option value="{{ subteam.id }}"
+                                            {% if subteam.id == user.subteam %}selected{% endif %}>{{ subteam.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -45,23 +46,23 @@
                                 <tbody>
                                 <tr>
                                     <td>{{ form.is_admin.label }}</td>
-                                    <td>{{ form.is_admin }}</td>
+                                    <td>{{ form.is_admin(checked=user.is_admin) }}</td>
                                 </tr>
                                 <tr>
                                     <td>{{ form.can_receive_pending_orders.label }}</td>
-                                    <td>{{ form.can_receive_pending_orders }}</td>
+                                    <td>{{ form.can_receive_pending_orders(checked=user.can_receive_pending_orders) }}</td>
                                 </tr>
                                 <tr>
                                     <td>{{ form.can_approve_orders.label }}</td>
-                                    <td>{{ form.can_approve_orders }}</td>
+                                    <td>{{ form.can_approve_orders(checked=user.can_approve_orders) }}</td>
                                 </tr>
                                 <tr>
                                     <td>{{ form.can_update_order_status.label }}</td>
-                                    <td>{{ form.can_update_order_status }}</td>
+                                    <td>{{ form.can_update_order_status(checked=user.can_update_order_status) }}</td>
                                 </tr>
                                 <tr>
                                     <td>{{ form.can_receive_order_notifications.label }}</td>
-                                    <td>{{ form.can_receive_order_notifications }}</td>
+                                    <td>{{ form.can_receive_order_notifications(checked=user.can_receive_order_notifications) }}</td>
                                 </tr>
                                 </tbody>
                             </table>
