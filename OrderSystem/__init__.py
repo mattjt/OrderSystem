@@ -8,9 +8,10 @@ from flask.ext.sqlalchemy import SQLAlchemy
 
 ***REMOVED***
 
-***REMOVED***
+***REMOVED***Bkp
 parser = SafeConfigParser()
 parser.read(CONFIG_ROOT + "mysql.ini")
+
 ***REMOVED***
 ***REMOVED***
 
