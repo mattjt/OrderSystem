@@ -21,7 +21,7 @@ class CreateNewUser(Form):
     username = StringField('Username', validators=[InputRequired("Username is required!")])
     first_name = StringField('First Name', validators=[InputRequired("First name is required!")])
     last_name = StringField('Last Name', validators=[InputRequired("Last name is required!")])
-    email = EmailField('Email', validators=[InputRequired(), Email("Email is required!")])
+    email = EmailField('Email', validators=[InputRequired("Email is required"), Email("Email is required!")])
     is_admin = BooleanField('Is Admin')
     can_receive_pending_orders = BooleanField('Can receive pending orders')
     can_approve_orders = BooleanField('Can approve/deny orders')

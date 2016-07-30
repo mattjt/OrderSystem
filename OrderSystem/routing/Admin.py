@@ -81,12 +81,13 @@ class UserManager(FlaskView, CRUDBase):
                          can_approve_orders,
                          can_update_order_status,
                          can_receive_order_notifications,
-                         subteam)).commit()
+                         subteam))
+                db.session.commit()
                 log_event('AUDIT', "{0} added new user [{1}]".format(current_user.username, username))
 
                 # Send user email with temp password
                 mail_registration(email, first_name, last_name, username, password)
-                return redirect(url_for('usermanager.index'))
+                return redirect(url_for('UserManager:index'))
             except Exception as e:
                 db.session.rollback()
                 flash("Unknown database error! [{0}]".format(e), 'error')
@@ -142,7 +143,7 @@ class UserManager(FlaskView, CRUDBase):
                 db.session.rollback()
                 flash("Unknown database error! [{0}]".format(e), 'error')  # TODO: Get better error code
 
-            return redirect(url_for('usermanager.index'))
+            return redirect(url_for('UserManager:index'))
 
         else:
             flash_errors(form)
@@ -163,7 +164,7 @@ class UserManager(FlaskView, CRUDBase):
         user_to_del = db.session.query(User).filter(User.id == user_id).first()
         db.session.delete(user_to_del)
         db.session.commit()
-        return redirect(url_for('usermanager.index'))
+        return redirect(url_for('UserManager:index'))
 
     @route('/admin/users/reset-password/<int:user_id>')
     @admin_access_required

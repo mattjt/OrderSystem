@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}User Manager{% endblock %}
+{% block content %}
+    <table id="usersTable" class="table table-striped">
+        <thead>
+        <tr>
+            <th>Username</th>
+            <th>Name</th>
+            <th>E-Mail</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                <td><a href="mailto:{{ user.email }}">{{ user.email }}</a></td>
+                <td>
+                    <a href="{{ url_for('UserManager:update', user_id=user.id) }}"
+                       class="btn btn-flat btn-warning">Edit</a>
+                    <a href="{{ url_for('UserManager:delete', user_id=user.id) }}" class="btn btn-flat btn-danger">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div style="padding: 25px">
+        <a href="{{ url_for('UserManager:create') }}" class="btn btn-flat btn-block btn-primary">Add User</a>
+    </div>
+{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+{% endblock %}
+{% block scripts %}
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#usersTable').DataTable();
+        });
+    </script>
+{% endblock %}
