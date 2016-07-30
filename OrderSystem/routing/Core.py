@@ -38,7 +38,6 @@ def index():
 @login_required
 def force_password_reset():
     form = forms.ResetPassword()
-    error = None
     user = db.session.query(User).filter(User.id == current_user.id).first()
 
     if form.validate_on_submit():
@@ -48,7 +47,7 @@ def force_password_reset():
         return redirect(url_for('auth.logout'))
     else:
         flash_errors(form)
-    return render_template('auth/force-passwd-reset.html', form=form, error=error)
+    return render_template('auth/password-reset.html', form=form)
 
 
 @main.route('/robots.txt')
