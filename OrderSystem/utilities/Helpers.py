@@ -11,12 +11,12 @@ from OrderSystem import db
 from OrderSystem.sql.ORM import User, Settings
 
 
-def randstr(length):
+def generate_random_string(length):
     return ''.join(chr(random.randint(0, 255)) for i in range(length))
 
 
 def hash_password((password), max_time=2.5, data_length=64):
-    return scrypt.encrypt(randstr(data_length), str(password), maxtime=max_time)
+    return scrypt.encrypt(generate_random_string(data_length), str(password), maxtime=max_time)
 
 
 def verify_password(hashed_password, guessed_password):
