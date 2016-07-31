@@ -1,5 +1,5 @@
 from flask import request, render_template
-from flask.ext.login import current_user
+from flask.ext.login import current_user, login_required
 
 from OrderSystem import app
 from OrderSystem.utilities.ServerLogger import log_event
@@ -11,6 +11,7 @@ from OrderSystem.utilities.ServerLogger import log_event
 @app.errorhandler(404)
 @app.errorhandler(405)
 @app.errorhandler(500)
+@login_required
 def error_handler(error_code):
     if request.path == '/favicon.ico':
         # This is getting annoying

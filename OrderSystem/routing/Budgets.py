@@ -26,7 +26,6 @@ class Budgets(FlaskView, CRUDBase):
     BUDGET_MEDIUM_THRESH = 0.50  # 50%
     BUDGET_LOW_THRESH = 0.25  # 25%
 
-    @login_required
     def create(self):
         """
         No implementation
@@ -122,7 +121,6 @@ class Budgets(FlaskView, CRUDBase):
 
         return render_template('settings/budgets/set.html', form=form)
 
-    @login_required
     def delete(self):
         """
         No implementation
