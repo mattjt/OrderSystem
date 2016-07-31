@@ -27,7 +27,7 @@ connection = MySQLdb.connect(db=parser.get("mysql", "mysql_database"),
                              passwd=parser.get("mysql", "mysql_password"),
                              host=parser.get("mysql", "mysql_host"))
 
-cursor = connection.cursorsor()
+cursor = connection.cursor()
 
 
 def main():
