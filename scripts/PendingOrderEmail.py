@@ -44,7 +44,7 @@ def main():
         # Select pending orders for given subteam
         cursor.execute(
             "SELECT * FROM orders WHERE (part_for_subteam = %d AND pending_approval = TRUE )" %
-            subteam['id'])
+            subteam[0])
 
         # Exit subteam if they have no pending orders
         if cursor.rowcount > 0:
@@ -57,16 +57,16 @@ def main():
             # Find the subteam mentor(s)
             cursor.execute(
                 "SELECT * FROM users WHERE subteam = %d AND can_receive_pending_orders = TRUE;" %
-                subteam['id'])
+                subteam[0])
 
             # If there's not mentor to receive the notification, don't process it
             if cursor.rowcount == 0:
                 log_event("MAILING-WARNING",
-                          "No mentor setup to receive pending order notifications for {0}".format(subteam["name"]))
+                          "No mentor setup to receive pending order notifications for {0}".format(subteam[1]))
                 continue
             else:
                 for mentor in cursor.fetchall():
-                    users_to_notify.append(mentor['email'])
+                    users_to_notify.append(mentor[5])
 
             pending_order_email = Email(
                 "MORT | {0} New orders pending approval".format(len(orders)),
@@ -78,9 +78,9 @@ def main():
             pending_order_email.set_html(template.render(orders=orders))
             pending_order_email.send()
 
-            log_event("MAILING-INFO", "Finished mailing notifications for {0}!".format(subteam['name']))
+            log_event("MAILING-INFO", "Finished mailing notifications for {0}!".format(subteam[1]))
         else:
-            log_event('MAILING-INFO', "No pending orders to mail for {0}".format(subteam['name']))
+            log_event('MAILING-INFO', "No pending orders to mail for {0}".format(subteam[1]))
 
 
 if __name__ == '__main__':
