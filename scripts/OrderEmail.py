@@ -1,11 +1,15 @@
 #!/usr/bin/env python
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.getcwd()))
 from ConfigParser import SafeConfigParser
 
 import MySQLdb
 
 from OrderSystem import Common
 from OrderSystem.utilities.Helpers import get_order_notification_recipients
-from ServerLogger import log_event
+from OrderSystem.utilities.ServerLogger import log_event
 from scripts.Email import Email
 
 __author__ = "Matt Turi"
@@ -19,9 +23,9 @@ __status__ = "Production"
 parser = SafeConfigParser()
 parser.read(Common.CONFIG_ROOT + "mysql.ini")
 
-connection = MySQLdb.connect(database=parser.get("mysql", "mysql_database"),
+connection = MySQLdb.connect(db=parser.get("mysql", "mysql_database"),
                              user=parser.get("mysql", "mysql_user"),
-                             password=parser.get("mysql", "mysql_password"),
+                             passwd=parser.get("mysql", "mysql_password"),
                              host=parser.get("mysql", "mysql_host"))
 
 cursor = connection.cursor()
