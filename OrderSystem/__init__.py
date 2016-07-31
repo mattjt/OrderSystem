@@ -3,8 +3,8 @@ from ConfigParser import SafeConfigParser
 from Crypto.Random.random import getrandbits
 from Crypto.Util.number import long_to_bytes
 from flask import Flask
-from flask.ext.login import LoginManager
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+from flask_sqlalchemy import SQLAlchemy
 
 from OrderSystem.Common import CONFIG_ROOT
 
@@ -20,6 +20,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{0}:{1}@{2}/{3}'.format(parser.
                                                                          parser.get("mysql", "mysql_password"),
                                                                          parser.get("mysql", "mysql_host"),
                                                                          parser.get("mysql", "mysql_database"))
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 # App settings
 app.config["VERBOSE_OUTPUT"] = True
 app.config["SECRET_KEY"] = long_to_bytes(getrandbits(32))
