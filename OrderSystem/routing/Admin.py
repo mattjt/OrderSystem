@@ -193,6 +193,7 @@ class UserManager(FlaskView, CRUDBase):
         user.password = hash_password(password)
         mail_forced_password_reset(user, password)
         db.session.commit()
+        flash("Successfully reset users password!")
         return redirect(url_for('UserManager:index'))
 
 

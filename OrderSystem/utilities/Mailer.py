@@ -4,7 +4,7 @@ from flask import render_template
 from OrderSystem.utilities.ServerLogger import log_event
 
 DEFAULT_EMAIL = "no-reply@mort11.org"
-DEFAULT_NAME = "MORT Mailer"
+DEFAULT_NAME = "MORT Orders"
 
 
 #####################
@@ -38,7 +38,7 @@ def mail_registration(recipient_email, first_name, last_name, username, password
         [recipient_email],
         render_template("emails/accounts/new-account.html", first_name=first_name, last_name=last_name,
                         username=username, temp_password=password),
-        sender_name="MORT Registrations"
+        sender_name="MORT Orders"
     )
 
 
@@ -48,5 +48,5 @@ def mail_forced_password_reset(user, new_password):
         [user.email],
         render_template("emails/accounts/reset-password.html", first_name=user.first_name, last_name=user.last_name,
                         username=user.username, temp_password=new_password),
-        sender_name="MORT Support"
+        sender_name="MORT Orders"
     )
