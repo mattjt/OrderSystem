@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import os
 
-CONFIG_ROOT = os.path.dirname(os.path.dirname(os.getcwd())) + "/configuration/"
-LOG_ROOT = os.path.dirname(os.path.dirname(os.getcwd())) + "/logs/"
+CONFIG_ROOT = os.path.dirname(os.getcwd()) + "/configuration/"
+LOG_ROOT = os.path.dirname(os.getcwd()) + "/logs/"
 
 # Create config dir if not exist
 if not os.path.isdir(CONFIG_ROOT):
