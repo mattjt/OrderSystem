@@ -12,6 +12,12 @@ from OrderSystem import app
      Copyright (C) 2015-2017
 """
 
+"""
+--- NOTICE ---
+This file is only for running the site in development mode, on a development machine.
+DO NOT USE THIS FILE TO RUN A PRODUCTION SERVER
+"""
+
 app.run(
     debug=True,
     port=1337
