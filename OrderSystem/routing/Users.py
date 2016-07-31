@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, flash
-from flask.ext.classy import FlaskView
-from flask.ext.login import login_required, current_user
+from flask_classy import FlaskView
+from flask_login import login_required, current_user
 
 from CRUDBase import CRUDBase
 from OrderSystem import db

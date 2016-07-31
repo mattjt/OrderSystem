@@ -1,8 +1,8 @@
 from decimal import Decimal
 
 from flask import render_template, url_for
-from flask.ext.classy import FlaskView, route
-from flask.ext.login import login_required
+from flask_classy import FlaskView, route
+from flask_login import login_required
 from sqlalchemy import and_
 from werkzeug.utils import redirect
 

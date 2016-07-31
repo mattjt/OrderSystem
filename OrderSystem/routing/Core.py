@@ -1,5 +1,5 @@
 from flask import render_template, redirect, url_for, Blueprint
-from flask.ext.login import current_user, login_required
+from flask_login import current_user, login_required
 
 from OrderSystem import forms
 from OrderSystem import login_manager, db

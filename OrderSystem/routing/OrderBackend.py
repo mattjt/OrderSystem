@@ -1,8 +1,8 @@
 from time import strftime
 
 from flask import render_template, request, url_for, flash, redirect
-from flask.ext.classy import FlaskView, route
-from flask.ext.login import current_user, login_required
+from flask_classy import FlaskView, route
+from flask_login import current_user, login_required
 from sqlalchemy import and_
 
 from OrderSystem import db

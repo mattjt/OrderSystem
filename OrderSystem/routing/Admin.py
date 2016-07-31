@@ -2,8 +2,8 @@ import base64
 import os
 
 from flask import render_template, request, redirect, url_for, flash
-from flask.ext.classy import FlaskView, route
-from flask.ext.login import current_user
+from flask_classy import FlaskView, route
+from flask_login import current_user
 
 from CRUDBase import CRUDBase
 from OrderSystem import db

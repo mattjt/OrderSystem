@@ -5,7 +5,7 @@ from functools import wraps
 
 import scrypt
 from flask import flash, url_for, redirect
-from flask.ext.login import current_user
+from flask_login import current_user
 
 from OrderSystem import db
 from OrderSystem.sql.ORM import User, Settings

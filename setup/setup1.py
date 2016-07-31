@@ -25,7 +25,7 @@ if not os.path.isfile(CONFIG_ROOT + "mailgun.ini"):
 # Create mysql.ini
 if not os.path.isfile(CONFIG_ROOT + "mysql.ini"):
     # Boilerplate config
-    f_contents = "[mysql]\nmysql_user = YOUR_MYSQL_USER\nmysql_password = YOUR_MYSQL_PASSWORD\nmysql_database = YOUR_MYSQL_DATABASE\nmysql_host = YOUR_MYSQL"
+    f_contents = "[mysql]\nmysql_user = YOUR_MYSQL_USER\nmysql_password = YOUR_MYSQL_PASSWORD\nmysql_database = YOUR_MYSQL_DATABASE\nmysql_host = YOUR_MYSQL_HOST"
     with open(CONFIG_ROOT + "mysql.ini", 'w') as mysql:
         mysql.write(f_contents)
 

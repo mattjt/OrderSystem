@@ -1,5 +1,5 @@
 from flask import request, render_template
-from flask.ext.login import current_user, login_required
+from flask_login import current_user, login_required
 
 from OrderSystem import app
 from OrderSystem.utilities.ServerLogger import log_event
