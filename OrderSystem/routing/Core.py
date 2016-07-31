@@ -1,6 +1,4 @@
-import os
-
-from flask import render_template, redirect, url_for, Blueprint, send_from_directory
+from flask import render_template, redirect, url_for, Blueprint
 from flask.ext.login import current_user, login_required
 
 from OrderSystem import forms
@@ -48,11 +46,6 @@ def force_password_reset():
     else:
         flash_errors(form)
     return render_template('auth/password-reset.html', form=form)
-
-
-@main.route('/robots.txt')
-def robots_txt():
-    return send_from_directory('{0}/OrderSystem/static'.format(os.environ.get('APPLICATION_ROOT')), 'robots.txt')
 
 
 # Load User Manager
