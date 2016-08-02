@@ -42,17 +42,19 @@
                         <h4><strong>{{ order.subteam.name }}</strong></h4>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="well row">
-                        <div class="col-md-6"><a href="{{ url_for('PendingOrders:update', order_id=order.id) }}"
-                                                 class="btn btn-success btn-block">Approve</a>
-                        </div>
-                        <div class="col-md-6">
-                            <a href="{{ url_for('PendingOrders:delete', order_id=order.id) }}"
-                               class="btn btn-danger btn-block">Deny</a>
+                {% if current_user.can_approve_orders or current_user.is_admin %}
+                    <div class="col-md-4">
+                        <div class="well row">
+                            <div class="col-md-6"><a href="{{ url_for('PendingOrders:update', order_id=order.id) }}"
+                                                     class="btn btn-success btn-block">Approve</a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{{ url_for('PendingOrders:delete', order_id=order.id) }}"
+                                   class="btn btn-danger btn-block">Deny</a>
+                            </div>
                         </div>
                     </div>
-                </div>
+                {% endif %}
 
             </div>
             <div style="border-bottom: 2px solid #cdcdcd"></div>
