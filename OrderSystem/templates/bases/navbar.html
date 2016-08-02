@@ -17,6 +17,10 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li class="user-footer">
+                            <div class="pull-left">
+                                <a href="{{ url_for('Users:update') }}" class="btn btn-warning btn-flat">Change
+                                    Password</a>
+                            </div>
                             <div class="pull-right">
                                 <a href="{{ url_for('auth.logout') }}" class="btn btn-default btn-flat">Sign out</a>
                             </div>
