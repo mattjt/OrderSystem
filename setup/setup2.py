@@ -30,3 +30,4 @@ db.session.add(
     User("robotics-osa", "MORT", "Admin", hash_password('admin'), "mort11org@mort11.org", True, True, True, True, True,
          1))
 db.session.commit()
+print "Done"

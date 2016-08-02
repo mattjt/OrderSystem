@@ -58,7 +58,7 @@ app_settings.conf
 .bower
 *.map
 
-configurationBkp/
 configuration/
+configurationBkp/
 logs/
 MORTOrderSystemVENV/
