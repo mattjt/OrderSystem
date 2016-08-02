@@ -200,17 +200,23 @@ class OrderBackend(FlaskView, CRUDBase):
 
         @return: Nothing. Method is called from some type of asynchronous segment of code
         """
+        allowable_statuses = ['unprocessed', 'in-progress', 'shipped', 'completed']
         item_id = request.values['oID']
         current_status = request.values['currentStatus']
         new_status = request.values['updatedStatus']
-        item = db.session.query(Order).filter(Order.id == item_id).first()
-        if item is not None:
-            item.order_status = str(new_status).lower().replace(" ", "-")
-            db.session.commit()
-            flash("Successfully updated order status", 'success')
-            return redirect(url_for('OrderBackend:index', order_status=current_status))
+
+        if new_status in allowable_statuses:
+            item = db.session.query(Order).filter(Order.id == item_id).first()
+            if item is not None:
+                item.order_status = str(new_status).lower().replace(" ", "-")
+                db.session.commit()
+                flash("Successfully updated order status", 'success')
+                return redirect(url_for('OrderBackend:index', order_status=current_status))
+            else:
+                flash("ERROR! Order requested was not found!", 'error')
+                return redirect(url_for('OrderBackend:index', order_status=current_status))
         else:
-            flash("ERROR! Order requested was not found!", 'error')
+            flash("ERROR! Invalid order status was provided!", 'error')
             return redirect(url_for('OrderBackend:index', order_status=current_status))
 
 
