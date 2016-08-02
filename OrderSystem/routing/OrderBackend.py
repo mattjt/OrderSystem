@@ -96,7 +96,7 @@ class OrderBackend(FlaskView, CRUDBase):
             "completed": "completed.html",
         }
 
-        return render_template('orders/view/{0}'.format(return_template.get(order_status, "unprocessed.html")),
+        return render_template('orders/view/{0}'.format(return_template.get(order_status, "invalid-type.html")),
                                today_date=strftime("%m-%d-%Y"), orders=orders, num_of_orders=orders.count(),
                                page="orders_" + order_status)
 

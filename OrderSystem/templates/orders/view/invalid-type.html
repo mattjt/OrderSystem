@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}Invalid order status{% endblock %}
+{% block content %}
+    You tried to access an invalid order status. Please
+    <a href="{{ url_for('main.index') }}">return to the dashboard</a>
+{% endblock %}
