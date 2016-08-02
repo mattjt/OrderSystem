@@ -348,10 +348,15 @@ class PendingOrders(FlaskView, CRUDBase):
 
         @return: Redirect to PendingOrders index
         """
-        approved_order = db.session.query(Order).filter(Order.id == order_id).first()
-        approved_order.pending_approval = False
-        db.session.commit()
-        flash("Successfully approved order!", 'success')
+        order_to_approve = db.session.query(Order).filter(Order.id == order_id).first()
+
+        # If the user is an admin, or is a member of that subteam, they can approve the order
+        if current_user.is_admin and current_user.subteam.id == order_to_approve.part_for_subteam:
+            order_to_approve.pending_approval = False
+            db.session.commit()
+            flash("Successfully approved order!", 'success')
+        else:
+            flash("You can't approve an order that isn't made on your subteam's behalf!")
         return redirect(url_for('PendingOrders:index'))
 
     @route('/deny/<int:order_id>')
@@ -362,8 +367,14 @@ class PendingOrders(FlaskView, CRUDBase):
 
         @return: Redirect to PendingOrders index
         """
-        denied_order = db.session.query(Order).filter(Order.id == order_id).first()
-        db.session.delete(denied_order)
-        db.session.commit()
-        flash("Successfully denied order!", 'error')
+        order_to_deny = db.session.query(Order).filter(Order.id == order_id).first()
+
+        # If the user is an admin, or is a member of that subteam, they can approve the order
+        if current_user.is_admin and current_user.subteam.id == order_to_deny.part_for_subteam:
+            db.session.delete(order_to_deny)
+            db.session.commit()
+            flash("Successfully denied order!", 'success')
+        else:
+            flash("You can't deny an order that isn't made on your subteam's behalf!", 'error')
+
         return redirect(url_for('PendingOrders:index'))
