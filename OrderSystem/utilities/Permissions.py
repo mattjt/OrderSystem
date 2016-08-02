@@ -11,7 +11,7 @@ def get_path():
 def admin_access_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             if current_user.is_admin:
                 return func(*args, **kwargs)
             else:
@@ -25,7 +25,7 @@ def admin_access_required(func):
 def update_order_status_access_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if not current_user.is_authenticated():
+        if not current_user.is_authenticated:
             return redirect(url_for('auth.login') + "?prev={0}".format(get_path()))
         else:
             if current_user.can_update_order_status or current_user.is_admin:
@@ -39,7 +39,7 @@ def update_order_status_access_required(func):
 def approve_order_access_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if not current_user.is_authenticated():
+        if not current_user.is_authenticated:
             return redirect(url_for('auth.login') + "?prev={0}".format(get_path()))
         else:
             if current_user.can_approve_orders or current_user.is_admin:

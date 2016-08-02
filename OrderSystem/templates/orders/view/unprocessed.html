@@ -119,37 +119,38 @@
                                                         </div>
                                                         <div class="tab-pane" id="manageOrderOID{{ order.id }}">
                                                             <div class="row">
-                                                                <div class="col-md-6">
-                                                                    <fieldset>
-                                                                        <legend>Order Status</legend>
-                                                                        <div class="form-group">
-                                                                            <!--suppress HtmlUnknownTarget -->
-                                                                            <form action="{{ url_for('OrderBackend:update_part_status') }}"
-                                                                                  method="post">
-                                                                                <input type="hidden"
-                                                                                       value="{{ order.id }}"
-                                                                                       name="oID">
-                                                                                <input type="hidden"
-                                                                                       name="currentStatus"
-                                                                                       value="unprocessed">
-                                                                                <select class="form-control"
-                                                                                        title="status"
-                                                                                        name="updatedStatus">
-                                                                                    <option selected>Unprocessed
-                                                                                    </option>
-                                                                                    <option>In Progress</option>
-                                                                                    <option>Shipped</option>
-                                                                                    <option>Completed</option>
-                                                                                </select>
-                                                                                <hr>
-                                                                                <button type="submit"
-                                                                                        class="btn btn-block btn-success btn-flat">
-                                                                                    Update
-                                                                                </button>
-                                                                            </form>
-                                                                        </div>
-                                                                    </fieldset>
-                                                                </div>
+                                                                {% if current_user.can_update_order_status or current_user.is_admin %}
+                                                                    <div class="col-md-6">
+                                                                        <fieldset>
+                                                                            <legend>Order Status</legend>
+                                                                            <div class="form-group">
+                                                                                <!--suppress HtmlUnknownTarget -->
+                                                                                <form action="{{ url_for('OrderBackend:update_part_status') }}"
+                                                                                      method="post">
+                                                                                    <input type="hidden"
+                                                                                           value="{{ order.id }}"
+                                                                                           name="oID">
+                                                                                    <input type="hidden"
+                                                                                           name="currentStatus"
+                                                                                           value="unprocessed">
+                                                                                    <select class="form-control"
+                                                                                            title="status"
+                                                                                            name="updatedStatus">
+                                                                                        <option selected>Unprocessed
+                                                                                        </option>
+                                                                                        <option>In Progress</option>
+                                                                                        <option>Shipped</option>
+                                                                                        <option>Completed</option>
+                                                                                    </select>
+                                                                                    <hr>
+                                                                                    <button type="submit"
+                                                                                            class="btn btn-block btn-success btn-flat">
+                                                                                        Update
+                                                                                    </button>
+                                                                                </form>
+                                                                            </div>
+                                                                        </fieldset>
+                                                                    </div>{% endif %}
                                                                 <div class="col-md-6">
                                                                     <fieldset>
                                                                         <legend>Modify Order</legend>

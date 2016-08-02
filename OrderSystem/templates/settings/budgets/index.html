@@ -12,7 +12,7 @@
                     </a>
                     <h4 class="pull-right"><strong>${{ cash_left[i] }}/${{ started_with[i] }}</strong></h4>
                 </div>
-                {% if current_user.can_update_order_status %}
+                {% if current_user.can_update_order_status or current_user.is_admin %}
                     <div class="col-md-2 well">
                         <a href="{{ url_for('Budgets:update', fiscal_year=fiscal_year, subteam_id=ids[i]) }}"
                            class="btn btn-danger">Set Budget</a>
