@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash
-from flask_classy import FlaskView
+from flask_classy import FlaskView, route
 from flask_login import login_required, current_user
 
 from CRUDBase import CRUDBase
@@ -19,14 +19,10 @@ class Users(FlaskView, CRUDBase):
     def create(self):
         pass
 
-    # @route('/profile', methods=['GET', 'POST'])
-    @login_required
     def index(self):
-        user = db.session.query(User).filter(User.id == current_user.id).first()
+        pass
 
-        return render_template('user/index.html', user=user)
-
-    # @route('/change-password', methods=['GET', 'POST'])
+    @route('/change-password', methods=['GET', 'POST'])
     @login_required
     def update(self):
         form = forms.ChangePassword(request.form)
@@ -41,7 +37,7 @@ class Users(FlaskView, CRUDBase):
                 flash("Current password is incorrect!", 'error')
         else:
             flash_errors(form)
-        return render_template('user/change-password.html', form=form)
+        return render_template('settings/users/change-password.html', form=form)
 
     def delete(self):
         pass

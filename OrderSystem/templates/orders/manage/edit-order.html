@@ -100,7 +100,7 @@
                         </div>
                     </fieldset>
                 </section>
-                {% if current_user.can_update_order_status %}
+                {% if current_user.can_update_order_status or current_user.is_admin %}
                     <h3><strong>Financing</strong></h3>
                     <section>
                         <fieldset>

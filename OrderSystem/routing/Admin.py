@@ -174,8 +174,15 @@ class UserManager(FlaskView, CRUDBase):
         @return: Redirect to admin dashboard
         """
         user_to_del = db.session.query(User).filter(User.id == user_id).first()
-        db.session.delete(user_to_del)
-        db.session.commit()
+
+        if user_to_del is None:
+            flash("ERROR! Cannot delete a user that doesn't exist!", 'error')
+        else:
+            if current_user.id == user_to_del.id:
+                flash("ERROR! You can't delete yourself!", 'error')
+            else:
+                db.session.delete(user_to_del)
+                db.session.commit()
         return redirect(url_for('UserManager:index'))
 
     @route('/admin/users/reset-password/<int:user_id>')
