@@ -10,7 +10,7 @@ from OrderSystem import db
 from OrderSystem import forms
 from OrderSystem.sql.ORM import User, Subteam, Budget, Settings
 from OrderSystem.utilities.Helpers import hash_password, flash_errors, generate_random_password
-from OrderSystem.utilities.Mailer import mail_registration, mail_forced_password_reset
+from OrderSystem.utilities.Mailer import mail_registration, mail_password_reset
 from OrderSystem.utilities.Permissions import admin_access_required
 from OrderSystem.utilities.ServerLogger import log_event
 
@@ -198,7 +198,7 @@ class UserManager(FlaskView, CRUDBase):
         user.needs_password_reset = True
         password = generate_random_password()
         user.password = hash_password(password)
-        mail_forced_password_reset(user, password)
+        mail_password_reset(user, password)
         db.session.commit()
         flash("Successfully reset users password!")
         return redirect(url_for('UserManager:index'))

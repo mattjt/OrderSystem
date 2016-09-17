@@ -3,7 +3,7 @@ from flask import render_template
 
 from OrderSystem.utilities.ServerLogger import log_event
 
-DEFAULT_EMAIL = "no-reply@mort11.org"
+DEFAULT_EMAIL = "orders-noreply@mort11.org"
 DEFAULT_NAME = "MORT Orders"
 
 
@@ -21,16 +21,13 @@ def send_email(subject, recipients, body, sender_name=DEFAULT_NAME, sender_email
                   "text": subject,
                   "html": body})
 
-        log_event("INFO", "Mailing Subsystem: Message(s) sent successfully!")
+        log_event("MAILING-INFO", "{0} sent to {0}".format(subject, recipients))
 
-    except Exception, e:
-        log_event("ERROR",
-                  "Mailing subsystem encountered error!\n\n {0} \n -----------------------------------------".format(e))
+    except Exception as e:
+        log_event("MAILING-ERROR",
+                  "Mailing subsystem encountered an error! :,(\n\n {0} \n -----------------------------------------".format(
+                      e))
 
-
-########################
-# User Data Management #
-########################
 
 def mail_registration(recipient_email, first_name, last_name, username, password):
     send_email(
@@ -42,7 +39,7 @@ def mail_registration(recipient_email, first_name, last_name, username, password
     )
 
 
-def mail_forced_password_reset(user, new_password):
+def mail_password_reset(user, new_password):
     send_email(
         "MORT | Password Reset",
         [user.email],
