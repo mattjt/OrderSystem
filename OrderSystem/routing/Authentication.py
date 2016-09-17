@@ -24,7 +24,7 @@ def login():
 
         # Guest tried to login as non-existent user
         if user is None:
-            log_event('INFO', 'Guest tried to login as non-existent user.')
+            log_event('AUTH ERR', 'Guest tried to login as non-existent user.')
             flash("Invalid username/password!", 'error')
             return render_template('auth/login.html', form=form)
 
@@ -38,7 +38,7 @@ def login():
         # User/password pair is wrong
         else:
             flash("Incorrect username/password", 'error')
-            log_event('WARNING', 'Guest incorrectly attempted to login as {0}.'.format(user.username))
+            log_event('AUTH ERR', 'Guest incorrectly attempted to login as {0}.'.format(user.username))
             return render_template('auth/login.html', form=form)
     else:
         flash_errors(form)

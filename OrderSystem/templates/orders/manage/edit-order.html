@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}New Order{% endblock %}
 {% block content %}
-    <div class="container">
         {% include 'bases/validation-error-base.html' %}
         <form method="post">
             {{ form.csrf_token }}
@@ -177,7 +176,6 @@
                 </section>
             </div>
         </form>
-    </div>
 {% endblock %}
 {% block stylesheets %}
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
