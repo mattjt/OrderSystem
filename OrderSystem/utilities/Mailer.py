@@ -21,7 +21,7 @@ def send_email(subject, recipients, body, sender_name=DEFAULT_NAME, sender_email
                   "text": subject,
                   "html": body})
 
-        log_event("MAILING-INFO", "{0} sent to {0}".format(subject, recipients))
+        log_event("MAILING-INFO", "[{0}] sent to ({1})".format(subject, recipients))
 
     except Exception as e:
         log_event("MAILING-ERROR",
