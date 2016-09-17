@@ -1,38 +1,36 @@
 {% extends 'base.html' %}
 {% block title %}Edit Vendor{% endblock %}
 {% block content %}
-    <div class="container">
-        <form method="post">
-            {{ form.csrf_token }}
-            <div class="row">
-                {% include 'bases/validation-error-base.html' %}
-                <div class="col-md-6">
-                    <div class="form-group">
-                        {{ form.vendor_name.label }}
-                        {{ form.vendor_name(class="form-control", value=vendor.vendor_name) }}
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        {{ form.vendor_url.label }}
-                        {{ form.vendor_url(class="form-control", value=vendor.vendor_url) }}
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        {{ form.vendor_phone.label }}
-                        {{ form.vendor_phone(class="form-control", value=vendor.vendor_phone) }}
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        {{ form.vendor_email.label }}
-                        {{ form.vendor_email(class="form-control", value=vendor.vendor_email) }}
-                    </div>
+    <form method="post">
+        {{ form.csrf_token }}
+        <div class="row">
+            {% include 'bases/validation-error-base.html' %}
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form.vendor_name.label }}
+                    {{ form.vendor_name(class="form-control", value=vendor.vendor_name) }}
                 </div>
             </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form.vendor_url.label }}
+                    {{ form.vendor_url(class="form-control", value=vendor.vendor_url) }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form.vendor_phone.label }}
+                    {{ form.vendor_phone(class="form-control", value=vendor.vendor_phone) }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form.vendor_email.label }}
+                    {{ form.vendor_email(class="form-control", value=vendor.vendor_email) }}
+                </div>
+            </div>
+        </div>
 
-            <button type="submit" class="btn btn-danger btn-flat btn-block">Update</button>
-        </form>
-    </div>
+        <button type="submit" class="btn btn-danger btn-flat btn-block">Update</button>
+    </form>
 {% endblock %}
