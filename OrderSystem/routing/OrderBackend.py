@@ -357,7 +357,7 @@ class PendingOrders(FlaskView, CRUDBase):
         order_to_approve = db.session.query(Order).filter(Order.id == order_id).first()
 
         # If the user is an admin, or is a member of that subteam, they can approve the order
-        if current_user.is_admin and current_user.subteam.id == order_to_approve.part_for_subteam:
+        if current_user.is_admin and current_user.subteam_ref.id == order_to_approve.part_for_subteam:
             order_to_approve.pending_approval = False
             db.session.commit()
             flash("Successfully approved order!", 'success')
@@ -376,7 +376,7 @@ class PendingOrders(FlaskView, CRUDBase):
         order_to_deny = db.session.query(Order).filter(Order.id == order_id).first()
 
         # If the user is an admin, or is a member of that subteam, they can approve the order
-        if current_user.is_admin and current_user.subteam.id == order_to_deny.part_for_subteam:
+        if current_user.is_admin and current_user.subteam_ref.id == order_to_deny.part_for_subteam:
             db.session.delete(order_to_deny)
             db.session.commit()
             flash("Successfully denied order!", 'success')
