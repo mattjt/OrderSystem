@@ -1,23 +1,26 @@
 {% extends 'base.html' %}
 {% block title %}Budgets{% endblock %}
 {% block content %}
-    <h3 style="text-align: center"><strong>Current Fiscal Year - [{{ fiscal_year }}]</strong></h3>
-    <hr>
-    {% for i in range(subteams|length) %}
-        <div class="col-md-10 well {{ css_classes[i] }}">
-            <a href="{{ url_for('Budgets:view_orders_by_subteam', fiscal_year=fiscal_year, subteam_id=ids[i]) }}">
-                <h4 class="pull-left"><strong>{{ subteams[i] }}</strong></h4>
-            </a>
-            <h4 class="pull-right"><strong>${{ cash_left[i] }}/${{ started_with[i] }}</strong></h4>
-        </div>
-        {% if current_user.can_update_order_status or current_user.is_admin %}
-            <div class="col-md-2 well">
-                <a href="{{ url_for('Budgets:update', fiscal_year=fiscal_year, subteam_id=ids[i]) }}"
-                   class="btn btn-danger">Set Budget</a>
+    <div class="container">
+        <h3 style="text-align: center"><strong>Current Fiscal Year - [{{ fiscal_year }}]</strong></h3>
+        <hr>
+        {% for i in range(subteams|length) %}
+            <div class="col-md-10 well {{ css_classes[i] }}">
+                <a href="{{ url_for('Budgets:view_orders_by_subteam', fiscal_year=fiscal_year, subteam_id=ids[i]) }}">
+                    <h4 class="pull-left"><strong>{{ subteams[i] }}</strong></h4>
+                </a>
+                <h4 class="pull-right"><strong>${{ cash_left[i] }}/${{ started_with[i] }}</strong></h4>
             </div>
-        {% endif %}
-    {% endfor %}
+            {% if current_user.can_update_order_status or current_user.is_admin %}
+                <div class="col-md-2 well">
+                    <a href="{{ url_for('Budgets:update', fiscal_year=fiscal_year, subteam_id=ids[i]) }}"
+                       class="btn btn-danger">Set Budget</a>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
 {% endblock %}
 {% block stylesheets %}
     <link rel="stylesheet" href="/static/css/styles.css" type="text/css">
 {% endblock %}
+{#{% block footer %}{% endblock %}#}
