@@ -23,7 +23,7 @@ class Email(object):
     Base class for sending emails
     """
 
-    environment = Environment(loader=jinja2.FileSystemLoader('templates'))
+    environment = Environment(loader=jinja2.FileSystemLoader(Common.TEMPLATE_ROOT))
 
     def __init__(self, subject, sender, to_address=None):
         self.subject = subject

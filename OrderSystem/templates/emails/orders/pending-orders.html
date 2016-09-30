@@ -2,12 +2,12 @@
 Please have a look at the order summary below, then view the full order at <a href="http://orders.mort11.org"
                                                                               target="_blank">orders.mort11.org</a>
 <br>
-{% for order in range(orders|length) %}
+{% for order in orders %}
     <br>
-    <strong>Part Name</strong> - {{ orders[order].part_name }}<br>
-    <strong>URL</strong> - {{ orders[order].part_url }}<br>
-    <strong>Ordered on</strong> - {{ orders[order].part_ordered_on }}<br>
-    <strong>Needed by</strong> - {{ orders[order].part_needed_by }}<br>
-    {{ orders[order].part_quantity }} units x ${{ orders[order].part_unit_price }} p/u = ${{ orders[order].total }}
+    <strong>Part Name</strong> - {{ order[3] }}<br>
+    <strong>URL</strong> - {{ orders[4] }}<br>
+    <strong>Ordered on</strong> - {{ order[14] }}<br>
+    <strong>Needed by</strong> - {{ order[11] }}<br>
+    {{ order[7] }} units x ${{ order[8] }} p/u = ${{ order[9] }}
     <hr>
 {% endfor %}

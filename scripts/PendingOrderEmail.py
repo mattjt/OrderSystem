@@ -73,8 +73,7 @@ def main():
                 "MORT Orders <orders@mort11.org>",
                 users_to_notify
             )
-            template = pending_order_email.get_environment().get_template(
-                "{0}/emails/orders/pending-orders.html".format(Common.TEMPLATE_ROOT))
+            template = pending_order_email.get_environment().get_template("emails/orders/pending-orders.html")
             pending_order_email.set_html(template.render(orders=orders))
             pending_order_email.send()
 
