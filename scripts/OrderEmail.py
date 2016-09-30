@@ -44,7 +44,7 @@ def main():
 
         order_email = Email("MORT | {0} New Orders".format(len(orders)), "MORT Orders <orders@mort11.org>",
                             get_order_notification_recipients())
-        template = order_email.get_environment().get_template("emails/orders/new/new-order-email.html")
+        template = order_email.get_environment().get_template("emails/orders/dirty-orders.html")
         order_email.set_html(template.render(orders=orders))
         order_email.send()
 
