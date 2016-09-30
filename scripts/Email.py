@@ -1,7 +1,8 @@
 from ConfigParser import SafeConfigParser
 
+import jinja2
 import requests
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment
 
 from OrderSystem import Common
 
@@ -22,7 +23,7 @@ class Email(object):
     Base class for sending emails
     """
 
-    environment = Environment(loader=FileSystemLoader(Common.CONFIG_ROOT))
+    environment = Environment(loader=jinja2.FileSystemLoader('templates'))
 
     def __init__(self, subject, sender, to_address=None):
         self.subject = subject
