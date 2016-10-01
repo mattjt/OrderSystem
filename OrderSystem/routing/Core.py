@@ -1,5 +1,6 @@
 from flask import render_template, redirect, url_for, Blueprint, abort
 from flask_login import current_user, login_required
+from sqlalchemy import and_
 
 from OrderSystem import forms
 from OrderSystem import login_manager, db
@@ -17,7 +18,8 @@ main = Blueprint('main', __name__)
 def index():
     fiscal_year = get_fiscal_year()
 
-    orders_this_fiscal_year = db.session.query(Order).filter(Order.fiscal_year == fiscal_year)
+    orders_this_fiscal_year = db.session.query(Order).filter(
+        and_(Order.fiscal_year == fiscal_year, Order.pending_approval == False))
     all_vendors = db.session.query(Vendor)
 
     # Some simple statistics
