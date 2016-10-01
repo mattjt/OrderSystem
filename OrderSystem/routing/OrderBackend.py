@@ -1,6 +1,6 @@
 from time import strftime
 
-from flask import render_template, request, url_for, flash, redirect
+from flask import render_template, request, url_for, flash, redirect, abort
 from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
 from sqlalchemy import and_
@@ -11,6 +11,7 @@ from OrderSystem.routing.CRUDBase import CRUDBase
 from OrderSystem.sql.ORM import Order, Subteam, Vendor
 from OrderSystem.utilities.Helpers import flash_errors, get_fiscal_year
 from OrderSystem.utilities.Permissions import update_order_status_access_required, approve_order_access_required
+from OrderSystem.utilities.ServerLogger import log_event
 
 
 class OrderBackend(FlaskView, CRUDBase):
@@ -64,6 +65,7 @@ class OrderBackend(FlaskView, CRUDBase):
 
                 return redirect(url_for('OrderBackend:index', order_status="unprocessed"))
             except Exception as e:
+                log_event("ERROR", e)
                 db.session.rollback()
                 flash("Unknown database error! [{0}]".format(e), 'error')  # TODO Get a better error code for this
         else:
@@ -111,60 +113,64 @@ class OrderBackend(FlaskView, CRUDBase):
         @return: Redirect to OrderSystem index if successful
         """
 
-        order = db.session.query(Order).filter(Order.id == order_id).first()
+        try:
+            order = db.session.query(Order).filter(Order.id == order_id).first()
 
-        if order.part_ordered_by == current_user.id or current_user.is_admin or (
-                        current_user.subteam == order.part_for_subteam and current_user.can_approve_orders):
-            # Get available vendors and sort alphabetically
-            vendors = db.session.query(Vendor).order_by(Vendor.vendor_name)
+            if order.part_ordered_by == current_user.id or current_user.is_admin or (
+                            current_user.subteam == order.part_for_subteam and current_user.can_approve_orders):
+                # Get available vendors and sort alphabetically
+                vendors = db.session.query(Vendor).order_by(Vendor.vendor_name)
 
-            # Get subteams that are actual subteams
-            subteams = db.session.query(Subteam).all()
+                # Get subteams that are actual subteams
+                subteams = db.session.query(Subteam).all()
 
-            form = forms.Order(request.form)
-            if form.validate_on_submit():
-                vendor_id = request.form['vendor']
+                form = forms.Order(request.form)
+                if form.validate_on_submit():
+                    vendor_id = request.form['vendor']
 
-                part_name = form.part_name.data
-                part_url = form.part_url.data
-                part_number = form.part_number.data
-                part_quantity = float(form.part_quantity.data)
-                part_unit_price = float(form.part_unit_price.data)
-                part_shipping_cost = 0
-                part_credit = 0
+                    part_name = form.part_name.data
+                    part_url = form.part_url.data
+                    part_number = form.part_number.data
+                    part_quantity = float(form.part_quantity.data)
+                    part_unit_price = float(form.part_unit_price.data)
+                    part_shipping_cost = 0
+                    part_credit = 0
 
-                if current_user.can_update_order_status:
-                    part_shipping_cost = float(request.values['shipping'])
-                    part_credit = float(request.values['credit'])
+                    if current_user.can_update_order_status:
+                        part_shipping_cost = float(request.values['shipping'])
+                        part_credit = float(request.values['credit'])
 
-                part_total_price = round(((part_unit_price * part_quantity) + part_shipping_cost) - part_credit, 2)
-                part_needed_by = form.needed_by.data
-                part_for_subteam = request.values['for_subteam']
-                total = part_total_price
+                    part_total_price = round(((part_unit_price * part_quantity) + part_shipping_cost) - part_credit, 2)
+                    part_needed_by = form.needed_by.data
+                    part_for_subteam = request.values['for_subteam']
+                    total = part_total_price
 
-                order.vendor_id = vendor_id
-                order.part_name = part_name
-                order.part_url = part_url
-                order.part_number = part_number
-                order.part_quantity = part_quantity
-                order.part_unit_price = part_unit_price
-                order.part_total_price = part_total_price
-                order.part_shipping_cost = part_shipping_cost
-                order.part_needed_by = part_needed_by
-                order.part_for_subteam = part_for_subteam
-                order.credit = part_credit
-                order.total = total
+                    order.vendor_id = vendor_id
+                    order.part_name = part_name
+                    order.part_url = part_url
+                    order.part_number = part_number
+                    order.part_quantity = part_quantity
+                    order.part_unit_price = part_unit_price
+                    order.part_total_price = part_total_price
+                    order.part_shipping_cost = part_shipping_cost
+                    order.part_needed_by = part_needed_by
+                    order.part_for_subteam = part_for_subteam
+                    order.credit = part_credit
+                    order.total = total
 
-                db.session.commit()
-                return redirect(url_for('OrderBackend:index', order_status=order_status))
+                    db.session.commit()
+                    return redirect(url_for('OrderBackend:index', order_status=order_status))
 
+                else:
+                    flash_errors(form)
+                return render_template('orders/manage/edit-order.html', order=order, form=form, vendors=vendors,
+                                       subteams=subteams)
             else:
-                flash_errors(form)
-            return render_template('orders/manage/edit-order.html', order=order, form=form, vendors=vendors,
-                                   subteams=subteams)
-        else:
-            flash("You can't edit an order that you didn't create!", 'error')
-            return redirect(url_for('OrderBackend:index', order_status=order_status))
+                flash("You can't edit an order that you didn't create!", 'error')
+                return redirect(url_for('OrderBackend:index', order_status=order_status))
+        except Exception as e:
+            log_event("ERROR", e)
+            abort(500)
 
     @route('/delete/<string:order_status>/<int:order_id>', methods=['GET'])
     @login_required
@@ -186,6 +192,7 @@ class OrderBackend(FlaskView, CRUDBase):
             flash("Successfully deleted order!", "success")
             return redirect(url_for('OrderBackend:index', order_status=order_status))
         except Exception as e:
+            log_event("ERROR", e)
             db.session.rollback()
             flash("Error deleting order! [{0}]".format(e), 'error')
             return redirect(url_for('OrderBackend:index', order_status=order_status))
@@ -200,24 +207,28 @@ class OrderBackend(FlaskView, CRUDBase):
 
         @return: Nothing. Method is called from some type of asynchronous segment of code
         """
-        allowable_statuses = ['unprocessed', 'in-progress', 'shipped', 'completed']
-        item_id = request.values['oID']
-        current_status = request.values['currentStatus']
-        new_status = request.values['updatedStatus']
+        try:
+            allowable_statuses = ['unprocessed', 'in-progress', 'shipped', 'completed']
+            item_id = request.values['oID']
+            current_status = request.values['currentStatus']
+            new_status = request.values['updatedStatus']
 
-        if new_status in allowable_statuses:
-            item = db.session.query(Order).filter(Order.id == item_id).first()
-            if item is not None:
-                item.order_status = str(new_status).lower().replace(" ", "-")
-                db.session.commit()
-                flash("Successfully updated order status", 'success')
-                return redirect(url_for('OrderBackend:index', order_status=current_status))
+            if new_status in allowable_statuses:
+                item = db.session.query(Order).filter(Order.id == item_id).first()
+                if item is not None:
+                    item.order_status = str(new_status).lower().replace(" ", "-")
+                    db.session.commit()
+                    flash("Successfully updated order status", 'success')
+                    return redirect(url_for('OrderBackend:index', order_status=current_status))
+                else:
+                    flash("ERROR! Order requested was not found!", 'error')
+                    return redirect(url_for('OrderBackend:index', order_status=current_status))
             else:
-                flash("ERROR! Order requested was not found!", 'error')
+                flash("ERROR! Invalid order status was provided!", 'error')
                 return redirect(url_for('OrderBackend:index', order_status=current_status))
-        else:
-            flash("ERROR! Invalid order status was provided!", 'error')
-            return redirect(url_for('OrderBackend:index', order_status=current_status))
+        except Exception as e:
+            log_event("ERROR", e)
+            abort(500)
 
 
 class Vendors(FlaskView, CRUDBase):

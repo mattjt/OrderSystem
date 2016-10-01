@@ -1,10 +1,11 @@
-from flask import render_template, redirect, url_for, Blueprint
+from flask import render_template, redirect, url_for, Blueprint, abort
 from flask_login import current_user, login_required
 
 from OrderSystem import forms
 from OrderSystem import login_manager, db
 from OrderSystem.sql.ORM import User, Order, Vendor
 from OrderSystem.utilities.Helpers import hash_password, flash_errors, needs_password_reset_check, get_fiscal_year
+from OrderSystem.utilities.ServerLogger import log_event
 
 main = Blueprint('main', __name__)
 
@@ -35,17 +36,21 @@ def index():
 @main.route('/user/force-password-reset', methods=['GET', 'POST'])
 @login_required
 def force_password_reset():
-    form = forms.ResetPassword()
-    user = db.session.query(User).filter(User.id == current_user.id).first()
+    try:
+        form = forms.ResetPassword()
+        user = db.session.query(User).filter(User.id == current_user.id).first()
 
-    if form.validate_on_submit():
-        user.password = hash_password(form.password.data)
-        user.needs_password_reset = False
-        db.session.commit()
-        return redirect(url_for('auth.logout'))
-    else:
-        flash_errors(form)
-    return render_template('auth/password-reset.html', form=form)
+        if form.validate_on_submit():
+            user.password = hash_password(form.password.data)
+            user.needs_password_reset = False
+            db.session.commit()
+            return redirect(url_for('auth.logout'))
+        else:
+            flash_errors(form)
+        return render_template('auth/password-reset.html', form=form)
+    except Exception as e:
+        log_event("ERROR", e)
+        abort(500)
 
 
 # Load User Manager
