@@ -1,7 +1,7 @@
 import base64
 import os
 
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, abort
 from flask_classy import FlaskView, route
 from flask_login import current_user
 
@@ -35,14 +35,18 @@ class Admin(FlaskView, CRUDBase):
     @route('/set-fiscal-year', methods=['GET', 'POST'])
     @admin_access_required
     def set_fiscal_year(self):
-        fiscal_setting = db.session.query(Settings).filter(Settings.key == "fiscal_year").first()
+        try:
+            fiscal_setting = db.session.query(Settings).filter(Settings.key == "fiscal_year").first()
 
-        if request.method == "POST":
-            new_fiscal_year = request.values['newFiscalYear']
-            fiscal_setting.value = new_fiscal_year
-            db.session.commit()
-            return redirect(url_for('Admin:index'))
-        return render_template('admin/fiscal-year.html', current_year=fiscal_setting.value)
+            if request.method == "POST":
+                new_fiscal_year = request.values['newFiscalYear']
+                fiscal_setting.value = new_fiscal_year
+                db.session.commit()
+                return redirect(url_for('Admin:index'))
+            return render_template('admin/fiscal-year.html', current_year=fiscal_setting.value)
+        except Exception as e:
+            log_event("ERROR", e)
+            abort(500)
 
 
 class UserManager(FlaskView, CRUDBase):
@@ -102,6 +106,7 @@ class UserManager(FlaskView, CRUDBase):
                 return redirect(url_for('UserManager:index'))
             except Exception as e:
                 db.session.rollback()
+                log_event("ERROR", e)
                 flash("Unknown database error! [{0}]".format(e), 'error')
         else:
             flash_errors(form)
@@ -153,7 +158,8 @@ class UserManager(FlaskView, CRUDBase):
                 db.session.commit()
             except Exception as e:
                 db.session.rollback()
-                flash("Unknown database error! [{0}]".format(e), 'error')  # TODO: Get better error code
+                log_event("ERROR", e)
+                flash("Unknown database error! [{0}]".format(e), 'error')
 
             return redirect(url_for('UserManager:index'))
 
@@ -173,17 +179,21 @@ class UserManager(FlaskView, CRUDBase):
         @param user_id:  Users ID
         @return: Redirect to admin dashboard
         """
-        user_to_del = db.session.query(User).filter(User.id == user_id).first()
+        try:
+            user_to_del = db.session.query(User).filter(User.id == user_id).first()
 
-        if user_to_del is None:
-            flash("ERROR! Cannot delete a user that doesn't exist!", 'error')
-        else:
-            if current_user.id == user_to_del.id:
-                flash("ERROR! You can't delete yourself!", 'error')
+            if user_to_del is None:
+                flash("ERROR! Cannot delete a user that doesn't exist!", 'error')
             else:
-                db.session.delete(user_to_del)
-                db.session.commit()
-        return redirect(url_for('UserManager:index'))
+                if current_user.id == user_to_del.id:
+                    flash("ERROR! You can't delete yourself!", 'error')
+                else:
+                    db.session.delete(user_to_del)
+                    db.session.commit()
+            return redirect(url_for('UserManager:index'))
+        except Exception as e:
+            log_event("ERROR", e)
+            abort(500)
 
     @route('/admin/users/reset-password/<int:user_id>')
     @admin_access_required
@@ -194,14 +204,18 @@ class UserManager(FlaskView, CRUDBase):
         @param user_id: User ID
         @return: Redirect to user manager dashboard
         """
-        user = db.session.query(User).filter(User.id == user_id).first()
-        user.needs_password_reset = True
-        password = generate_random_password()
-        user.password = hash_password(password)
-        mail_password_reset(user, password)
-        db.session.commit()
-        flash("Successfully reset users password!")
-        return redirect(url_for('UserManager:index'))
+        try:
+            user = db.session.query(User).filter(User.id == user_id).first()
+            user.needs_password_reset = True
+            password = generate_random_password()
+            user.password = hash_password(password)
+            mail_password_reset(user, password)
+            db.session.commit()
+            flash("Successfully reset users password!")
+            return redirect(url_for('UserManager:index'))
+        except Exception as e:
+            log_event("ERROR", e)
+            abort(500)
 
 
 class SubteamManager(FlaskView, CRUDBase):
@@ -226,8 +240,9 @@ class SubteamManager(FlaskView, CRUDBase):
                 log_event("AUDIT",
                           "{0} created a new subteam called {1}".format(current_user.username, form.subteam_name.data))
                 return redirect(url_for('SubteamManager:index'))
-            except:
+            except Exception as e:
                 db.session.rollback()
+                log_event("ERROR", e)
                 flash("Unknown database error!", 'error')
         else:
             flash_errors(form)
@@ -261,8 +276,9 @@ class SubteamManager(FlaskView, CRUDBase):
 
                 db.session.commit()
                 return redirect(url_for('SubteamManager:index'))
-            except:
+            except Exception as e:
                 db.session.rollback()
+                log_event("ERROR", e)
                 flash("Unknown database error!", 'error')
         else:
             flash_errors(form)
@@ -279,11 +295,13 @@ class SubteamManager(FlaskView, CRUDBase):
         try:
             try:
                 db.session.delete(db.session.query(Budget).filter(Budget.subteam_id == subteam_id).first())
-            except:
+            except Exception as e:
+                log_event("ERROR", e)
                 flash("Budget wasn't set for subteam. Skipping budget deletion!")
             db.session.delete(db.session.query(Subteam).filter(Subteam.id == subteam_id).first())
             db.session.commit()
-        except:
+        except Exception as e:
+            log_event("ERROR", e)
             flash("You can't delete this subteam! There are team members that are still members of it!", 'warning')
 
         return redirect(url_for('SubteamManager:index'))

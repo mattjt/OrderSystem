@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from flask import render_template, url_for
+from flask import render_template, url_for, abort
 from flask_classy import FlaskView, route
 from flask_login import login_required
 from sqlalchemy import and_
@@ -12,6 +12,7 @@ from OrderSystem.routing.CRUDBase import CRUDBase
 from OrderSystem.sql.ORM import Budget, Subteam, Order
 from OrderSystem.utilities.Helpers import flash_errors, get_fiscal_year
 from OrderSystem.utilities.Permissions import update_order_status_access_required
+from OrderSystem.utilities.ServerLogger import log_event
 
 
 class Budgets(FlaskView, CRUDBase):
@@ -101,26 +102,30 @@ class Budgets(FlaskView, CRUDBase):
         @return: Redirect to Budgets index
         """
 
-        form = forms.SetBudgetForm()
+        try:
+            form = forms.SetBudgetForm()
 
-        existing_budget = db.session.query(Budget).filter(
-            and_(Budget.subteam_id == subteam_id, Budget.fiscal_year == fiscal_year)).first()
+            existing_budget = db.session.query(Budget).filter(
+                and_(Budget.subteam_id == subteam_id, Budget.fiscal_year == fiscal_year)).first()
 
-        if form.validate_on_submit():
-            if existing_budget is None:
-                # Subteam didn't have a budget previously set
-                db.session.add(Budget(subteam_id, form.amount.data, fiscal_year))
+            if form.validate_on_submit():
+                if existing_budget is None:
+                    # Subteam didn't have a budget previously set
+                    db.session.add(Budget(subteam_id, form.amount.data, fiscal_year))
+                else:
+                    # Subteam had an existing budget; update the previous one instead of creating a new DB row
+                    existing_budget.dollar_amount = form.amount.data
+
+                db.session.commit()
+                return redirect(url_for('Budgets:index'))
+
             else:
-                # Subteam had an existing budget; update the previous one instead of creating a new DB row
-                existing_budget.dollar_amount = form.amount.data
+                flash_errors(form)
 
-            db.session.commit()
-            return redirect(url_for('Budgets:index'))
-
-        else:
-            flash_errors(form)
-
-        return render_template('settings/budgets/set.html', form=form)
+            return render_template('settings/budgets/set.html', form=form)
+        except Exception as e:
+            log_event("ERROR", e)
+            abort(500)
 
     def delete(self):
         """

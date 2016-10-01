@@ -11,6 +11,8 @@ from OrderSystem.utilities.ServerLogger import log_event
 @app.errorhandler(404)
 @app.errorhandler(405)
 @app.errorhandler(500)
+@app.errorhandler(502)
+@app.errorhandler(503)
 @login_required
 def error_handler(error_code):
     if request.path == '/favicon.ico':
