@@ -103,7 +103,8 @@ class Budgets(FlaskView, CRUDBase):
 
         form = forms.SetBudgetForm()
 
-        existing_budget = db.session.query(Budget).filter(Budget.subteam_id == subteam_id).first()
+        existing_budget = db.session.query(Budget).filter(
+            and_(Budget.subteam_id == subteam_id, Budget.fiscal_year == fiscal_year)).first()
 
         if form.validate_on_submit():
             if existing_budget is None:
