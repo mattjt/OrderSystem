@@ -69,20 +69,20 @@ class OrderBackend(FlaskView, CRUDBase):
                 if Common.DEBUG_MODE:
                     log_event('ERROR', '{0} encountered {1} at {2}'.format(get_current_user(), e, request.path))
                     log_event("ERROR", """
-                    ~~~ REQUEST BREAKDOWN ~~~\n
-                    FIS_YR = {0}\n
-                    VEN_ID = {1}\n
-                    P_NAME = {2}\n
-                    P_URL = {3}\n
-                    P_NUM = {4}\n
-                    P_QUAN = {5}\n
-                    P_UNITP = {6}\n
-                    P_TP = {7}\n
-                    P_NB = {8}\n
-                    P_FS = {9}\n
-                    P_OB = {10}\n
-                    P_OO = {11}\n
-                    TOT = {12}\n
+                    ~~~ REQUEST BREAKDOWN ~~~
+                    FIS_YR = {0}
+                    VEN_ID = {1}
+                    P_NAME = {2}
+                    P_URL = {3}
+                    P_NUM = {4}
+                    P_QUAN = {5}
+                    P_UNITP = {6}
+                    P_TP = {7}
+                    P_NB = {8}
+                    P_FS = {9}
+                    P_OB = {10}
+                    P_OO = {11}
+                    TOT = {12}
                     ~~~ END REQUEST BREAKDOWN ~~~
                     """.format(fiscal_year, vendor_id, part_name, part_url, part_number, part_quantity, part_unit_price,
                                part_total_price, part_needed_by, part_for_subteam, part_ordered_by, part_ordered_on,
