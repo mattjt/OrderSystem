@@ -5,7 +5,6 @@ from OrderSystem import app
 from OrderSystem.utilities.ServerLogger import log_event
 
 
-@app.errorhandler(400)
 @app.errorhandler(401)
 @app.errorhandler(403)
 @app.errorhandler(404)
