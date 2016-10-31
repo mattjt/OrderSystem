@@ -42,21 +42,21 @@ class OrderBackend(FlaskView, CRUDBase):
         order_form = forms.Order(request.form)
 
         if order_form.validate_on_submit():
-            try:
-                fiscal_year = get_fiscal_year()
-                vendor_id = request.form['vendor']
-                part_name = order_form.part_name.data
-                part_url = order_form.part_url.data
-                part_number = order_form.part_number.data
-                part_quantity = int(order_form.part_quantity.data)
-                part_unit_price = float(order_form.part_unit_price.data)
-                part_total_price = round(part_quantity * part_unit_price, 2)
-                part_needed_by = order_form.needed_by.data
-                part_for_subteam = request.form['for_subteam']
-                part_ordered_by = current_user.id
-                part_ordered_on = strftime("%m/%d/%Y")
-                total = part_total_price
+            fiscal_year = get_fiscal_year()
+            vendor_id = request.form['vendor']
+            part_name = order_form.part_name.data
+            part_url = order_form.part_url.data
+            part_number = order_form.part_number.data
+            part_quantity = int(order_form.part_quantity.data)
+            part_unit_price = float(order_form.part_unit_price.data)
+            part_total_price = round(part_quantity * part_unit_price, 2)
+            part_needed_by = order_form.needed_by.data
+            part_for_subteam = request.form['for_subteam']
+            part_ordered_by = current_user.id
+            part_ordered_on = strftime("%m/%d/%Y")
+            total = part_total_price
 
+            try:
                 db.session.add(
                     Order(fiscal_year, vendor_id, part_name, part_url, part_number, part_quantity,
                           part_unit_price, part_total_price, part_needed_by, part_for_subteam,
@@ -84,7 +84,9 @@ class OrderBackend(FlaskView, CRUDBase):
                     P_OO = {11}\n
                     TOT = {12}\n
                     ~~~ END REQUEST BREAKDOWN ~~~
-                    """)
+                    """.format(fiscal_year, vendor_id, part_name, part_url, part_number, part_quantity, part_unit_price,
+                               part_total_price, part_needed_by, part_for_subteam, part_ordered_by, part_ordered_on,
+                               total))
                 db.session.rollback()
                 flash(
                     "Unknown database error! [{0}]. Please contact a system administrator if the issue persists".format(
