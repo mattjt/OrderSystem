@@ -60,15 +60,15 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Ordering Subteam</label>
-                                    <select class="form-control" name="for_subteam"
-                                            {% if not current_user.is_admin %}disabled{% endif %}>
+                                    <select class="form-control" name="for_subteam">
                                         {% if current_user.is_admin %}
                                             {% for subteam in subteams %}
                                                 <option value="{{ subteam.id }}"
                                                         {% if subteam.id == current_user.subteam_ref.id %}selected{% endif %}>{{ subteam.name }}</option>
                                             {% endfor %}
                                         {% else %}
-                                            <option value="{{ current_user.subteam_ref.id }}">{{ current_user.subteam_ref.name }}</option>
+                                            <option value="{{ current_user.subteam_ref.id }}"
+                                                    selected>{{ current_user.subteam_ref.name }}</option>
                                         {% endif %}
                                     </select>
                                 </div>

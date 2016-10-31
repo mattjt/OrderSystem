@@ -400,7 +400,7 @@ class PendingOrders(FlaskView, CRUDBase):
         return redirect(url_for('PendingOrders:index'))
 
     @route('/deny/<int:order_id>')
-    @approve_order_access_required
+    @login_required
     def delete(self, order_id):
         """
         Deny an order and have it deleted
@@ -415,6 +415,6 @@ class PendingOrders(FlaskView, CRUDBase):
             db.session.commit()
             flash("Successfully denied order!", 'success')
         else:
-            flash("You can't deny an order that isn't made on your subteam's behalf!", 'error')
+            flash("You can't deny an order that isn't made on your subteam's behalf!", 'warning')
 
         return redirect(url_for('PendingOrders:index'))
