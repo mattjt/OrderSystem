@@ -5,7 +5,8 @@ from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
 from sqlalchemy import and_
 
-from OrderSystem import db
+from ErrorHandler import get_current_user
+from OrderSystem import db, Common
 from OrderSystem import forms
 from OrderSystem.routing.CRUDBase import CRUDBase
 from OrderSystem.sql.ORM import Order, Subteam, Vendor
@@ -65,9 +66,29 @@ class OrderBackend(FlaskView, CRUDBase):
 
                 return redirect(url_for('OrderBackend:index', order_status="unprocessed"))
             except Exception as e:
-                log_event("ERROR", e)
+                if Common.DEBUG_MODE:
+                    log_event('ERROR', '{0} encountered {1} at {2}'.format(get_current_user(), e, request.path))
+                    log_event("ERROR", """
+                    ~~~ REQUEST BREAKDOWN ~~~\n
+                    FIS_YR = {0}\n
+                    VEN_ID = {1}\n
+                    P_NAME = {2}\n
+                    P_URL = {3}\n
+                    P_NUM = {4}\n
+                    P_QUAN = {5}\n
+                    P_UNITP = {6}\n
+                    P_TP = {7}\n
+                    P_NB = {8}\n
+                    P_FS = {9}\n
+                    P_OB = {10}\n
+                    P_OO = {11}\n
+                    TOT = {12}\n
+                    ~~~ END REQUEST BREAKDOWN ~~~
+                    """)
                 db.session.rollback()
-                flash("Unknown database error! [{0}]".format(e), 'error')  # TODO Get a better error code for this
+                flash(
+                    "Unknown database error! [{0}]. Please contact a system administrator if the issue persists".format(
+                        e), 'error')  # TODO Get a better error code for this
         else:
             flash_errors(order_form)
         return render_template('orders/manage/new-order.html', today_date=strftime("%m/%d/%Y"), form=order_form,
