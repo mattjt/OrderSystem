@@ -27,7 +27,8 @@
                             <div class="col-md-6">
                                 <strong>Part Name:</strong> {{ order.part_name }}<br>
                                 <strong>Ordered
-                                    By:</strong> {{ order.ordering_user.first_name }} {{ order.ordering_user.last_name }}
+                                    By:</strong> {{ order.ordering_user.first_name }} {{ order.ordering_user.last_name }}<br>
+                                <strong>URL</strong> - <a href="{{ order.part_url }}" target="_blank">Link</a>
                             </div>
                             <div class="col-md-6"><h4><strong>
                                 {{ order.part_quantity }} units x ${{ order.part_unit_price }} p/u = ${{ order.total }}
