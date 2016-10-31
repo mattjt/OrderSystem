@@ -54,6 +54,15 @@
                             </div>
                         </div>
                     </div>
+                {% else %}
+                    <div class="col-md-4">
+                        <div class="well row">
+                            <div class="col-md-12">
+                                <a href="{{ url_for('PendingOrders:delete', order_id=order.id) }}"
+                                   class="btn btn-danger btn-block">Cancel [Deny]</a>
+                            </div>
+                        </div>
+                    </div>
                 {% endif %}
 
             </div>
