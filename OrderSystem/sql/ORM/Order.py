@@ -11,9 +11,9 @@ class Order(db.Model):
     vendor = db.relationship('Vendor', foreign_keys=[vendor_id])
 
     # Part Info
-    part_name = db.Column('part_name', db.String(150), nullable=False)
-    part_url = db.Column('part_url', db.String(350), nullable=False)
-    part_number = db.Column('part_number', db.String(15), nullable=False)
+    part_name = db.Column('part_name', db.String(500), nullable=False)
+    part_url = db.Column('part_url', db.String(750), nullable=False)
+    part_number = db.Column('part_number', db.String(300), nullable=False)
     part_quantity = db.Column('part_quantity', db.Integer, nullable=False)
     part_unit_price = db.Column('part_unit_price', db.Numeric(15, 2), nullable=False)
     part_total_price = db.Column('part_total_price', db.Numeric(15, 2), nullable=False)
@@ -21,12 +21,12 @@ class Order(db.Model):
     credit = db.Column('part_credit', db.Numeric(15, 2), nullable=False, default=0)
 
     # MetaData
-    part_needed_by = db.Column('part_needed_by', db.String(150), nullable=False)
+    part_needed_by = db.Column('part_needed_by', db.String(20), nullable=False)
     part_for_subteam = db.Column('part_for_subteam', db.ForeignKey('subteams.id'), nullable=False)
     subteam = db.relationship('Subteam', foreign_keys=[part_for_subteam])
     part_ordered_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     ordering_user = db.relationship('User', foreign_keys=[part_ordered_by])
-    part_ordered_on = db.Column('part_ordered_on', db.String(150), nullable=False)
+    part_ordered_on = db.Column('part_ordered_on', db.String(20), nullable=False)
     total = db.Column('total', db.Numeric(15, 2), nullable=False)
     order_status = db.Column('order_status', db.String(150), nullable=False)
 
