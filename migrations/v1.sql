@@ -1,0 +1,10 @@
+ALTER TABLE orders
+  MODIFY part_name VARCHAR(500);
+ALTER TABLE orders
+  MODIFY part_url VARCHAR(750);
+ALTER TABLE orders
+  MODIFY part_number VARCHAR(300);
+ALTER TABLE orders
+  MODIFY part_needed_by VARCHAR(20);
+ALTER TABLE orders
+  MODIFY part_ordered_on VARCHAR(20);
