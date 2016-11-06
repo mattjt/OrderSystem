@@ -20,7 +20,8 @@
                                 <div class="panel box box-danger">
                                     <div class="box-header with-border">
                                         <h4>
-                                            <a data-toggle="collapse" data-parent="#accordion" href="#oid1">
+                                            <a data-toggle="collapse" data-parent="#accordion"
+                                               href="#oid{{ order.id }}">
                                                 <div class="row">
                                                     <div class="col-md-6">{{ order.part_name }}</div>
                                                     <div class="col-md-2">{{ order.vendor.vendor_name }}</div>
@@ -30,7 +31,7 @@
                                             </a>
                                         </h4>
                                     </div>
-                                    <div id="oid1" class="panel-collapse collapse">
+                                    <div id="oid{{ order.id }}" class="panel-collapse collapse">
                                         <div class="box-body">
                                             <div class="col-md-12">
                                                 <div class="nav-tabs-custom">
@@ -163,18 +164,22 @@
                                                                 <div class="col-md-6">
                                                                     <fieldset>
                                                                         <legend>Modify Order</legend>
-                                                                        <a href="{{ url_for('OrderBackend:update', order_status="completed", order_id = order.id) }}"
-                                                                           class="btn btn-block btn-success btn-flat">
-                                                                            Edit
-                                                                        </a>
+                                                                        {% if current_user.id == order.ordered_by or current_user.is_admin %}
+                                                                            <a href="{{ url_for('OrderBackend:update', order_status="unprocessed",order_id = order.id) }}"
+                                                                               class="btn btn-block btn-success btn-flat">
+                                                                                Edit
+                                                                            </a>
+                                                                        {% endif %}
                                                                         <button type="button"
                                                                                 class="btn btn-block btn-warning btn-flat disabled">
                                                                             Suggest alternate vendor
                                                                         </button>
-                                                                        <a href="{{ url_for('OrderBackend:delete', order_status="completed", order_id = order.id) }}"
-                                                                           class="btn btn-block btn-danger btn-flat">
-                                                                            Delete
-                                                                        </a>
+                                                                        {% if current_user.id == order.ordered_by or current_user.is_admin %}
+                                                                            <a href="{{ url_for('OrderBackend:delete', order_status="unprocessed",order_id = order.id) }}"
+                                                                               class="btn btn-block btn-danger btn-flat">
+                                                                                Delete
+                                                                            </a>
+                                                                        {% endif %}
                                                                     </fieldset>
                                                                 </div>
                                                             </div>
