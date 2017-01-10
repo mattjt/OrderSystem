@@ -1,4 +1,4 @@
-Permissions System
+Permission System
 ----
 |Permission|Description|
 |:-----:|:---------:|
