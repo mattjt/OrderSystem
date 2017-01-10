@@ -164,8 +164,9 @@
                                                                 <div class="col-md-6">
                                                                     <fieldset>
                                                                         <legend>Modify Order</legend>
-                                                                        {% if current_user.id == order.ordered_by or current_user.is_admin %}
-                                                                            <a href="{{ url_for('OrderBackend:update', order_status="unprocessed",order_id = order.id) }}"
+                                                                        {% if current_user.id == order.part_ordered_by
+                                                                        or current_user.is_admin %}
+                                                                        <a href="{{ url_for('OrderBackend:update', order_status='shipped',order_id = order.id) }}"
                                                                                class="btn btn-block btn-success btn-flat">
                                                                                 Edit
                                                                             </a>
@@ -174,8 +175,9 @@
                                                                                 class="btn btn-block btn-warning btn-flat disabled">
                                                                             Suggest alternate vendor
                                                                         </button>
-                                                                        {% if current_user.id == order.ordered_by or current_user.is_admin %}
-                                                                            <a href="{{ url_for('OrderBackend:delete', order_status="unprocessed",order_id = order.id) }}"
+                                                                        {% if current_user.id == order.part_ordered_by
+                                                                        or current_user.is_admin %}
+                                                                        <a href="{{ url_for('OrderBackend:delete', order_status='shipped',order_id = order.id) }}"
                                                                                class="btn btn-block btn-danger btn-flat">
                                                                                 Delete
                                                                             </a>
