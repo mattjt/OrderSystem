@@ -62,3 +62,4 @@ configuration/
 configurationBkp/
 logs/
 MORTOrderSystemVENV/
+venv
