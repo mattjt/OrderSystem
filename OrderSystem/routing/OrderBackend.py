@@ -7,7 +7,7 @@ from sqlalchemy import and_
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from ErrorHandler import get_current_user
-from OrderSystem import db, Common
+from OrderSystem import db
 from OrderSystem import forms
 from OrderSystem.routing.CRUDBase import CRUDBase
 from OrderSystem.sql.ORM import Order, Subteam, Vendor
@@ -46,9 +46,9 @@ class OrderBackend(FlaskView, CRUDBase):
             try:
                 fiscal_year = get_fiscal_year()
                 vendor_id = request.form['vendor']
-                part_name = order_form.part_name.data
-                part_url = order_form.part_url.data
-                part_number = order_form.part_number.data
+                part_name = str(order_form.part_name.data).replace("/[^\x00-\x7F]/g", "")
+                part_url = str(order_form.part_url.data).replace("/[^\x00-\x7F]/g", "")
+                part_number = str(order_form.part_number.data).replace("/[^\x00-\x7F]/g", "")
                 part_quantity = int(order_form.part_quantity.data)
                 part_unit_price = float(order_form.part_unit_price.data)
                 part_total_price = round(part_quantity * part_unit_price, 2)
@@ -67,27 +67,7 @@ class OrderBackend(FlaskView, CRUDBase):
 
                 return redirect(url_for('OrderBackend:index', order_status="unprocessed"))
             except Exception as e:
-                if Common.DEBUG_MODE:
-                    log_event('ERROR', '{0} encountered {1} at {2}'.format(get_current_user(), e, request.path))
-                    log_event("ERROR", """
-                    ~~~ REQUEST BREAKDOWN ~~~
-                    FIS_YR = {0}
-                    VEN_ID = {1}
-                    P_NAME = {2}
-                    P_URL = {3}
-                    P_NUM = {4}
-                    P_QUAN = {5}
-                    P_UNITP = {6}
-                    P_TP = {7}
-                    P_NB = {8}
-                    P_FS = {9}
-                    P_OB = {10}
-                    P_OO = {11}
-                    TOT = {12}
-                    ~~~ END REQUEST BREAKDOWN ~~~
-                    """.format(fiscal_year, vendor_id, part_name, part_url, part_number, part_quantity, part_unit_price,
-                               part_total_price, part_needed_by, part_for_subteam, part_ordered_by, part_ordered_on,
-                               total))
+                log_event('ERROR', '{0} encountered {1} at {2}'.format(get_current_user(), e, request.path))
                 db.session.rollback()
                 flash(
                     "Unknown database error! [{0}]. Please contact a system administrator if the issue persists".format(
@@ -95,8 +75,7 @@ class OrderBackend(FlaskView, CRUDBase):
         else:
             flash_errors(order_form)
         return render_template('orders/manage/new-order.html', today_date=strftime("%m/%d/%Y"), form=order_form,
-                               subteams=subteams,
-                               vendors=vendors)
+                               subteams=subteams, vendors=vendors)
 
     @route('/<order_status>')
     @login_required
@@ -152,9 +131,9 @@ class OrderBackend(FlaskView, CRUDBase):
                 if form.validate_on_submit():
                     vendor_id = request.form['vendor']
 
-                    part_name = form.part_name.data
-                    part_url = form.part_url.data
-                    part_number = form.part_number.data
+                    part_name = str(form.part_name.data).replace("/[^\x00-\x7F]/g", "")
+                    part_url = str(form.part_url.data).replace("/[^\x00-\x7F]/g", "")
+                    part_number = str(form.part_number.data).replace("/[^\x00-\x7F]/g", "")
                     part_quantity = float(form.part_quantity.data)
                     part_unit_price = float(form.part_unit_price.data)
                     part_shipping_cost = 0
