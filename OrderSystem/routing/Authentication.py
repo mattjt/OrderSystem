@@ -4,7 +4,7 @@ from sqlalchemy import or_
 
 from OrderSystem import forms, db
 from OrderSystem.sql.ORM import User
-from OrderSystem.utilities.Helpers import verify_password, flash_errors
+from OrderSystem.utilities.Helpers import verify_password, flash_errors, strip_non_ascii
 from OrderSystem.utilities.ServerLogger import log_event
 
 auth = Blueprint('auth', __name__)
@@ -16,8 +16,8 @@ def login():
     form = forms.Login()
 
     if form.validate_on_submit():
-        username = form.username.data
-        password = form.password.data
+        username = strip_non_ascii(form.username.data)
+        password = strip_non_ascii(form.password.data)
 
         # Find matching user
         user = db.session.query(User).filter(or_(User.username == username)).first()

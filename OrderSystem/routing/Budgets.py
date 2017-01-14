@@ -10,7 +10,7 @@ from OrderSystem import db
 from OrderSystem import forms
 from OrderSystem.routing.CRUDBase import CRUDBase
 from OrderSystem.sql.ORM import Budget, Subteam, Order
-from OrderSystem.utilities.Helpers import flash_errors, get_fiscal_year
+from OrderSystem.utilities.Helpers import flash_errors, get_fiscal_year, strip_non_ascii
 from OrderSystem.utilities.Permissions import update_order_status_access_required
 from OrderSystem.utilities.ServerLogger import log_event
 
@@ -111,7 +111,7 @@ class Budgets(FlaskView, CRUDBase):
             if form.validate_on_submit():
                 if existing_budget is None:
                     # Subteam didn't have a budget previously set
-                    db.session.add(Budget(subteam_id, form.amount.data, fiscal_year))
+                    db.session.add(Budget(subteam_id, strip_non_ascii(form.amount.data), fiscal_year))
                 else:
                     # Subteam had an existing budget; update the previous one instead of creating a new DB row
                     existing_budget.dollar_amount = form.amount.data

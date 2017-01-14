@@ -9,7 +9,7 @@ from CRUDBase import CRUDBase
 from OrderSystem import db
 from OrderSystem import forms
 from OrderSystem.sql.ORM import User, Subteam, Budget, Settings
-from OrderSystem.utilities.Helpers import hash_password, flash_errors, generate_random_password
+from OrderSystem.utilities.Helpers import hash_password, flash_errors, generate_random_password, strip_non_ascii
 from OrderSystem.utilities.Mailer import mail_registration, mail_password_reset
 from OrderSystem.utilities.Permissions import admin_access_required
 from OrderSystem.utilities.ServerLogger import log_event
@@ -39,7 +39,7 @@ class Admin(FlaskView, CRUDBase):
             fiscal_setting = db.session.query(Settings).filter(Settings.key == "fiscal_year").first()
 
             if request.method == "POST":
-                new_fiscal_year = request.values['newFiscalYear']
+                new_fiscal_year = int(strip_non_ascii(request.values['newFiscalYear']))
                 fiscal_setting.value = new_fiscal_year
                 db.session.commit()
                 return redirect(url_for('Admin:index'))
@@ -63,11 +63,11 @@ class UserManager(FlaskView, CRUDBase):
 
         if form.validate_on_submit():
             try:
-                username = form.username.data
-                first_name = form.first_name.data
-                last_name = form.last_name.data
+                username = strip_non_ascii(form.username.data)
+                first_name = strip_non_ascii(form.first_name.data)
+                last_name = strip_non_ascii(form.last_name.data)
                 password = base64.urlsafe_b64encode(os.urandom(8))
-                email = form.email.data
+                email = strip_non_ascii(form.email.data)
                 is_admin = form.is_admin.data
                 can_receive_pending_orders = form.can_receive_pending_orders.data
                 can_approve_orders = form.can_approve_orders.data
@@ -131,10 +131,10 @@ class UserManager(FlaskView, CRUDBase):
                 user_to_update = User.query.filter(User.id == user_id).first()
 
                 # Gather information
-                username = form.username.data
-                first_name = form.first_name.data
-                last_name = form.last_name.data
-                email = form.email.data
+                username = strip_non_ascii(form.username.data)
+                first_name = strip_non_ascii(form.first_name.data)
+                last_name = strip_non_ascii(form.last_name.data)
+                email = strip_non_ascii(form.email.data)
                 is_admin = form.is_admin.data
                 can_receive_pending_orders = form.can_receive_pending_orders.data
                 can_approve_orders = form.can_approve_orders.data
@@ -235,7 +235,8 @@ class SubteamManager(FlaskView, CRUDBase):
 
         if form.validate_on_submit():
             try:
-                db.session.add(Subteam(form.subteam_name.data, form.hidden_from_choosable_subteams_list.data))
+                db.session.add(
+                    Subteam(strip_non_ascii(form.subteam_name.data), form.hidden_from_choosable_subteams_list.data))
                 db.session.commit()
                 log_event("AUDIT",
                           "{0} created a new subteam called {1}".format(current_user.username, form.subteam_name.data))
@@ -271,7 +272,7 @@ class SubteamManager(FlaskView, CRUDBase):
 
         if form.validate_on_submit():
             try:
-                subteam.name = form.subteam_name.data
+                subteam.name = strip_non_ascii(form.subteam_name.data)
                 subteam.hidden_from_choosable_subteams_list = form.hidden_from_choosable_subteams_list.data
 
                 db.session.commit()

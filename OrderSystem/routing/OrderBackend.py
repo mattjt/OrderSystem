@@ -11,7 +11,7 @@ from OrderSystem import db
 from OrderSystem import forms
 from OrderSystem.routing.CRUDBase import CRUDBase
 from OrderSystem.sql.ORM import Order, Subteam, Vendor
-from OrderSystem.utilities.Helpers import flash_errors, get_fiscal_year
+from OrderSystem.utilities.Helpers import flash_errors, get_fiscal_year, strip_non_ascii
 from OrderSystem.utilities.Permissions import update_order_status_access_required, approve_order_access_required
 from OrderSystem.utilities.ServerLogger import log_event
 
@@ -46,9 +46,9 @@ class OrderBackend(FlaskView, CRUDBase):
             try:
                 fiscal_year = get_fiscal_year()
                 vendor_id = request.form['vendor']
-                part_name = str(order_form.part_name.data).replace("/[^\x00-\x7F]/g", "")
-                part_url = str(order_form.part_url.data).replace("/[^\x00-\x7F]/g", "")
-                part_number = str(order_form.part_number.data).replace("/[^\x00-\x7F]/g", "")
+                part_name = strip_non_ascii(order_form.part_name.data)
+                part_url = strip_non_ascii(order_form.part_url.data)
+                part_number = strip_non_ascii(order_form.part_number.data)
                 part_quantity = int(order_form.part_quantity.data)
                 part_unit_price = float(order_form.part_unit_price.data)
                 part_total_price = round(part_quantity * part_unit_price, 2)
@@ -131,9 +131,9 @@ class OrderBackend(FlaskView, CRUDBase):
                 if form.validate_on_submit():
                     vendor_id = request.form['vendor']
 
-                    part_name = str(form.part_name.data).replace("/[^\x00-\x7F]/g", "")
-                    part_url = str(form.part_url.data).replace("/[^\x00-\x7F]/g", "")
-                    part_number = str(form.part_number.data).replace("/[^\x00-\x7F]/g", "")
+                    part_name = strip_non_ascii(form.part_name.data)
+                    part_url = strip_non_ascii(form.part_url.data)
+                    part_number = strip_non_ascii(form.part_number.data)
                     part_quantity = float(form.part_quantity.data)
                     part_unit_price = float(form.part_unit_price.data)
                     part_shipping_cost = 0
