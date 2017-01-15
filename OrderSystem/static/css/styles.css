@@ -5,22 +5,22 @@
   color: inherit; }
 
 .budget-full {
-  background-color: #17bd1a; }
+  background-color: #2dd22d; }
 
 .budget-medium {
-  background-color: #a7bd2d; }
+  background-color: #98cb11; }
 
 .budget-low {
-  background-color: #bda421; }
+  background-color: #efc70f; }
 
 .budget-verylow {
-  background-color: #bd5434; }
+  background-color: #fca611; }
 
 .budget-critical {
-  background-color: #bd0006;
+  background-color: #f97116;
   color: #fff; }
 
 .budget-empty {
-  background-color: black;
+  background-color: #ff0000;
   color: white; }
 
