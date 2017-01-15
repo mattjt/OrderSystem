@@ -39,7 +39,7 @@ class Admin(FlaskView, CRUDBase):
             fiscal_setting = db.session.query(Settings).filter(Settings.key == "fiscal_year").first()
 
             if request.method == "POST":
-                new_fiscal_year = int(strip_non_ascii(request.values['newFiscalYear']))
+                new_fiscal_year = int(request.values['newFiscalYear'])
                 fiscal_setting.value = new_fiscal_year
                 db.session.commit()
                 return redirect(url_for('Admin:index'))
