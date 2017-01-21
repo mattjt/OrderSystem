@@ -33,6 +33,8 @@ class Order(db.Model):
     # Advisor input
     pending_approval = db.Column('pending_approval', db.Boolean, nullable=False)
     order_dirty = db.Column('order_dirty', db.Boolean, nullable=False)
+    approved_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    approving_user = db.relationship('User', foreign_keys=[approved_by])
 
     def __init__(self, fiscal_year, vendor_id, part_name, part_url, part_number, part_quantity, part_unit_price,
                  part_total_price, part_needed_by, part_for_subteam, part_ordered_by, part_ordered_on, total):
@@ -49,6 +51,7 @@ class Order(db.Model):
         self.part_ordered_by = part_ordered_by
         self.part_ordered_on = part_ordered_on
         self.total = total
+        self.approved_by = 1
         self.order_status = "unprocessed"
         self.pending_approval = True
         self.order_dirty = True
