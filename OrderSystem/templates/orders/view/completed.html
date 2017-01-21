@@ -91,6 +91,11 @@
                                                                         <p><strong>Ordered By
                                                                             - </strong> {{ order.ordering_user.first_name }} {{ order.ordering_user.last_name }}
                                                                         </p>
+                                                                        <p><strong>Approved By
+                                                                            - </strong> {{
+                                                                            order.approving_user.first_name }} {{
+                                                                            order.approving_user.last_name }}
+                                                                        </p>
                                                                         <p><strong>Ordered On
                                                                             - </strong> {{ order.part_ordered_on }}</p>
                                                                         <p><strong>Needed By

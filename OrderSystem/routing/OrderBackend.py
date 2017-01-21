@@ -374,6 +374,7 @@ class PendingOrders(FlaskView, CRUDBase):
         if current_user.is_admin or current_user.subteam_ref.id == order_to_approve.part_for_subteam:
             if not order_to_approve == None:
                 order_to_approve.pending_approval = False
+                order_to_approve.approved_by = current_user.id
                 db.session.commit()
                 flash("Successfully approved order!", 'success')
             else:
