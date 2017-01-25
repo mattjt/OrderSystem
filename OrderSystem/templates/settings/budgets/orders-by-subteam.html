@@ -16,6 +16,7 @@
                             <td class="text-center"><strong>Quantity</strong></td>
                             <td class="text-center"><strong>Ordered On</strong></td>
                             <td class="text-center"><strong>Ordered By</strong></td>
+                            <td class="text-center"><strong>Approved By</strong></td>
                             <td class="text-right"><strong>Total</strong></td>
                         </tr>
                         </thead>
@@ -27,6 +28,9 @@
                                 <td class="text-center">{{ order.part_quantity }}</td>
                                 <td class="text-center">{{ order.part_ordered_on }}</td>
                                 <td class="text-center">{{ order.ordering_user.first_name }} {{ order.ordering_user.last_name }}</td>
+                                <td class="text-center">{{ order.approving_user.first_name }} {{
+                                    order.approving_user.last_name }}
+                                </td>
                                 <td class="text-right">${{ order.part_total_price }}</td>
                             </tr>
                         {% endfor %}
@@ -35,10 +39,12 @@
                             <td class="highrow"></td>
                             <td class="highrow"></td>
                             <td class="highrow"></td>
+                            <td class="highrow"></td>
                             <td class="highrow text-center"><strong>Subtotal</strong></td>
                             <td class="highrow text-right">${{ total }}</td>
                         </tr>
                         <tr>
+                            <td class="emptyrow"></td>
                             <td class="emptyrow"></td>
                             <td class="emptyrow"></td>
                             <td class="emptyrow"></td>
