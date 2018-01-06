@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Budgets Summary for {{ subteam.name }}{% endblock %}
+{% block title %}Budget Summary for {{ subteam.name }}{% endblock %}
 {% block content %}
     <div id="order-summary">
         <div class="panel panel-default">
@@ -28,8 +28,7 @@
                                 <td class="text-center">{{ order.part_quantity }}</td>
                                 <td class="text-center">{{ order.part_ordered_on }}</td>
                                 <td class="text-center">{{ order.ordering_user.first_name }} {{ order.ordering_user.last_name }}</td>
-                                <td class="text-center">{{ order.approving_user.first_name }} {{
-                                    order.approving_user.last_name }}
+                                <td class="text-center">{{ order.approving_user.first_name }} {{ order.approving_user.last_name }}
                                 </td>
                                 <td class="text-right">${{ order.part_total_price }}</td>
                             </tr>
@@ -59,7 +58,7 @@
         </div>
     </div>
     <button type="button" class="btn btn-success" onclick="printContent('order-summary')">
-        Print Summary <i class="fa fa-print"></i>
+        <span class="fa fa-print"></span>&nbsp; Print Summary
     </button>
 {% endblock %}
 {% block stylesheets %}

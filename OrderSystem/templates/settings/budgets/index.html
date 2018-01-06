@@ -2,8 +2,12 @@
 {% block title %}Budgets{% endblock %}
 {% block content %}
     <div class="container">
-        <h3 style="text-align: center"><strong>Current Fiscal Year - [{{ fiscal_year }}]</strong></h3>
+        <h3 style="text-align: center">
+            <strong>Current Fiscal Year - [{{ fiscal_year }}]</strong>
+        </h3>
+
         <hr>
+
         {% for i in range(subteams|length) %}
             <div class="col-md-10 well {{ css_classes[i] }}">
                 <a href="{{ url_for('Budgets:view_orders_by_subteam', fiscal_year=fiscal_year, subteam_id=ids[i]) }}">

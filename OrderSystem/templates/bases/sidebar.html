@@ -66,6 +66,14 @@
                 </a>
             </li>
 
+            {# Budget viewer #}
+            <li {% if page == "budgets" %}class="active"{% endif %}>
+                <a href="{{ url_for('Budgets:index', fiscal_year=current_fiscal_year) }}">
+                    <i class="fa fa-area-chart"></i>
+                    Budgets
+                </a>
+            </li>
+
             <li class="header">DATA</li>
 
             {# Export data #}
@@ -77,22 +85,27 @@
             </li>
 
             {# Historical data browser #}
-            <li {% if page == "historical_orders" %}class="active"{% endif %}>
+            <li class="treeview  {% if (page == "historical_orders") %}active{% endif %}">
                 <a href="#">
                     <i class="fa fa-history"></i>
                     Historical Orders
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
                 </a>
+                <ul class="treeview-menu">
+                    {% for year in distinct_fiscal_years %}
+                        <li>
+                            <a href="{{ url_for('Budgets:index', fiscal_year=year) }}">
+                                <i class="fa fa-circle-o {% if page == "" %}text-red{% endif %}"></i>
+                                {{ year }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
             </li>
 
             <li class="header">SETTINGS</li>
-
-            {# Budget viewer #}
-            <li {% if page == "budgets" %}class="active"{% endif %}>
-                <a href="{{ url_for('Budgets:index') }}">
-                    <i class="fa fa-area-chart"></i>
-                    Budgets
-                </a>
-            </li>
 
             {# Vendor manager #}
             <li {% if page == "vendors" %}class="active"{% endif %}>
