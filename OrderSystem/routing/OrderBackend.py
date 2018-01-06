@@ -143,10 +143,10 @@ class OrderBackend(FlaskView, CRUDBase):
                         part_shipping_cost = float(request.values['shipping'])
                         part_credit = float(request.values['credit'])
 
-                    part_total_price = round(((part_unit_price * part_quantity) + part_shipping_cost) - part_credit, 2)
+                    part_total_price = round((part_unit_price * part_quantity), 2)
                     part_needed_by = form.needed_by.data
                     part_for_subteam = request.values['for_subteam']
-                    total = part_total_price
+                    total = round(((part_unit_price * part_quantity) + part_shipping_cost) - part_credit, 2)
 
                     order.vendor_id = vendor_id
                     order.part_name = part_name

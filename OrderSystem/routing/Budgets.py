@@ -148,9 +148,16 @@ class Budgets(FlaskView, CRUDBase):
 
         subteam = db.session.query(Subteam).filter(Subteam.id == subteam_id).first()
 
+        subtotal = 0
+        credit = 0
+        shipping = 0
         total = 0
         for order in orders_by_subteam:
+            subtotal += order.part_total_price
+            credit += order.credit
+            shipping += order.part_shipping_cost
             total += order.total
 
         return render_template('settings/budgets/orders-by-subteam.html', orders_by_subteam=orders_by_subteam,
-                               total=total, subteam=subteam)
+                               total=total, credit=credit, shipping=shipping, subtotal=subtotal, subteam=subteam,
+                               fiscal_year=fiscal_year)
