@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
-{% block title %}Budget Summary for {{ subteam.name }}{% endblock %}
+{% block title %}{{ fiscal_year }} Budget Summary for {{ subteam.name }}{% endblock %}
 {% block content %}
     <div id="order-summary">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="text-center"><strong>Summary for {{ subteam.name }}</strong></h3>
+                <h3 class="text-center"><strong>{{ fiscal_year }} Budget Summary for {{ subteam.name }}</strong></h3>
             </div>
             <div class="panel-body">
                 <div class="table-responsive">
@@ -40,7 +40,7 @@
                             <td class="highrow"></td>
                             <td class="highrow"></td>
                             <td class="highrow text-center"><strong>Subtotal</strong></td>
-                            <td class="highrow text-right">${{ total }}</td>
+                            <td class="highrow text-right">${{ subtotal }}</td>
                         </tr>
                         <tr>
                             <td class="emptyrow"></td>
@@ -48,8 +48,26 @@
                             <td class="emptyrow"></td>
                             <td class="emptyrow"></td>
                             <td class="emptyrow"></td>
-                            <td class="emptyrow text-center"><strong>Total Expenditures</strong></td>
-                            <td class="emptyrow text-right">${{ total }}</td>
+                            <td class="emptyrow text-center"><strong>Shipping</strong></td>
+                            <td class="emptyrow text-right">${{ shipping }}</td>
+                        </tr>
+                        <tr>
+                            <td class="emptyrow"></td>
+                            <td class="emptyrow"></td>
+                            <td class="emptyrow"></td>
+                            <td class="emptyrow"></td>
+                            <td class="emptyrow"></td>
+                            <td class="emptyrow text-center"><strong>Credit</strong></td>
+                            <td class="emptyrow text-right">-${{ credit }}</td>
+                        </tr>
+                        <tr>
+                            <td class="emptyrow"></td>
+                            <td class="emptyrow"></td>
+                            <td class="emptyrow"></td>
+                            <td class="emptyrow"></td>
+                            <td class="emptyrow"></td>
+                            <td class="highrow text-center"><strong>Total Expenditures</strong></td>
+                            <td class="highrow text-right">${{ total }}</td>
                         </tr>
                         </tbody>
                     </table>
