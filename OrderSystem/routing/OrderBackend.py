@@ -162,7 +162,10 @@ class OrderBackend(FlaskView, CRUDBase):
                     order.total = total
 
                     db.session.commit()
-                    return redirect(url_for('OrderBackend:index', order_status=order_status))
+                    if order_status == "pending":
+                        return redirect(url_for('PendingOrders:index'))
+                    else:
+                        return redirect(url_for('OrderBackend:index', order_status=order_status))
 
                 else:
                     flash_errors(form)

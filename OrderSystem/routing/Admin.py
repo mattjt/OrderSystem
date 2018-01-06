@@ -217,6 +217,50 @@ class UserManager(FlaskView, CRUDBase):
             log_event("ERROR", e)
             abort(500)
 
+    @route('/admin/users/disable-account/<int:user_id>')
+    @admin_access_required
+    def disable_account(self, user_id):
+        """
+        Disable a user's account by changing their password to a random 64-character string
+
+        :param user_id: User ID
+        :return: Redirect to admin dashboard
+        """
+        try:
+            user = db.session.query(User).filter(User.id == user_id).first()
+            password = generate_random_password(password_length=64)
+            user.password = hash_password(password)
+            user.username = str(user.username + "-DISABLED")
+            db.session.commit()
+            flash("Successfully disabled account!")
+            return redirect(url_for('UserManager:index'))
+        except Exception as e:
+            log_event("ERROR", e)
+            abort(500)
+
+    @route('/admin/users/enable-account/<int:user_id>')
+    @admin_access_required
+    def enable_account(self, user_id):
+        """
+        Re-enable the user's account by emailing them a new password
+
+        :param user_id: User ID
+        :return: Redirect to admin dashboard
+        """
+        try:
+            user = db.session.query(User).filter(User.id == user_id).first()
+            user.needs_password_reset = True
+            password = generate_random_password()
+            user.password = hash_password(password)
+            user.username = str(user.username).replace("-DISABLED", "")
+            mail_password_reset(user, password)
+            db.session.commit()
+            flash("Successfully enabled account!")
+            return redirect(url_for('UserManager:index'))
+        except Exception as e:
+            log_event("ERROR", e)
+            abort(500)
+
 
 class SubteamManager(FlaskView, CRUDBase):
     """
