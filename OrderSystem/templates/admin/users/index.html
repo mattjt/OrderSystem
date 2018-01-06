@@ -20,12 +20,22 @@
         <td><a href="mailto:{{ user.email }}">{{ user.email }}</a></td>
         <td>
             <a href="{{ url_for('UserManager:update', user_id=user.id) }}"
-               class="btn btn-flat btn-warning">Edit</a>
+               class="btn btn-flat btn-info">Edit</a>
             <a href="{{ url_for('UserManager:enable_forced_password_reset', user_id=user.id) }}"
                onclick="return confirm('Are you sure you want to reset this account password?')"
                class="btn btn-flat btn-success">Reset Password</a>
-            <a href="{{ url_for('UserManager:delete', user_id=user.id) }}"
-               onclick="return confirm('Are you sure you want to delete this user?')" class="btn btn-flat btn-danger">Delete</a>
+            {#            <a href="{{ url_for('UserManager:delete', user_id=user.id) }}"#}
+            {#               onclick="return confirm('Are you sure you want to delete this user?')" class="btn btn-flat btn-danger">Delete</a>#}
+            {% if '-DISABLED' in user.username %}
+                <a href="{{ url_for('UserManager:enable_account', user_id=user.id) }}"
+                   onclick="return confirm('Are you sure you want to enable this account?')"
+                   class="btn btn-flat btn-warning">Enable</a>
+            {% else %}
+                <a href="{{ url_for('UserManager:disable_account', user_id=user.id) }}"
+                   onclick="return confirm('Are you sure you want to disable this account?')"
+                   class="btn btn-flat btn-danger">Disable</a>
+            {% endif %}
+
         </td>
     </tr>
     {% endfor %}

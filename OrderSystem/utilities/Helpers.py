@@ -70,12 +70,14 @@ def needs_password_reset_check(function):
     return wrapper
 
 
-def generate_random_password():
+def generate_random_password(password_length=8):
     """
     Used to generate temporary passwords for new/password-reset accounts
-    @return: 8 character base64 password
+
+    :param password_length: Optionally specify password length
+    @return: base64 password
     """
-    return base64.urlsafe_b64encode(os.urandom(8))
+    return base64.urlsafe_b64encode(os.urandom(password_length))
 
 
 def get_fiscal_year():
