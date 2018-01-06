@@ -44,7 +44,7 @@ class OrderBackend(FlaskView, CRUDBase):
 
         if order_form.validate_on_submit():
             try:
-                fiscal_year = get_fiscal_year()
+                fiscal_year = get_fiscal_year()['current_fiscal_year']
                 vendor_id = request.form['vendor']
                 part_name = strip_non_ascii(order_form.part_name.data)
                 part_url = strip_non_ascii(order_form.part_url.data)
@@ -89,7 +89,7 @@ class OrderBackend(FlaskView, CRUDBase):
         """
         orders = db.session.query(Order).filter(
             Order.pending_approval == False,
-            Order.fiscal_year == get_fiscal_year(),
+            Order.fiscal_year == get_fiscal_year()['current_fiscal_year'],
             Order.order_status == order_status
         ).order_by(Order.part_ordered_on.asc())
 
@@ -120,7 +120,7 @@ class OrderBackend(FlaskView, CRUDBase):
             order = db.session.query(Order).filter(Order.id == order_id).first()
 
             if order.part_ordered_by == current_user.id or current_user.is_admin or (
-                            current_user.subteam == order.part_for_subteam and current_user.can_approve_orders):
+                    current_user.subteam == order.part_for_subteam and current_user.can_approve_orders):
                 # Get available vendors and sort alphabetically
                 vendors = db.session.query(Vendor).order_by(Vendor.vendor_name)
 

@@ -2,9 +2,9 @@ from flask import render_template, redirect, url_for, Blueprint, abort
 from flask_login import current_user, login_required
 from sqlalchemy import and_
 
-from OrderSystem import forms
+from OrderSystem import forms, app
 from OrderSystem import login_manager, db
-from OrderSystem.sql.ORM import User, Order, Vendor
+from OrderSystem.sql.ORM import User, Order, Vendor, Budget
 from OrderSystem.utilities.Helpers import hash_password, flash_errors, needs_password_reset_check, get_fiscal_year
 from OrderSystem.utilities.ServerLogger import log_event
 
@@ -16,7 +16,7 @@ main = Blueprint('main', __name__)
 @login_required
 @needs_password_reset_check
 def index():
-    fiscal_year = get_fiscal_year()
+    fiscal_year = get_fiscal_year()['current_fiscal_year']
 
     orders_this_fiscal_year = db.session.query(Order).filter(
         and_(Order.fiscal_year == fiscal_year, Order.pending_approval == False))
@@ -59,3 +59,10 @@ def force_password_reset():
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.query(User).get(int(user_id))
+
+
+@app.context_processor
+def get_fiscal_years():
+    distinct_fiscal_years = db.session.query(Budget.fiscal_year).distinct()
+    years = [row.fiscal_year for row in distinct_fiscal_years.all()]
+    return dict(distinct_fiscal_years=years)

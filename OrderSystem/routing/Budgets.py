@@ -10,7 +10,7 @@ from OrderSystem import db
 from OrderSystem import forms
 from OrderSystem.routing.CRUDBase import CRUDBase
 from OrderSystem.sql.ORM import Budget, Subteam, Order
-from OrderSystem.utilities.Helpers import flash_errors, get_fiscal_year
+from OrderSystem.utilities.Helpers import flash_errors
 from OrderSystem.utilities.Permissions import update_order_status_access_required
 from OrderSystem.utilities.ServerLogger import log_event
 
@@ -33,16 +33,15 @@ class Budgets(FlaskView, CRUDBase):
         """
         pass
 
-    @route('/')
+    @route('/<int:fiscal_year>')
     @login_required
-    def index(self):
+    def index(self, fiscal_year):
         """
         Shows the user an overview of the budgets for subteams this year
 
         @return: List of subteams color-coded with their amount of money remaining
         """
         subteams = db.session.query(Subteam).all()
-        fiscal_year = get_fiscal_year()
 
         ids = []
         names = []

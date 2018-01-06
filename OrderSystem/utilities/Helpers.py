@@ -9,7 +9,7 @@ import scrypt
 from flask import flash, url_for, redirect
 from flask_login import current_user
 
-from OrderSystem import db
+from OrderSystem import db, app
 from OrderSystem.sql.ORM import User, Settings
 
 
@@ -80,13 +80,14 @@ def generate_random_password(password_length=8):
     return base64.urlsafe_b64encode(os.urandom(password_length))
 
 
+@app.context_processor
 def get_fiscal_year():
     """
     @return: Current fiscal year
     """
     # Get current fiscal_year
     fiscal_year = db.session.query(Settings).filter(Settings.key == "fiscal_year").first()
-    return fiscal_year.value
+    return dict(current_fiscal_year=fiscal_year.value)
 
 
 def strip_non_ascii(string):
