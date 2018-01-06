@@ -105,6 +105,18 @@ class OrderBackend(FlaskView, CRUDBase):
                                today_date=strftime("%m-%d-%Y"), orders=orders, num_of_orders=orders.count(),
                                page="orders_" + order_status)
 
+    @route('/single/<order_id>')
+    @login_required
+    def single_order_view(self, order_id):
+        """
+        Shows the user a single order given an order ID
+
+        @return: Single order view
+        """
+        order = db.session.query(Order).filter(Order.id == order_id).first()
+
+        return render_template('orders/view/single-order-view.html', order=order)
+
     @route('/update/<string:order_status>/<int:order_id>', methods=['GET', 'POST'])
     @login_required
     def update(self, order_status, order_id):

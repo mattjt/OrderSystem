@@ -23,7 +23,11 @@
                         <tbody>
                         {% for order in orders_by_subteam %}
                             <tr>
-                                <td>{{ order.part_name }}</td>
+                                <td>
+                                    <a href="{{ url_for('OrderBackend:single_order_view', order_id = order.id) }}">
+                                        {{ order.part_name }}
+                                    </a>
+                                </td>
                                 <td class="text-center">${{ order.part_unit_price }}</td>
                                 <td class="text-center">{{ order.part_quantity }}</td>
                                 <td class="text-center">{{ order.part_ordered_on }}</td>
@@ -91,6 +95,12 @@
 
         .table > tbody > tr > .highrow {
             border-top: 3px solid;
+        }
+
+        @media print {
+            a[href]:after {
+                content: none;
+            }
         }
     </style>
 {% endblock %}
