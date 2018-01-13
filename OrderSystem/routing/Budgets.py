@@ -6,7 +6,7 @@ from flask_login import login_required
 from sqlalchemy import and_
 from werkzeug.utils import redirect
 
-from OrderSystem import db
+from OrderSystem import db, sentry
 from OrderSystem import forms
 from OrderSystem.routing.CRUDBase import CRUDBase
 from OrderSystem.sql.ORM import Budget, Subteam, Order
@@ -124,6 +124,7 @@ class Budgets(FlaskView, CRUDBase):
             return render_template('settings/budgets/set.html', form=form)
         except Exception as e:
             log_event("ERROR", e)
+            sentry.captureException()
             abort(500)
 
     def delete(self):

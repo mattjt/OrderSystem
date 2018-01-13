@@ -7,7 +7,7 @@ from sqlalchemy import and_
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from ErrorHandler import get_current_user
-from OrderSystem import db
+from OrderSystem import db, sentry
 from OrderSystem import forms
 from OrderSystem.routing.CRUDBase import CRUDBase
 from OrderSystem.sql.ORM import Order, Subteam, Vendor
@@ -68,6 +68,7 @@ class OrderBackend(FlaskView, CRUDBase):
                 return redirect(url_for('OrderBackend:index', order_status="unprocessed"))
             except Exception as e:
                 log_event('ERROR', '{0} encountered {1} at {2}'.format(get_current_user(), e, request.path))
+                sentry.captureException()
                 db.session.rollback()
                 flash(
                     "Unknown database error! [{0}]. Please contact a system administrator if the issue persists".format(
@@ -188,6 +189,7 @@ class OrderBackend(FlaskView, CRUDBase):
                 return redirect(url_for('OrderBackend:index', order_status=order_status))
         except Exception as e:
             log_event("ERROR", e)
+            sentry.captureException()
             abort(500)
 
     @route('/delete/<string:order_status>/<int:order_id>', methods=['GET'])
@@ -211,6 +213,7 @@ class OrderBackend(FlaskView, CRUDBase):
             return redirect(url_for('OrderBackend:index', order_status=order_status))
         except Exception as e:
             log_event("ERROR", e)
+            sentry.captureException()
             db.session.rollback()
             flash("Error deleting order! [{0}]".format(e), 'error')
             return redirect(url_for('OrderBackend:index', order_status=order_status))
@@ -246,6 +249,7 @@ class OrderBackend(FlaskView, CRUDBase):
                 return redirect(url_for('OrderBackend:index', order_status=current_status))
         except Exception as e:
             log_event("ERROR", e)
+            sentry.captureException()
             abort(500)
 
 
@@ -270,14 +274,18 @@ class Vendors(FlaskView, CRUDBase):
 
         vendor_form = forms.NewVendor(request.form)
 
-        if vendor_form.validate_on_submit():
-            db.session.add(Vendor(vendor_form.vendor_name.data, vendor_form.vendor_url.data,
-                                  vendor_form.vendor_email.data if vendor_form.vendor_email.data != "" else "None",
-                                  vendor_form.vendor_phone.data if vendor_form.vendor_phone.data != "" else "None"))
-            db.session.commit()
-            return redirect(url_for('Vendors:index'))
-        else:
-            flash_errors(vendor_form)
+        try:
+            if vendor_form.validate_on_submit():
+                db.session.add(Vendor(vendor_form.vendor_name.data, vendor_form.vendor_url.data,
+                                      vendor_form.vendor_email.data if vendor_form.vendor_email.data != "" else "None",
+                                      vendor_form.vendor_phone.data if vendor_form.vendor_phone.data != "" else "None"))
+                db.session.commit()
+                return redirect(url_for('Vendors:index'))
+            else:
+                flash_errors(vendor_form)
+        except Exception as e:
+            log_event("ERROR", e)
+            sentry.captureException()
 
         return render_template('settings/vendors/add-vendor.html', form=vendor_form)
 
@@ -300,17 +308,21 @@ class Vendors(FlaskView, CRUDBase):
 
         @return: Redirect to Vendors index if successful
         """
-        vendor = db.session.query(Vendor).filter(Vendor.id == vendor_id).first()
+        try:
+            vendor = db.session.query(Vendor).filter(Vendor.id == vendor_id).first()
 
-        vendor_form = forms.NewVendor(request.form)
+            vendor_form = forms.NewVendor(request.form)
 
-        if vendor_form.validate_on_submit():
-            vendor.vendor_name = vendor_form.vendor_name.data
-            vendor.vendor_url = vendor_form.vendor_url.data
-            vendor.vendor_email = vendor_form.vendor_email.data
-            vendor.vendor_phone = vendor_form.vendor_phone.data
-            db.session.commit()
-            return redirect(url_for('Vendors:index'))
+            if vendor_form.validate_on_submit():
+                vendor.vendor_name = vendor_form.vendor_name.data
+                vendor.vendor_url = vendor_form.vendor_url.data
+                vendor.vendor_email = vendor_form.vendor_email.data
+                vendor.vendor_phone = vendor_form.vendor_phone.data
+                db.session.commit()
+                return redirect(url_for('Vendors:index'))
+        except Exception as e:
+            log_event("ERROR", e)
+            sentry.captureException()
 
         return render_template('settings/vendors/edit-vendor.html', form=vendor_form, vendor=vendor)
 
@@ -384,18 +396,21 @@ class PendingOrders(FlaskView, CRUDBase):
         @return: Redirect to PendingOrders index
         """
         order_to_approve = db.session.query(Order).filter(Order.id == order_id).first()
-
-        # If the user is an admin, or is a member of that subteam, they can approve the order
-        if current_user.is_admin or current_user.subteam_ref.id == order_to_approve.part_for_subteam:
-            if not order_to_approve == None:
-                order_to_approve.pending_approval = False
-                order_to_approve.approved_by = current_user.id
-                db.session.commit()
-                flash("Successfully approved order!", 'success')
+        try:
+            # If the user is an admin, or is a member of that subteam, they can approve the order
+            if current_user.is_admin or current_user.subteam_ref.id == order_to_approve.part_for_subteam:
+                if not order_to_approve == None:
+                    order_to_approve.pending_approval = False
+                    order_to_approve.approved_by = current_user.id
+                    db.session.commit()
+                    flash("Successfully approved order!", 'success')
+                else:
+                    flash("You tried to approve/deny a non-existent order", 'error')
             else:
-                flash("You tried to approve/deny a non-existent order", 'error')
-        else:
-            flash("You can't approve an order that isn't made on your subteam's behalf!")
+                flash("You can't approve an order that isn't made on your subteam's behalf!")
+        except:
+            sentry.captureException()
+
         return redirect(url_for('PendingOrders:index'))
 
     @route('/deny/<int:order_id>')
@@ -407,16 +422,18 @@ class PendingOrders(FlaskView, CRUDBase):
         @return: Redirect to PendingOrders index
         """
         order_to_deny = db.session.query(Order).filter(Order.id == order_id).first()
-
-        # If the user is an admin, or is a member of that subteam, they can approve the order
-        if current_user.is_admin or current_user.subteam_ref.id == order_to_deny.part_for_subteam:
-            try:
-                db.session.delete(order_to_deny)
-                db.session.commit()
-                flash("Successfully denied order!", 'warning')
-            except UnmappedInstanceError:
-                flash("You tried to approve/deny a non-existent order", 'error')
-        else:
-            flash("You can't deny an order that isn't made on your subteam's behalf!", 'error')
+        try:
+            # If the user is an admin, or is a member of that subteam, they can approve the order
+            if current_user.is_admin or current_user.subteam_ref.id == order_to_deny.part_for_subteam:
+                try:
+                    db.session.delete(order_to_deny)
+                    db.session.commit()
+                    flash("Successfully denied order!", 'warning')
+                except UnmappedInstanceError:
+                    flash("You tried to approve/deny a non-existent order", 'error')
+            else:
+                flash("You can't deny an order that isn't made on your subteam's behalf!", 'error')
+        except:
+            sentry.captureException()
 
         return redirect(url_for('PendingOrders:index'))
