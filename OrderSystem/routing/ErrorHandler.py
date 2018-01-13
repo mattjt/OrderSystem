@@ -9,7 +9,6 @@ from OrderSystem.utilities.ServerLogger import log_event
 @app.errorhandler(403)
 @app.errorhandler(404)
 @app.errorhandler(405)
-@app.errorhandler(500)
 @app.errorhandler(502)
 @app.errorhandler(503)
 @login_required
@@ -19,6 +18,12 @@ def error_handler(error_code):
         pass
     else:
         log_event('ERROR', '{0} encountered {1} at {2}'.format(get_current_user(), error_code, request.path))
+    return render_template('errors/base.html', error_code=error_code)
+
+
+@app.errorhandler(500)
+def internal_error_handler(error_code):
+    log_event('ERROR', '{0} encountered {1} at {2}'.format(get_current_user(), error_code, request.path))
     return render_template('errors/base.html', error_code=error_code, event_id=g.sentry_event_id,
                            public_dsn=sentry.client.get_public_dsn('https'))
 
