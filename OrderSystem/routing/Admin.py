@@ -6,7 +6,7 @@ from flask_classy import FlaskView, route
 from flask_login import current_user
 
 from CRUDBase import CRUDBase
-from OrderSystem import db
+from OrderSystem import db, sentry
 from OrderSystem import forms
 from OrderSystem.sql.ORM import User, Subteam, Budget, Settings
 from OrderSystem.utilities.Helpers import hash_password, flash_errors, generate_random_password, strip_non_ascii
@@ -46,6 +46,7 @@ class Admin(FlaskView, CRUDBase):
             return render_template('admin/fiscal-year.html', current_year=fiscal_setting.value)
         except Exception as e:
             log_event("ERROR", e)
+            sentry.captureException()
             abort(500)
 
 
@@ -107,6 +108,7 @@ class UserManager(FlaskView, CRUDBase):
             except Exception as e:
                 db.session.rollback()
                 log_event("ERROR", e)
+                sentry.captureException()
                 flash("Unknown database error! [{0}]".format(e), 'error')
         else:
             flash_errors(form)
@@ -159,6 +161,7 @@ class UserManager(FlaskView, CRUDBase):
             except Exception as e:
                 db.session.rollback()
                 log_event("ERROR", e)
+                sentry.captureException()
                 flash("Unknown database error! [{0}]".format(e), 'error')
 
             return redirect(url_for('UserManager:index'))
@@ -193,6 +196,7 @@ class UserManager(FlaskView, CRUDBase):
             return redirect(url_for('UserManager:index'))
         except Exception as e:
             log_event("ERROR", e)
+            sentry.captureException()
             abort(500)
 
     @route('/admin/users/reset-password/<int:user_id>')
@@ -215,6 +219,7 @@ class UserManager(FlaskView, CRUDBase):
             return redirect(url_for('UserManager:index'))
         except Exception as e:
             log_event("ERROR", e)
+            sentry.captureException()
             abort(500)
 
     @route('/admin/users/disable-account/<int:user_id>')
@@ -236,6 +241,7 @@ class UserManager(FlaskView, CRUDBase):
             return redirect(url_for('UserManager:index'))
         except Exception as e:
             log_event("ERROR", e)
+            sentry.captureException()
             abort(500)
 
     @route('/admin/users/enable-account/<int:user_id>')
@@ -259,6 +265,7 @@ class UserManager(FlaskView, CRUDBase):
             return redirect(url_for('UserManager:index'))
         except Exception as e:
             log_event("ERROR", e)
+            sentry.captureException()
             abort(500)
 
 
@@ -288,6 +295,7 @@ class SubteamManager(FlaskView, CRUDBase):
             except Exception as e:
                 db.session.rollback()
                 log_event("ERROR", e)
+                sentry.captureException()
                 flash("Unknown database error!", 'error')
         else:
             flash_errors(form)
@@ -324,6 +332,7 @@ class SubteamManager(FlaskView, CRUDBase):
             except Exception as e:
                 db.session.rollback()
                 log_event("ERROR", e)
+                sentry.captureException()
                 flash("Unknown database error!", 'error')
         else:
             flash_errors(form)
@@ -347,6 +356,7 @@ class SubteamManager(FlaskView, CRUDBase):
             db.session.commit()
         except Exception as e:
             log_event("ERROR", e)
+            sentry.captureException()
             flash("You can't delete this subteam! There are team members that are still members of it!", 'warning')
 
         return redirect(url_for('SubteamManager:index'))

@@ -1,6 +1,7 @@
 import requests
 from flask import render_template
 
+from OrderSystem import sentry
 from OrderSystem.utilities.ServerLogger import log_event
 
 DEFAULT_EMAIL = "orders-noreply@mort11.org"
@@ -27,6 +28,7 @@ def send_email(subject, recipients, body, sender_name=DEFAULT_NAME, sender_email
         log_event("MAILING-ERROR",
                   "Mailing subsystem encountered an error! :,(\n\n {0} \n -----------------------------------------".format(
                       e))
+        sentry.captureException()
 
 
 def mail_registration(recipient_email, first_name, last_name, username, password):

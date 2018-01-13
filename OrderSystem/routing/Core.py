@@ -52,16 +52,6 @@ def force_password_reset():
         return render_template('auth/password-reset.html', form=form)
     except Exception as e:
         log_event("ERROR", e)
-        abort(500)
-
-
-@main.route('/geterror', methods=['GET'])
-@login_required
-def get_error():
-    try:
-        1 / 0
-    except Exception as e:
-        log_event("ERROR", e)
         sentry.captureException()
         abort(500)
 
