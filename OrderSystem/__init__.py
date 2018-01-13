@@ -5,6 +5,7 @@ from Crypto.Util.number import long_to_bytes
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+from raven.contrib.flask import Sentry
 
 from OrderSystem.Common import CONFIG_ROOT
 
@@ -28,6 +29,9 @@ app.config["SECRET_KEY"] = long_to_bytes(getrandbits(32))
 
 # Instantiate SQLAlchemy
 db = SQLAlchemy(app)
+
+# Setup sentry logging
+sentry = Sentry(app, dsn='https://f8ef7f188bf94deb898536d0668c4a29:5e30affaa5984a429a8af228a8baeed4@sentry.io/271212')
 
 # Start login manager
 login_manager = LoginManager()

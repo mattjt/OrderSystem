@@ -11,6 +11,17 @@
                 The system has encountered an error.
                 Meanwhile, you may <a href="{{ url_for('main.index') }}">return to dashboard</a>
             </p>
+
+            <!-- Sentry JS SDK 2.1.+ required -->
+            <script src="https://cdn.ravenjs.com/2.3.0/raven.min.js"></script>
+            {% if event_id %}
+                <script>
+                    Raven.showReportDialog({
+                        eventId: '{{ event_id }}',
+                        dsn: '{{ public_dsn }}'
+                    });
+                </script>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, Blueprint, abort
 from flask_login import current_user, login_required
 from sqlalchemy import and_
 
-from OrderSystem import forms, app
+from OrderSystem import forms, app, sentry
 from OrderSystem import login_manager, db
 from OrderSystem.sql.ORM import User, Order, Vendor, Budget
 from OrderSystem.utilities.Helpers import hash_password, flash_errors, needs_password_reset_check, get_fiscal_year
@@ -52,6 +52,17 @@ def force_password_reset():
         return render_template('auth/password-reset.html', form=form)
     except Exception as e:
         log_event("ERROR", e)
+        abort(500)
+
+
+@main.route('/geterror', methods=['GET'])
+@login_required
+def get_error():
+    try:
+        1 / 0
+    except Exception as e:
+        log_event("ERROR", e)
+        sentry.captureException()
         abort(500)
 
 
