@@ -149,17 +149,9 @@ class OrderBackend(FlaskView, CRUDBase):
                     part_number = strip_non_ascii(form.part_number.data)
                     part_quantity = float(form.part_quantity.data)
                     part_unit_price = float(form.part_unit_price.data)
-                    part_shipping_cost = 0
-                    part_credit = 0
-
-                    if current_user.can_update_order_status:
-                        part_shipping_cost = float(request.values['shipping'])
-                        part_credit = float(request.values['credit'])
-
                     part_total_price = round((part_unit_price * part_quantity), 2)
                     part_needed_by = form.needed_by.data
                     part_for_subteam = request.values['for_subteam']
-                    total = round(((part_unit_price * part_quantity) + part_shipping_cost) - part_credit, 2)
 
                     order.vendor_id = vendor_id
                     order.part_name = part_name
@@ -168,9 +160,24 @@ class OrderBackend(FlaskView, CRUDBase):
                     order.part_quantity = part_quantity
                     order.part_unit_price = part_unit_price
                     order.part_total_price = part_total_price
-                    order.part_shipping_cost = part_shipping_cost
                     order.part_needed_by = part_needed_by
                     order.part_for_subteam = part_for_subteam
+
+                    part_shipping_cost = order.part_shipping_cost
+                    part_credit = order.credit
+
+                    # Check permissions and that field aren't empty
+                    if current_user.can_update_order_status:
+                        shipping = request.values['shipping']
+                        if shipping != '':
+                            part_shipping_cost = float(shipping)
+
+                        credit = request.values['credit']
+                        if credit != '':
+                            part_credit = float(credit)
+
+                    order.part_shipping_cost = part_shipping_cost
+                    total = round(((part_unit_price * part_quantity) + part_shipping_cost) - part_credit, 2)
                     order.credit = part_credit
                     order.total = total
 
