@@ -2,6 +2,6 @@ OrderSystem
 ------------
 A free to use part ordering system
 
-----------
-
-**Further documentation coming soon...**
+Documentation
+--------------
+Component documentation can be found under the Docs/ directory
