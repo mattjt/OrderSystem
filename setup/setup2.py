@@ -27,7 +27,8 @@ db.session.add(Settings(key="fiscal_year", value=date.today().year))
 
 db.session.add(Subteam("Order System Admin", False))
 db.session.add(
-    User("robotics-osa", "MORT", "Admin", hash_password('admin'), "delete_me@mort11.org", True, True, True, True, True,
+    User("robotics-osa", "DELETE ME", "AFTER SETUP", hash_password('admin'), "delete_me@mort11.org", True, True,
+         True, True, True,
          1))
 db.session.commit()
 print ("Done")

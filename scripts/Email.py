@@ -1,4 +1,4 @@
-***REMOVED***
+from ConfigParser import SafeConfigParser
 
 import jinja2
 import requests

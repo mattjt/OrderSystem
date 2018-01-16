@@ -1,44 +1,44 @@
-***REMOVED***
+from ConfigParser import SafeConfigParser
 
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
+from Crypto.Random.random import getrandbits
+from Crypto.Util.number import long_to_bytes
+from flask import Flask
+from flask_login import LoginManager
+from flask_sqlalchemy import SQLAlchemy
+from raven.contrib.flask import Sentry
 
-***REMOVED***
+from OrderSystem.Common import CONFIG_ROOT
 
-***REMOVED***Bkp
+# Load app configurationBkp
 parser = SafeConfigParser()
 parser.read(CONFIG_ROOT + "mysql.ini")
 
-***REMOVED***
-***REMOVED***
+# Instantiate entire application
+app = Flask(__name__, static_url_path='/static')
 
-***REMOVED***
+# Configure database path
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{0}:{1}@{2}/{3}'.format(parser.get("mysql", "mysql_user"),
                                                                          parser.get("mysql", "mysql_password"),
                                                                          parser.get("mysql", "mysql_host"),
                                                                          parser.get("mysql", "mysql_database"))
-***REMOVED***
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-***REMOVED***
-***REMOVED***
-***REMOVED***
+# App settings
+app.config["VERBOSE_OUTPUT"] = True
+app.config["SECRET_KEY"] = long_to_bytes(getrandbits(32))
 
-***REMOVED***
-***REMOVED***
+# Instantiate SQLAlchemy
+db = SQLAlchemy(app)
 
-***REMOVED***
+# Setup sentry logging
 sentry = Sentry(app, dsn='https://f8ef7f188bf94deb898536d0668c4a29:5e30affaa5984a429a8af228a8baeed4@sentry.io/271212')
 
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
+# Start login manager
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'auth.login'
 
-***REMOVED***
-***REMOVED***
+# Initialize application routes
+from OrderSystem import RouteController
 
-***REMOVED***
+RouteController.init()
