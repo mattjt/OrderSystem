@@ -163,8 +163,8 @@ class OrderBackend(FlaskView, CRUDBase):
                     order.part_needed_by = part_needed_by
                     order.part_for_subteam = part_for_subteam
 
-                    part_shipping_cost = order.part_shipping_cost
-                    part_credit = order.credit
+                    part_shipping_cost = float(order.part_shipping_cost)
+                    part_credit = float(order.credit)
 
                     # Check permissions and that field aren't empty
                     if current_user.can_update_order_status:
