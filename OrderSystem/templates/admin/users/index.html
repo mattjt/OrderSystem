@@ -1,60 +1,58 @@
 {% extends 'base.html' %}
 {% block title %}User Manager{% endblock %}
 {% block content %}
-{% include 'bases/validation-error-base.html' %}
+    {% include 'bases/validation-error-base.html' %}
 
-<table id="usersTable" class="table table-striped">
-    <thead>
-    <tr>
-	<th>ID</th>
-        <th>Username</th>
-        <th>Name</th>
-        <th>E-Mail</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for user in users %}
-    <tr>
-	<td>{{ user.id }}</td>
-        <td>{{ user.username }}</td>
-        <td>{{ user.first_name }} {{ user.last_name }}</td>
-        <td><a href="mailto:{{ user.email }}">{{ user.email }}</a></td>
-        <td>
-            <a href="{{ url_for('UserManager:update', user_id=user.id) }}"
-               class="btn btn-flat btn-info">Edit</a>
-            <a href="{{ url_for('UserManager:enable_forced_password_reset', user_id=user.id) }}"
-               onclick="return confirm('Are you sure you want to reset this account password?')"
-               class="btn btn-flat btn-success">Reset Password</a>
-            {% if '-DISABLED' in user.username %}
-                <a href="{{ url_for('UserManager:enable_account', user_id=user.id) }}"
-                   onclick="return confirm('Are you sure you want to enable this account?')"
-                   class="btn btn-flat btn-warning">Enable</a>
-            {% else %}
-                <a href="{{ url_for('UserManager:disable_account', user_id=user.id) }}"
-                   onclick="return confirm('Are you sure you want to disable this account?')"
-                   class="btn btn-flat btn-danger">Disable</a>
-            {% endif %}
+    <table id="usersTable" class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Name</th>
+            <th>E-Mail</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                <td><a href="mailto:{{ user.email }}">{{ user.email }}</a></td>
+                <td>
+                    <a href="{{ url_for('UserManager:update', user_id=user.id) }}"
+                       class="btn btn-flat btn-info">Edit</a>
+                    <a href="{{ url_for('UserManager:enable_forced_password_reset', user_id=user.id) }}"
+                       onclick="return confirm('Are you sure you want to reset this account password?')"
+                       class="btn btn-flat btn-success">Reset Password</a>
+                    {% if '-DISABLED' in user.username %}
+                        <a href="{{ url_for('UserManager:enable_account', user_id=user.id) }}"
+                           onclick="return confirm('Are you sure you want to enable this account?')"
+                           class="btn btn-flat btn-warning">Enable</a>
+                    {% else %}
+                        <a href="{{ url_for('UserManager:disable_account', user_id=user.id) }}"
+                           onclick="return confirm('Are you sure you want to disable this account?')"
+                           class="btn btn-flat btn-danger">Disable</a>
+                    {% endif %}
 
-        </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
-<div style="padding: 25px">
-    <a href="{{ url_for('UserManager:create') }}" class="btn btn-flat btn-block btn-primary">Add User</a>
-</div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div style="padding: 25px">
+        <a href="{{ url_for('UserManager:create') }}" class="btn btn-flat btn-block btn-primary">Add User</a>
+    </div>
 {% endblock %}
 {% block stylesheets %}
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
 {% endblock %}
 {% block scripts %}
-<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript">
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
         $(document).ready(function () {
             $('#usersTable').DataTable();
         });
-
-
-</script>
+    </script>
 {% endblock %}
