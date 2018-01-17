@@ -29,6 +29,13 @@ if not os.path.isfile(CONFIG_ROOT + "mysql.ini"):
     with open(CONFIG_ROOT + "mysql.ini", 'w') as mysql:
         mysql.write(f_contents)
 
+# Create sentry.ini
+if not os.path.isfile(CONFIG_ROOT + "sentry.ini"):
+    # Boilerplate config
+    f_contents = "[sentry]\ndsn = YOUR_SENTRY_DSN"
+    with open(CONFIG_ROOT + "mailgun.ini", 'w') as mailgun:
+        mailgun.write(f_contents)
+
 # Create logs dir if not exist
 if not os.path.isdir(LOG_ROOT):
     os.mkdir(LOG_ROOT)
