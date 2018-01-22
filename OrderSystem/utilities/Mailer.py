@@ -1,11 +1,16 @@
+from ConfigParser import SafeConfigParser
+
 import requests
 from flask import render_template
 
-from OrderSystem import sentry
+from OrderSystem import sentry, CONFIG_ROOT
 from OrderSystem.utilities.ServerLogger import log_event
 
 DEFAULT_EMAIL = "orders-noreply@mort11.org"
 DEFAULT_NAME = "MORT Orders"
+
+conf_parser = SafeConfigParser()
+conf_parser.read(CONFIG_ROOT + "mailgun.ini")
 
 
 #####################
@@ -13,14 +18,13 @@ DEFAULT_NAME = "MORT Orders"
 #####################
 def send_email(subject, recipients, body, sender_name=DEFAULT_NAME, sender_email=DEFAULT_EMAIL):
     try:
-        requests.post(
-            "https://api.mailgun.net/v3/mg.mort11.org/messages",
-            auth=("api", "key-43bd883a0e65f3738340c81a0066a99a"),
-            data={"from": "{0} <{1}>".format(sender_name, sender_email),
-                  "to": recipients,
-                  "subject": subject,
-                  "text": subject,
-                  "html": body})
+        requests.post(conf_parser.get("mailgun", "api_url"),
+                      auth=("api", conf_parser.get("mailgun", "api_key")),
+                      data={"from": "{0} <{1}>".format(sender_name, sender_email),
+                            "to": recipients,
+                            "subject": subject,
+                            "text": subject,
+                            "html": body})
 
         log_event("MAILING-INFO", "[{0}] sent to ({1})".format(subject, recipients))
 
