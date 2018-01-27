@@ -24,7 +24,7 @@ class Admin(FlaskView, CRUDBase):
     @route('')
     @admin_access_required
     def index(self):
-        return render_template('admin/index.html')
+        return render_template('admin/index.html', page="admin")
 
     def update(self):
         pass
@@ -43,7 +43,7 @@ class Admin(FlaskView, CRUDBase):
                 fiscal_setting.value = new_fiscal_year
                 db.session.commit()
                 return redirect(url_for('Admin:index'))
-            return render_template('admin/fiscal-year.html', current_year=fiscal_setting.value)
+            return render_template('admin/fiscal-year.html', current_year=fiscal_setting.value, page="admin")
         except Exception as e:
             log_event("ERROR", e)
             sentry.captureException()
@@ -81,14 +81,14 @@ class UserManager(FlaskView, CRUDBase):
 
                 if username_exists is not None:
                     flash("Username already taken!", 'error')
-                    return render_template('admin/users/add-user.html', form=form, subteams=subteams)
+                    return render_template('admin/users/add-user.html', form=form, subteams=subteams, page="admin")
 
                 # Check if email is already in use
                 email_exists = db.session.query(User).filter(User.email == email).first()
 
                 if email_exists is not None:
                     flash("Email exists!", 'error')
-                    return render_template('admin/users/add-user.html', form=form, subteams=subteams)
+                    return render_template('admin/users/add-user.html', form=form, subteams=subteams, page="admin")
 
                 # Create the user
                 db.session.add(
@@ -112,13 +112,13 @@ class UserManager(FlaskView, CRUDBase):
                 flash("Unknown database error! [{0}]".format(e), 'error')
         else:
             flash_errors(form)
-        return render_template('admin/users/add-user.html', form=form, subteams=subteams)
+        return render_template('admin/users/add-user.html', form=form, subteams=subteams, page="admin")
 
     @route('')
     @admin_access_required
     def index(self):
         users = db.session.query(User)
-        return render_template('admin/users/index.html', users=users)
+        return render_template('admin/users/index.html', users=users, page="admin")
 
     # Edit user given user_id
     @route('/edit/<int:user_id>', methods=['GET', 'POST'])
@@ -171,7 +171,7 @@ class UserManager(FlaskView, CRUDBase):
 
         user = db.session.query(User).filter(User.id == user_id).first()
 
-        return render_template('admin/users/edit-user.html', user=user, form=form, error=error, subteams=subteams)
+        return render_template('admin/users/edit-user.html', user=user, form=form, error=error, subteams=subteams, page="admin")
 
     @route('/delete/<int:user_id>')
     @admin_access_required
@@ -299,7 +299,7 @@ class SubteamManager(FlaskView, CRUDBase):
                 flash("Unknown database error!", 'error')
         else:
             flash_errors(form)
-        return render_template('admin/subteams/add-subteam.html', form=form)
+        return render_template('admin/subteams/add-subteam.html', form=form, page="admin")
 
     @route('')
     @admin_access_required
@@ -309,7 +309,7 @@ class SubteamManager(FlaskView, CRUDBase):
         @return: Subteam manager dashboard
         """
         subteams = db.session.query(Subteam)
-        return render_template('admin/subteams/index.html', subteams=subteams)
+        return render_template('admin/subteams/index.html', subteams=subteams, page="admin")
 
     @route('/edit/<int:subteam_id>', methods=['GET', 'POST'])
     @admin_access_required
@@ -336,7 +336,7 @@ class SubteamManager(FlaskView, CRUDBase):
                 flash("Unknown database error!", 'error')
         else:
             flash_errors(form)
-        return render_template('admin/subteams/edit-subteam.html', form=form, subteam=subteam)
+        return render_template('admin/subteams/edit-subteam.html', form=form, subteam=subteam, page="admin")
 
     @route('/delete/<int:subteam_id>')
     @admin_access_required
