@@ -10,8 +10,9 @@
         <div style="border-bottom: 2px solid black"></div>
     {% endif %}
     <div class="row" style="padding-bottom:10px; margin: 10px 0 0;border-bottom: 2px solid black">
-        <div class="col-md-6 text-center"><strong>Part Details [p/u = price per unit]</strong></div>
+        <div class="col-md-5 text-center"><strong>Part Details [p/u = price per unit]</strong></div>
         <div class="col-md-2 text-center"><strong>Subteam</strong></div>
+        <div class="col-md-1 text-center"><strong>Info</strong></div>
         <div class="col-md-4 text-center"><strong>Actions</strong></div>
     </div>
     <hr>
@@ -21,7 +22,7 @@
         {% for order in orders %}
             <div style="padding-top: 25px;"></div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <div class="well">
                         <div class="row">
                             <div class="col-md-6">
@@ -41,6 +42,21 @@
                 <div class="col-md-2 text-center">
                     <div class="well">
                         <h4><strong>{{ order.subteam.name }}</strong></h4>
+                    </div>
+                </div>
+                <div class="col-md-1 text-center">
+                    <div class="well">
+                        <p>
+                            <small><strong>Ordered on:</strong></small>
+                            <br>
+                            <em>{{ order.part_ordered_on }}</em>
+                        </p>
+                        <hr>
+                        <p>
+                            <small><strong>Needed by:</strong></small>
+                            <br>
+                            <em>{{ order.part_needed_by }}</em>
+                        </p>
                     </div>
                 </div>
                 {% if current_user.can_approve_orders or current_user.is_admin %}
