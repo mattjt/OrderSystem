@@ -5,10 +5,10 @@
             {% include 'bases/validation-error-base.html' %}
             <div class="box box-solid">
                 <div class="box-header with-border">
-                    <div class="row">
+                    <div class="row hidden-xs">
                         <div class="col-sm-5"><h4><strong>Product</strong></h4></div>
-                        <div class="col-sm-2"><h4><strong>Vendor</strong></h4></div>
-                        <div class="col-sm-1"><h4><strong>Subteam</strong></h4></div>
+                        <div class="col-sm-1"><h4><strong>Vendor</strong></h4></div>
+                        <div class="col-sm-2"><h4><strong>Subteam</strong></h4></div>
                         <div class="col-sm-1"><h4><strong>Ordered On</strong></h4></div>
                         <div class="col-sm-1"><h4><strong>Qty</strong></h4></div>
                         <div class="col-sm-1"><h4><strong>Unit Price</strong></h4></div>
@@ -30,19 +30,26 @@
                                                             {{ order.part_name }}
                                                         </strong></small>
                                                     </div>
-                                                    <div class="col-md-2">
-                                                        <small style="font-size: 14px;">
-                                                            {{ order.vendor.vendor_name }}
-                                                        </small>
-                                                    </div>
+                                                    <hr class="hidden-md hidden-lg">
                                                     <div class="col-md-1">
                                                         <small style="font-size: 14px;">
-                                                            {{ order.subteam.name }}
+                                                            <span class="hidden-md
+                                                            hidden-lg"><strong>Vendor - </strong></span> {{ order
+                                                            .vendor.vendor_name }}
+                                                        </small>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <small style="font-size: 14px;">
+                                                            <span class="hidden-md
+                                                            hidden-lg"><strong>Subteam - </strong></span>{{ order
+                                                            .subteam.name }}
                                                         </small>
                                                     </div>
                                                     <div class="col-md-1">
                                                         <small style="font-size: 14px;">
                                                             <strong>
+                                                                <span class="hidden-md
+                                                            hidden-lg"><strong>Ordered On - </strong></span>
                                                                 <em>
                                                                     {{ order.part_ordered_on }}
                                                                 </em>
@@ -51,6 +58,8 @@
                                                     </div>
                                                     <div class="col-md-1">
                                                         <small style="font-size: 14px;">
+                                                            <span class="hidden-md
+                                                            hidden-lg"><strong>Qty - </strong></span>
                                                             <em>
                                                                 {{ order.part_quantity }}
                                                             </em>
@@ -58,13 +67,18 @@
                                                     </div>
                                                     <div class="col-md-1">
                                                         <small style="font-size: 14px;">
+                                                            <span class="hidden-md
+                                                            hidden-lg"><strong>Unit Price - </strong></span>
                                                             <em>
                                                                 ${{ order.part_unit_price }}
                                                             </em>
                                                         </small>
                                                     </div>
+                                                    <hr class="hidden-md hidden-lg">
                                                     <div class="col-md-1">
                                                         <small style="font-size: 16px;">
+                                                        <span class="hidden-md
+                                                            hidden-lg"><strong>Total - </strong></span>
                                                             <strong>
                                                                 ${{ order.total }}
                                                             </strong>
@@ -221,6 +235,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <hr class="hidden-md hidden-lg">
                             {% endfor %}
                         {% else %}
                             <h3 style="text-align: center;"><strong>No orders</strong></h3>
