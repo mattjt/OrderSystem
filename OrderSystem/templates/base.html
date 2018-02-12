@@ -48,19 +48,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="/static/js/app.min.js"></script>
-<script src="https://cdn.ravenjs.com/3.22.1/raven.min.js" crossorigin="anonymous"></script>
-<script>
-    Raven.config('https://30303a3c461d439fa277d353db2d2231@sentry.io/273267').install();
-    {% if current_user.is_authenticated %}
-        Raven.setUserContext({
-            username: '{{ current_user.username }}',
-            email: '{{ current_user.email }}',
-            id: '{{ current_user.id }}'
-        });
-    {% else %}
-        Raven.setUserContext();
-    {% endif %}
-</script>
+
 {# Additional page-specific scripts#}
 {% block scripts %}{% endblock %}
 </body>
