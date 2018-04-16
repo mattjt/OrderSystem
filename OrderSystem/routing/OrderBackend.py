@@ -76,7 +76,7 @@ class OrderBackend(FlaskView, CRUDBase):
         else:
             flash_errors(order_form)
         return render_template('orders/manage/new-order.html', today_date=strftime("%m/%d/%Y"), form=order_form,
-                               subteams=subteams, vendors=vendors)
+                               subteams=subteams, vendors=vendors, page="new_order")
 
     @route('/<order_status>')
     @login_required
@@ -116,7 +116,7 @@ class OrderBackend(FlaskView, CRUDBase):
         """
         order = db.session.query(Order).filter(Order.id == order_id).first()
 
-        return render_template('orders/view/single-order-view.html', order=order)
+        return render_template('orders/view/single-order-view.html', order=order, page="orders")
 
     @route('/update/<string:order_status>/<int:order_id>', methods=['GET', 'POST'])
     @login_required
@@ -190,7 +190,7 @@ class OrderBackend(FlaskView, CRUDBase):
                 else:
                     flash_errors(form)
                 return render_template('orders/manage/edit-order.html', order=order, form=form, vendors=vendors,
-                                       subteams=subteams)
+                                       subteams=subteams, page="orders")
             else:
                 flash("You can't edit an order that you didn't create!", 'error')
                 return redirect(url_for('OrderBackend:index', order_status=order_status))
@@ -294,7 +294,7 @@ class Vendors(FlaskView, CRUDBase):
             log_event("ERROR", e)
             sentry.captureException()
 
-        return render_template('settings/vendors/add-vendor.html', form=vendor_form)
+        return render_template('settings/vendors/add-vendor.html', form=vendor_form, page="vendors")
 
     @route('/index')
     @login_required
@@ -331,7 +331,7 @@ class Vendors(FlaskView, CRUDBase):
             log_event("ERROR", e)
             sentry.captureException()
 
-        return render_template('settings/vendors/edit-vendor.html', form=vendor_form, vendor=vendor)
+        return render_template('settings/vendors/edit-vendor.html', form=vendor_form, vendor=vendor, page="vendors")
 
     @route('/delete/<int:vendor_id>', methods=['GET'])
     @login_required
@@ -391,7 +391,7 @@ class PendingOrders(FlaskView, CRUDBase):
             # User is a normal mentor
             orders_for_subteam = db.session.query(Order).filter(and_(
                 Order.part_for_subteam == current_user.subteam, Order.pending_approval == True))
-        return render_template('orders/pending/index.html', orders=orders_for_subteam,
+        return render_template('orders/pending/index.html', orders=orders_for_subteam, page="pending_orders",
                                is_order_system_admin=is_order_system_admin)
 
     @route('/approve/<int:order_id>')

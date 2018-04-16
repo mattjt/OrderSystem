@@ -2,7 +2,7 @@ from flask import redirect, url_for, request, render_template, Blueprint, flash
 from flask_login import login_user, logout_user
 from sqlalchemy import or_
 
-from OrderSystem import forms, db
+from OrderSystem import forms, db, sentry
 from OrderSystem.sql.ORM import User
 from OrderSystem.utilities.Helpers import verify_password, flash_errors
 from OrderSystem.utilities.ServerLogger import log_event
@@ -31,6 +31,11 @@ def login():
         # Check if passwords match
         if verify_password(user.password, password):
             login_user(user, remember=True)
+            sentry.user_context({
+                'id': user.id,
+                'username': user.username,
+                'email': user.email
+            })
 
             # Redirect to previous page
             return redirect(request.args.get('prev') or request.args.get('next') or "/")

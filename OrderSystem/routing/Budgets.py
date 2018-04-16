@@ -87,10 +87,10 @@ class Budgets(FlaskView, CRUDBase):
 
         return render_template('settings/budgets/index.html', subteams=names, cash_left=cash_left,
                                started_with=started_with, css_classes=css_classes, fiscal_year=fiscal_year,
-                               ids=ids,
+                               ids=ids, page="budgets",
                                thresholds=[self.BUDGET_FULL_THRESH, self.BUDGET_MEDIUM_THRESH, self.BUDGET_LOW_THRESH])
 
-    @route('/<fiscal_year>/<subteam_id>/set', methods=['GET', 'POST'])
+    @route('/<int:fiscal_year>/<int:subteam_id>/set', methods=['GET', 'POST'])
     @update_order_status_access_required
     def update(self, fiscal_year, subteam_id):
         """
@@ -121,7 +121,7 @@ class Budgets(FlaskView, CRUDBase):
             else:
                 flash_errors(form)
 
-            return render_template('settings/budgets/set.html', form=form)
+            return render_template('settings/budgets/set.html', form=form, page="budgets")
         except Exception as e:
             log_event("ERROR", e)
             sentry.captureException()
@@ -133,7 +133,7 @@ class Budgets(FlaskView, CRUDBase):
         """
         pass
 
-    @route('/<fiscal_year>/<subteam_id>')
+    @route('/<int:fiscal_year>/<int:subteam_id>')
     @login_required
     def view_orders_by_subteam(self, fiscal_year, subteam_id):
         """
@@ -161,4 +161,4 @@ class Budgets(FlaskView, CRUDBase):
 
         return render_template('settings/budgets/orders-by-subteam.html', orders_by_subteam=orders_by_subteam,
                                total=total, credit=credit, shipping=shipping, subtotal=subtotal, subteam=subteam,
-                               fiscal_year=fiscal_year)
+                               fiscal_year=fiscal_year, page="budgets")

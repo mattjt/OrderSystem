@@ -17,7 +17,7 @@ def generate_random_string(length):
     return ''.join(chr(random.randint(0, 255)) for i in range(length))
 
 
-def hash_password((password), max_time=2.5, data_length=64):
+def hash_password((password), max_time=0.5, data_length=64):
     return scrypt.encrypt(generate_random_string(data_length), str(password), maxtime=max_time)
 
 

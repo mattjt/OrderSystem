@@ -10,7 +10,8 @@
             </li>
 
             {# Orders #}
-            <li class="treeview {% if (page == "orders_unprocessed") or (page == "orders_in-progress") or (page == "orders_shipped") or (page == "orders_completed") %}active{% endif %}">
+            <li class="treeview {% if (page == "orders_unprocessed") or (page == "orders_in-progress") or (page ==
+            "orders_shipped") or (page == "orders_completed") or (page == "orders") %}active{% endif %}">
                 <a href="#">
                     <i class="fa fa-shopping-cart"></i>
                     Orders
@@ -85,7 +86,7 @@
             </li>
 
             {# Historical data browser #}
-            <li class="treeview  {% if (page == "historical_orders") %}active{% endif %}">
+            <li class="treeview  {% if (page == "budgets") %}active{% endif %}">
                 <a href="#">
                     <i class="fa fa-history"></i>
                     Historical Orders
@@ -97,7 +98,7 @@
                     {% for year in distinct_fiscal_years %}
                         <li>
                             <a href="{{ url_for('Budgets:index', fiscal_year=year) }}">
-                                <i class="fa fa-circle-o {% if page == "" %}text-red{% endif %}"></i>
+                                <i class="fa fa-circle-o {% if year == fiscal_year %}text-red{% endif %}"></i>
                                 {{ year }}
                             </a>
                         </li>
