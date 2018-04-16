@@ -5,9 +5,9 @@ from flask_classy import FlaskView, route
 from flask_login import login_required
 
 from OrderSystem import db, sentry
+from OrderSystem.routing.ErrorHandler import get_current_user
 from OrderSystem.sql.ORM import Order
-from routing.ErrorHandler import get_current_user
-from utilities.ServerLogger import log_event
+from OrderSystem.utilities.ServerLogger import log_event
 
 
 class SystemService(FlaskView):
