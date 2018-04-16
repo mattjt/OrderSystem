@@ -84,8 +84,7 @@ class OrderBackend(FlaskView, CRUDBase):
         """
         Shows the user an overview of all unprocessed, in progress, and completed orders.
 
-        @note OrderSystem will only show orders that have been approved from pending by the OS admin or the subteam
-        mentor
+        @note OrderSystem will only show orders that have been approved from pending by the OSA or the subteam mentor
         @return: OrderSystem home page
         """
         orders = db.session.query(Order).filter(

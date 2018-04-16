@@ -5,6 +5,7 @@ from OrderSystem.routing.Authentication import auth
 from OrderSystem.routing.Budgets import Budgets
 from OrderSystem.routing.Core import main
 from OrderSystem.routing.OrderBackend import OrderBackend, Vendors, PendingOrders
+from OrderSystem.routing.SystemService import SystemService
 from OrderSystem.routing.Users import Users
 from OrderSystem.utilities.ServerLogger import console_print
 
@@ -29,6 +30,9 @@ def init():
 
     Users.register(app, route_prefix="/user", trailing_slash=False)
     console_print('INFO', 'Loaded user routes', always_show=False)
+
+    SystemService.register(app, route_prefix="/sys-service", trailing_slash=False)
+    console_print('INFO', 'Loaded system service interface', always_show=False)
 
     ErrorHandler.init()
     console_print('INFO', 'Loaded error routes', always_show=False)

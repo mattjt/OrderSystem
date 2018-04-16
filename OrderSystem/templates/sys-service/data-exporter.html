@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}System Data Exporter{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-4">
+            <form action="" method="POST">
+                <label for="fiscal_year">Fiscal year
+                    <input type="number" name="fiscal_year" id="fiscal_year" class="form-control">
+                </label>
+                <input type="submit" class="btn btn-success form-control" value="Generate CSV">
+            </form>
+        </div>
+    </div>
+{% endblock %}

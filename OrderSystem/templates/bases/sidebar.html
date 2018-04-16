@@ -78,8 +78,8 @@
             <li class="header">DATA</li>
 
             {# Export data #}
-            <li {% if page == "export_data" %}class="active"{% endif %}>
-                <a href="#">
+            <li {% if page == "data_exporter" %}class="active"{% endif %}>
+                <a href="{{ url_for('SystemService:data_exporter') }}">
                     <i class="fa fa-table"></i>
                     Export Data
                 </a>
