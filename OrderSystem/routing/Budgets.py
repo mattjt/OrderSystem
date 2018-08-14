@@ -1,5 +1,4 @@
 from decimal import Decimal
-
 from flask import render_template, url_for, abort
 from flask_classy import FlaskView, route
 from flask_login import login_required
@@ -116,7 +115,7 @@ class Budgets(FlaskView, CRUDBase):
                     existing_budget.dollar_amount = form.amount.data
 
                 db.session.commit()
-                return redirect(url_for('Budgets:index'))
+                return redirect(url_for('Budgets:index', fiscal_year=fiscal_year))
 
             else:
                 flash_errors(form)
